@@ -18,8 +18,8 @@ const ScoutHomepage = () => {
       ta: "எங்கும் இளைஞர்களுக்கான மாற்றமளிக்கும் கற்றல் அனுபவங்களை உருவாக்குகிறோம்."
     },
     learnMore: {
-      en: "Learn more",
-      ta: "மேலும் அறிக"
+      en: "Scout Movement",
+      ta: "சாரணர் இயக்கம்"
     },
     featuredStories: {
       en: "Featured Stories",
@@ -87,16 +87,16 @@ const ScoutHomepage = () => {
           <div className="md:w-1/2">
             <Carousel autoPlay infiniteLoop interval={3000} showThumbs={false} showStatus={false}>
               <div>
-                <img src="Images/ScoutMarch.png" alt="Scouts marching 1" />
+                <img src="Images/ScoutMarch.png" alt="Scouts marching 1" className="w-full h-auto object-contain" />
               </div>
               <div>
-                <img src="Images/ScoutMarch2.png" alt="Scouts marching 2" />
+                <img src="Images/ScoutMarch2.png" alt="Scouts marching 2" className="w-full h-auto object-contain" />
               </div>
               <div>
-                <img src="Images/ScoutMarch3.png" alt="Scouts marching 3" />
+                <img src="Images/ScoutMarch3.png" alt="Scouts marching 3" className="w-full h-auto object-contain" />
               </div>
               <div>
-                <img src="Images/ScoutMarch4.png" alt="Scouts marching 4" />
+                <img src="Images/ScoutMarch4.png" alt="Scouts marching 4" className="w-full h-auto object-contain" />
               </div>
             </Carousel>
           </div>
@@ -119,7 +119,7 @@ const ScoutHomepage = () => {
                 <img
                   src="Images/stories1.png"
                   alt="Featured story 1"
-                  className="w-full h-64 object-cover"
+                  className="w-full h-auto object-contain"
                 />
               </div>
               <div className="flex-grow p-4 flex items-center justify-center">
@@ -135,7 +135,7 @@ const ScoutHomepage = () => {
                 <img
                   src="Images/stories2.png"
                   alt="Featured story 2"
-                  className="w-full h-64 object-cover"
+                  className="w-full h-auto object-contain"
                 />
               </div>
               <div className="flex-grow p-4 flex items-center justify-center">
@@ -151,7 +151,7 @@ const ScoutHomepage = () => {
                 <img
                   src="Images/stories3.png"
                   alt="Featured story 3"
-                  className="w-full h-64 object-cover"
+                  className="w-full h-auto object-contain"
                 />
               </div>
               <div className="flex-grow p-4 flex items-center justify-center">
@@ -165,116 +165,116 @@ const ScoutHomepage = () => {
       </section>
 
     {/* Updated New Organization Section with Hardcoded Images */}
-<section className="py-12 px-4 sm:px-9 mt-10">
-  <div className="container mx-auto">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-8">
-      {/* Organization Card 1 */}
-      <div className="relative mb-24 md:mb-0">
-        <div className="w-full">
-          <img
-            src="/Images/worldscout.png"
-            alt="Organization 1"
-            className="w-full h-64 object-cover"
-          />
-          <div className="absolute bottom-0 left-0 transform translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
-            <h2 className="text-xl font-bold mb-2 text-black">
-              {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
-            </h2>
-            <p className="text-sm mb-3 text-gray-800">
-              {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
-            </p>
-            <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
-              {isTamil ? translations.learnMore.ta : translations.learnMore.en}
-            </button>
+    <section className="py-12 px-4 sm:px-9 mt-10">
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-8">
+          {/* Organization Card 1 */}
+          <div className="relative mb-24 md:mb-0">
+            <div className="w-full">
+              <img
+                src="/Images/worldscout.png"
+                alt="Organization 1"
+                className="w-full h-auto object-contain"
+              />
+              <div className="absolute bottom-0 left-0 transform translate-y-1/2 md:translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
+                <h2 className="text-xl font-bold mb-2 text-black">
+                  {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
+                </h2>
+                <p className="text-sm mb-3 text-gray-800">
+                  {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
+                </p>
+                <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
+                  {isTamil ? translations.learnMore.ta : translations.learnMore.en}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Organization Card 2 */}
+          <div className="relative mb-24 md:mb-0">
+            <div className="w-full">
+              <img
+                src="/Images/worldscout2.png"
+                alt="Organization 2"
+                className="w-full h-auto object-contain"
+              />
+              <div className="absolute bottom-0 left-0 transform translate-y-1/2 md:translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
+                <h2 className="text-xl font-bold mb-2 text-black">
+                  {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
+                </h2>
+                <p className="text-sm mb-3 text-gray-800">
+                  {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
+                </p>
+                <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
+                  {isTamil ? translations.learnMore.ta : translations.learnMore.en}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Organization Card 3 */}
+          <div className="relative mb-24 md:mb-0">
+            <div className="w-full">
+              <img
+                src="/Images/worldscout3.png"
+                alt="Organization 3"
+                className="w-full h-auto object-contain"
+              />
+              <div className="absolute bottom-0 left-0 transform translate-y-1/2 md:translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
+                <h2 className="text-xl font-bold mb-2 text-black">
+                  {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
+                </h2>
+                <p className="text-sm mb-3 text-gray-800">
+                  {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
+                </p>
+                <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
+                  {isTamil ? translations.learnMore.ta : translations.learnMore.en}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Organization Card 2 */}
-      <div className="relative mb-24 md:mb-0">
-        <div className="w-full">
-          <img
-            src="/Images/worldscout2.png"
-            alt="Organization 2"
-            className="w-full h-64 object-cover"
-          />
-          <div className="absolute bottom-0 left-0 transform translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
-            <h2 className="text-xl font-bold mb-2 text-black">
-              {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
-            </h2>
-            <p className="text-sm mb-3 text-gray-800">
-              {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
-            </p>
-            <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
-              {isTamil ? translations.learnMore.ta : translations.learnMore.en}
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Organization Card 3 */}
-      <div className="relative mb-24 md:mb-0">
-        <div className="w-full">
-          <img
-            src="/Images/worldscout3.png"
-            alt="Organization 3"
-            className="w-full h-64 object-cover"
-          />
-          <div className="absolute bottom-0 left-0 transform translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
-            <h2 className="text-xl font-bold mb-2 text-black">
-              {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
-            </h2>
-            <p className="text-sm mb-3 text-gray-800">
-              {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
-            </p>
-            <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors">
-              {isTamil ? translations.learnMore.ta : translations.learnMore.en}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
     {/* Latest News Section */}
-<section className="py-8 mt-48">
-  <div className="container mx-auto px-4">
-    <h2 className="text-2xl font-bold mb-6 text-center">
-      {translations.latestNews[isTamil ? 'ta' : 'en']}
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {/* News Item 1 */}
-      <div className="flex flex-col h-full">
-        <img 
-          src="/Images/news1.png"
-          alt="News 1"
-          className="w-full h-48 object-cover mb-4"
-        />
-        <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
-          {translations.newsDescription[isTamil ? 'ta' : 'en']} 1.
-        </p>
-      </div>
+    <section className="py-8 mt-8 md:mt-48">
+      <div className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          {translations.latestNews[isTamil ? 'ta' : 'en']}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* News Item 1 */}
+          <div className="flex flex-col h-full">
+            <img 
+              src="/Images/news1.png"
+              alt="News 1"
+              className="w-full h-auto object-contain mb-4"
+            />
+            <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
+              {translations.newsDescription[isTamil ? 'ta' : 'en']} 1.
+            </p>
+          </div>
 
-      {/* News Item 2 */}
-      <div className="flex flex-col h-full">
-        <img 
-          src="/Images/news2.png"
-          alt="News 2"
-          className="w-full h-48 object-cover mb-4"
-        />
-        <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
-          {translations.newsDescription[isTamil ? 'ta' : 'en']} 2.
-        </p>
-      </div>
+          {/* News Item 2 */}
+          <div className="flex flex-col h-full">
+            <img 
+              src="/Images/news2.png"
+              alt="News 2"
+              className="w-full h-auto object-contain mb-4"
+            />
+            <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
+              {translations.newsDescription[isTamil ? 'ta' : 'en']} 2.
+            </p>
+          </div>
 
-      {/* News Item 3 */}
-      <div className="flex flex-col h-full">
-        <img 
-          src="/Images/news3.png"
-          alt="News 3"
-          className="w-full h-48 object-cover mb-4"
-        />
+          {/* News Item 3 */}
+          <div className="flex flex-col h-full">
+            <img 
+              src="/Images/news3.png"
+              alt="News 3"
+              className="w-full h-auto object-contain mb-4"
+            />
         <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
           {translations.newsDescription[isTamil ? 'ta' : 'en']} 3.
         </p>
