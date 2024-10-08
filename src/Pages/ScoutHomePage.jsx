@@ -247,7 +247,7 @@ const ScoutHomepage = () => {
       {/* News Item 1 */}
       <div className="text-left">
         <img 
-          src="/images/news1.png"
+          src="/Images/news1.png"
           alt="News 1"
           className="w-11/12 h-48 object-cover mb-2 mx-auto"
         />
@@ -259,7 +259,7 @@ const ScoutHomepage = () => {
       {/* News Item 2 */}
       <div className="text-left">
         <img 
-          src="/images/news2.png"
+          src="/Images/news2.png"
           alt="News 2"
           className="w-11/12 h-48 object-cover mb-2 mx-auto"
         />
@@ -271,7 +271,7 @@ const ScoutHomepage = () => {
       {/* News Item 3 */}
       <div className="text-left">
         <img 
-          src="/images/news3.png"
+          src="/Images/news3.png"
           alt="News 3"
           className="w-11/12 h-48 object-cover mb-2 mx-auto"
         />

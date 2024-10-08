@@ -30,7 +30,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-start">
           <div className="mb-6 md:mb-0">
             <div className="flex items-center mb-4">
-              <img src="/images/tn-logo.png" alt="Bharath Scouts And Guides" className="w-30 h-20 mr-4" />
+              <img src="/Images/tn-logo.png" alt="Bharath Scouts And Guides" className="w-30 h-20 mr-4" />
               <h2 className="text-2xl font-bold">{isTamil ? translations.title.ta : translations.title.en}</h2>
             </div>
             <p className="text-sm max-w-md">
