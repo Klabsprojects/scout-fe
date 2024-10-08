@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+@media (max-width: 640px) { /* Mobile view */
+  .mobile-navbar {
+    height: 80px; /* Adjust as needed */
+    padding-top: 10px; /* Add padding for better alignment */
+    padding-bottom: 10px; /* Add padding for better alignment */
+  }
+
+  /* Optional: Adjust font size if needed */
+  .mobile-navbar h1 {
+    font-size: 14px; /* Adjust based on your needs */
+  }
+}
