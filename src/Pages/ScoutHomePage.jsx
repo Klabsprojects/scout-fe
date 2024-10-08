@@ -237,51 +237,51 @@ const ScoutHomepage = () => {
   </div>
 </section>
 
-     {/* Latest News Section */}
-<section className="py-8 mt-24">
+    {/* Latest News Section */}
+<section className="py-8 mt-48">
   <div className="container mx-auto px-4">
     <h2 className="text-2xl font-bold mb-6 text-center">
       {translations.latestNews[isTamil ? 'ta' : 'en']}
     </h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {/* News Item 1 */}
-      <div className="text-left">
+      <div className="flex flex-col h-full">
         <img 
           src="/Images/news1.png"
           alt="News 1"
-          className="w-11/12 h-48 object-cover mb-2 mx-auto"
+          className="w-full h-48 object-cover mb-4"
         />
-        <p className="text-sm font-semibold text-gray-700 mb-2 ml-4">
+        <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
           {translations.newsDescription[isTamil ? 'ta' : 'en']} 1.
         </p>
       </div>
 
       {/* News Item 2 */}
-      <div className="text-left">
+      <div className="flex flex-col h-full">
         <img 
           src="/Images/news2.png"
           alt="News 2"
-          className="w-11/12 h-48 object-cover mb-2 mx-auto"
+          className="w-full h-48 object-cover mb-4"
         />
-        <p className="text-sm font-semibold text-gray-700 mb-2 ml-4">
+        <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
           {translations.newsDescription[isTamil ? 'ta' : 'en']} 2.
         </p>
       </div>
 
       {/* News Item 3 */}
-      <div className="text-left">
+      <div className="flex flex-col h-full">
         <img 
           src="/Images/news3.png"
           alt="News 3"
-          className="w-11/12 h-48 object-cover mb-2 mx-auto"
+          className="w-full h-48 object-cover mb-4"
         />
-        <p className="text-sm font-semibold text-gray-700 mb-2 ml-4">
+        <p className="text-sm font-semibold text-gray-700 mb-2 flex-grow">
           {translations.newsDescription[isTamil ? 'ta' : 'en']} 3.
         </p>
       </div>
     </div>
     {/* "See all news" button */}
-    <div className="flex justify-center mt-6">
+    <div className="flex justify-center mt-8">
       <button className="bg-transparent text-black border border-black rounded-full px-6 py-2 hover:bg-black hover:text-white transition font-bold">
         {translations.seeAllNews[isTamil ? 'ta' : 'en']}
       </button>
@@ -290,7 +290,7 @@ const ScoutHomepage = () => {
 </section>
 
       {/* Watch Scouting Stories Section */}
-      <section className="py-8 mt-15">
+      <section className="py-8 mt-30">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6 text-center">
             {translations.watchScoutingStories[isTamil ? 'ta' : 'en']}
