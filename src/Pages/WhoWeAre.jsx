@@ -2,6 +2,7 @@ import React from 'react';
 import { Globe, Users, Trophy } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import NavigationMenu from '../components/NavigationMenu';
+import mediaData from '../MediaData.json';
 
 export default function WhoWeAre() {
   const { isTamil } = useTranslation();
@@ -11,7 +12,7 @@ export default function WhoWeAre() {
       {/* Hero Image Section */}
       <div className="relative w-full mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
         <img 
-          src="Images/whoweare.png" 
+          src={mediaData.whoWeAre.heroImage}
           alt="Scout Hero" 
           className="w-full h-auto max-h-[600px] object-cover"
         />
@@ -26,7 +27,7 @@ export default function WhoWeAre() {
         </h1>
         <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto text-lg sm:text-xl">
           {isTamil
-            ? 'ஆராய்ச்சி இயக்கத்திலிருந்து பிறந்தது, இது ஆராய்ச்சியாளர்களை சहிதமையும் மரியாதையும் மிக்கவர்களாக வழிகாட்டுகிறது. இன்று, உலகம் முழுவதும் 57 மில்லியனுக்கும் மேற்பட்ட ஆராய்ச்சியாளர்கள் இந்த இயக்கத்தை சிரம் சாய்த்த உழைப்பால் நடாத்துகின்றனர்.'
+            ? 'ஆராய்ச்சி இயக்கத்திலிருந்து பிறந்தது, இது ஆராய்ச்சியாளர்களை சகிப்புத்தன்மையும் மரியாதையும் மிக்கவர்களாக வழிகாட்டுகிறது. இன்று, உலகம் முழுவதும் 57 மில்லியனுக்கும் மேற்பட்ட ஆராய்ச்சியாளர்கள் இந்த இயக்கத்தை சிறப்பாகவும் அர்ப்பணிப்புடனும் நடத்துகின்றனர்.'
             : 'Born from the Scout Movement, it has continued to guide scouts to be tolerant and respectful. Today, over 57 million scouts worldwide make this movement effective and dedicated, with growing membership and a unified global presence.'}
         </p>
 
@@ -64,47 +65,47 @@ export default function WhoWeAre() {
           <video 
             controls 
             className="w-full h-auto"
-            poster="/Images/cover.png"
+            poster={mediaData.whoWeAre.videoPoster}
           >
-            <source src="videos/testvideo.mp4" type="video/mp4" />
+            <source src={mediaData.whoWeAre.video} type="video/mp4" />
             {isTamil ? 'உங்கள் உலாவியில் வீடியோ தொகுப்பு ஆதரவு இல்லை.' : 'Your browser does not support the video tag.'}
           </video>
         </div>
 
         {/* Organization Cards Section */}
         <div className="flex flex-col sm:flex-row gap-8 mb-16">
-          {[
-            { 
-              img: "/Images/worldscout.png", 
-              title: isTamil ? 'தேசிய ஆராய்ச்சி அமைப்பு' : 'National Scout Organization',  
-              desc: isTamil ? 'உங்கள் நாட்டில் செயல்படும் ஆராய்ச்சி அமைப்பு' : 'A scout organization operates in your country'
-            },
-            { 
-              img: "/Images/worldscout2.png", 
-              title: isTamil ? 'உலக ஆராய்ச்சி இயக்கம்' : 'World Scouting', 
-              desc: isTamil ? 'உலகம் முழுவதும் நாங்கள் ஒரு இயக்கமாக இருக்கிறோம்' : 'We have a worldwide movement'
-            },
-            { 
-              img: "/Images/worldscout3.png", 
-              title: isTamil ? 'ஆராய்ச்சி இயக்கத்தை ஆதரிக்கவும்' : 'Win to Scout Movement', 
-              desc: isTamil ? 'உலகளாவிய அளவில் எங்கள் பணிக்கான ஆதரவு' : 'Support our mission worldwide'
-            }
-          ].map((card, index) => (
-            <div key={index} className="relative w-full sm:w-1/3">
-              <img 
-                src={card.img}
-                alt={card.title}
-                className="w-full h-auto object-contain"
-              />
-              <div className="bg-white p-4 shadow-lg rounded-md mt-2">
-                <h3 className="font-semibold text-base truncate">{card.title}</h3>
-                <p className="text-sm text-gray-600 truncate">{card.desc}</p>
-                <button className="border border-black bg-transparent text-black font-medium text-xs py-2 px-4 rounded-md mt-3 transition duration-300 ease-in-out hover:bg-black hover:text-white">
-                  {isTamil ? 'மேலும் அறிக' : 'Learn More'}
-                </button>
+          {mediaData.organizationImages.map((img, index) => {
+            const cards = [
+              { 
+                title: isTamil ? 'தேசிய ஆராய்ச்சி அமைப்பு' : 'National Scout Organization',  
+                desc: isTamil ? 'உங்கள் நாட்டில் செயல்படும் ஆராய்ச்சி அமைப்பு' : 'A scout organization operates in your country'
+              },
+              { 
+                title: isTamil ? 'உலக ஆராய்ச்சி இயக்கம்' : 'World Scouting', 
+                desc: isTamil ? 'உலகம் முழுவதும் நாங்கள் ஒரு இயக்கமாக இருக்கிறோம்' : 'We have a worldwide movement'
+              },
+              { 
+                title: isTamil ? 'ஆராய்ச்சி இயக்கத்தை ஆதரிக்கவும்' : 'Win to Scout Movement', 
+                desc: isTamil ? 'உலகளாவிய அளவில் எங்கள் பணிக்கான ஆதரவு' : 'Support our mission worldwide'
+              }
+            ];
+            return (
+              <div key={index} className="relative w-full sm:w-1/3">
+                <img 
+                  src={img}
+                  alt={cards[index].title}
+                  className="w-full h-auto object-contain"
+                />
+                <div className="bg-white p-4 shadow-lg rounded-md mt-2">
+                  <h3 className="font-semibold text-base truncate">{cards[index].title}</h3>
+                  <p className="text-sm text-gray-600 truncate">{cards[index].desc}</p>
+                  <button className="border border-black bg-transparent text-black font-medium text-xs py-2 px-4 rounded-md mt-3 transition duration-300 ease-in-out hover:bg-black hover:text-white">
+                    {isTamil ? 'மேலும் அறிக' : 'Learn More'}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <p className="text-gray-600 text-center mb-8 max-w-3xl mx-auto text-sm sm:text-base">
@@ -113,31 +114,30 @@ export default function WhoWeAre() {
             : '"Global citizens are those who identify themselves not as members of a single nation, but as members of humanity. They understand and tolerate other people and cultures."'}
         </p>
 
-{/* Updated Ban Ki-moon Section with adjusted positioning and bottom margin */}
-<div className="mt-16 mb-24"> {/* Increased bottom margin */}
-        {/* Decorative green line */}
-        <div className="w-full h-0.5 bg-green-500 mb-12"></div>
-        
-        {/* Ban Ki-moon content - adjusted to be slightly right-aligned */}
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:max-w-3xl sm:mx-auto sm:pl-8"> {/* Added pl-8 for slight right alignment */}
-          <img 
-            src="Images/bankimoon.png"
-            alt="Ban Ki-moon"
-            className="w-32 h-32 rounded-full object-cover flex-shrink-0"
-          />
-          <div className="text-center sm:text-left">
-            <h2 className="text-2xl font-semibold mb-2">
-              {isTamil ? 'பான் கி-மூன்' : 'Ban Ki-moon'}
-            </h2>
-            <p className="text-gray-600 text-base max-w-lg">
-              {isTamil
-                ? 'பான் கி-மூன், ஐக்கிய நாடுகள் சபையின் 8ஆம் செயலாளர் மற்றும் முன்னாள் ஆராய்ச்சியாளர், அமைதியை வளர்ப்பதில் தன்னை அர்ப்பணித்தவர்.'
-                : 'Ban Ki-moon, the 8th Secretary-General of the United Nations and former Scout, is dedicated to promoting peace.'}
-            </p>
+        {/* Updated Ban Ki-moon Section with adjusted positioning and bottom margin */}
+        <div className="mt-16 mb-24">
+          {/* Decorative green line */}
+          <div className="w-full h-0.5 bg-green-500 mb-12"></div>
+          
+          {/* Ban Ki-moon content - adjusted to be slightly right-aligned */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:max-w-3xl sm:mx-auto sm:pl-8">
+            <img 
+              src={mediaData.whoWeAre.banKiMoonImage}
+              alt="Ban Ki-moon"
+              className="w-32 h-32 rounded-full object-cover flex-shrink-0"
+            />
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-semibold mb-2">
+                {isTamil ? 'பான் கி-மூன்' : 'Ban Ki-moon'}
+              </h2>
+              <p className="text-gray-600 text-base max-w-lg">
+                {isTamil
+                  ? 'பான் கி-மூன், ஐக்கிய நாடுகள் சபையின் 8ஆம் செயலாளர் மற்றும் முன்னாள் ஆராய்ச்சியாளர், அமைதியை வளர்ப்பதில் தன்னை அர்ப்பணித்தவர்.'
+                  : 'Ban Ki-moon, the 8th Secretary-General of the United Nations and former Scout, is dedicated to promoting peace.'}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-
       </div>
     </div>
   );

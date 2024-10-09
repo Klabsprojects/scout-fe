@@ -22,7 +22,7 @@ const NavigationMenu = () => {
           <div key={item.path} className={`text-gray-500 text-center mb-2 sm:mb-0 sm:mr-4`}>
             <Link
               to={item.path}
-              className={`text-gray-500 ${location.pathname === item.path ? 'font-bold text-blue-500' : ''}`}
+              className={`text-gray-500 ${location.pathname === item.path ? 'font-bold text-red-500' : ''}`}
             >
               {item.label}
             </Link>

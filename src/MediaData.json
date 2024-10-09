@@ -1,0 +1,63 @@
+{
+    "carouselImages": [
+      "/Images/ScoutMarch.png",
+      "/Images/ScoutMarch2.png",
+      "/Images/ScoutMarch3.png",
+      "/Images/ScoutMarch4.png"
+    ],
+    "featuredStories": [
+      "/Images/stories1.png",
+      "/Images/stories2.png",
+      "/Images/stories3.png"
+    ],
+    "organizationImages": [
+      "/Images/worldscout.png",
+      "/Images/worldscout2.png",
+      "/Images/worldscout3.png"
+    ],
+    "newsImages": [
+      "/Images/news1.png",
+      "/Images/news2.png",
+      "/Images/news3.png"
+    ],
+    "videos": [
+      "/videos/testvideo.mp4",
+      "/videos/testvideo.mp4",
+      "/videos/testvideo.mp4"
+    ],
+    "whoWeAre": {
+      "heroImage": "/Images/whoweare.png",
+      "videoPoster": "/Images/cover.png",
+      "video": "/videos/testvideo.mp4",
+      "banKiMoonImage": "/Images/bankimoon.png"
+    },
+    "scoutEducation": {
+      "heroImage": "/Images/ScoutMarch2.png",
+      "educationImage1": "/Images/education1.png",
+      "educationImage2": "/Images/education2.png",
+      "videoPoster": "/Images/scouted-cover.png",
+      "videos": [
+        {
+          "src": "/videos/testvideo.mp4",
+          "title": {
+            "en": "Outdoor Skills",
+            "ta": "வெளிப்புற திறன்கள்"
+          }
+        },
+        {
+          "src": "/videos/testvideo.mp4",
+          "title": {
+            "en": "Leadership",
+            "ta": "தலைமைத்துவம்"
+          }
+        },
+        {
+          "src": "/videos/testvideo.mp4",
+          "title": {
+            "en": "Community Service",
+            "ta": "சமூக சேவை"
+          }
+        }
+      ]
+    }
+  }
