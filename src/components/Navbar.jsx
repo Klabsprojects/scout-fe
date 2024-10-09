@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Menu, X } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import { Link } from 'react-router-dom'; 
+import mediaData from '../MediaData.json';
 
 const Navbar = () => {
   const { isTamil, toggleLanguage } = useTranslation();
@@ -222,11 +223,19 @@ const Navbar = () => {
             </div>
           </div>
           <div className="absolute left-2 top-2 z-10">
-            <img src="/Images/ScoutLogo.png" alt="Bharat Scouts and Guides Logo" className="h-16 w-16 lg:h-24 lg:w-24 object-contain" />
-          </div>
-          <div className="absolute right-2 top-2 z-10">
-            <img src="/Images/tn-logo.png" alt="TN Logo" className="h-16 w-16 lg:h-24 lg:w-24 object-contain" />
-          </div>
+        <img
+          src={mediaData.headerImages.scoutLogo}
+          alt="Bharat Scouts and Guides Logo"
+          className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
+        />
+      </div>
+      <div className="absolute right-2 top-2 z-10">
+        <img
+          src={mediaData.headerImages.tnLogo}
+          alt="TN Logo"
+          className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
+        />
+      </div>
         </>
       )}
     </nav>

@@ -53,39 +53,39 @@ export default function ScoutEducation() {
       <NavigationMenu />
 
       <div className="max-w-7xl mx-auto px-4 mt-16">
-        {/* First Section: Image Left, Text Right */}
-        <div className="flex flex-col md:flex-row items-center mb-16">
-          <img
-            src={mediaData.scoutEducation.educationImage1}
-            alt="Scout Education"
-            className="w-full md:w-1/2 h-auto object-cover mb-8 md:mb-0 md:mr-8"
-          />
-          <div className="md:w-1/2">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-              {translations.title[isTamil ? 'ta' : 'en']}
-            </h1>
-            <p className="text-gray-600 mb-4">
-              {translations.description[isTamil ? 'ta' : 'en']}
-            </p>
-          </div>
-        </div>
+       {/* First Section: Image Left, Text Right */}
+<div className="flex flex-col md:flex-row items-center mb-16">
+  <img
+    src={mediaData.scoutEducation.educationImage1}
+    alt="Scout Education"
+    className="w-full md:w-3/5 h-auto object-cover mb-8 md:mb-0 md:mr-8" // Changed md:w-1/2 to md:w-3/5
+  />
+  <div className="md:w-1/2">
+    <h1 className="text-2xl sm:text-3xl font-bold mb-4">
+      {translations.title[isTamil ? 'ta' : 'en']}
+    </h1>
+    <p className="text-gray-600 mb-4">
+      {translations.description[isTamil ? 'ta' : 'en']}
+    </p>
+  </div>
+</div>
 
-        {/* Second Section: Text Left, Image Right */}
-        <div className="flex flex-col md:flex-row-reverse items-center mb-16">
-          <img
-            src={mediaData.scoutEducation.educationImage2}
-            alt="Scout Activities"
-            className="w-full md:w-1/2 h-auto object-cover mb-8 md:mb-0 md:ml-8"
-          />
-          <div className="md:w-1/2">
-            <h2 className="text-2xl font-bold mb-4">
-              {translations.programs[isTamil ? 'ta' : 'en']}
-            </h2>
-            <p className="text-gray-600 mb-4">
-              {translations.programsDescription[isTamil ? 'ta' : 'en']}
-            </p>
-          </div>
-        </div>
+{/* Second Section: Text Left, Image Right */}
+<div className="flex flex-col md:flex-row-reverse items-center mb-16">
+  <img
+    src={mediaData.scoutEducation.educationImage2}
+    alt="Scout Activities"
+    className="w-full md:w-3/5 h-auto object-cover mb-8 md:mb-0 md:ml-8" // Changed md:w-1/2 to md:w-3/5
+  />
+  <div className="md:w-1/2">
+    <h2 className="text-2xl font-bold mb-4">
+      {translations.programs[isTamil ? 'ta' : 'en']}
+    </h2>
+    <p className="text-gray-600 mb-4">
+      {translations.programsDescription[isTamil ? 'ta' : 'en']}
+    </p>
+  </div>
+</div>
 
         {/* Horizontal Card Section */}
         <div className="bg-white shadow-lg rounded-lg p-6 mb-16">

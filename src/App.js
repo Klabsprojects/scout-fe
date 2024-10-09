@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import WhoWeAre from "./Pages/WhoWeAre";
 import ScoutEducation from "./Pages/ScoutEducation"; // Import the new component
 
+
 function App() {
   return (
     <Router>
@@ -23,6 +24,7 @@ function App() {
           <Route path="/shop" element={<div>Shop Page</div>} />
         </Routes>
         <Footer />
+     
       </TranslationProvider>
     </Router>
   );
