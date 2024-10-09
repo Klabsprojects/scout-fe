@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Book } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import NavigationMenu from '../components/NavigationMenu';
 import mediaData from '../MediaData.json';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default function ScoutEducation() {
   const { isTamil } = useTranslation();
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
 
   const translations = {
     title: {
@@ -36,10 +45,11 @@ export default function ScoutEducation() {
       en: 'Your browser does not support the video tag.',
       ta: 'உங்கள் உலாவியில் வீடியோ தொகுப்பு ஆதரவு இல்லை.',
     },
+
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full bg-gray-50">
       {/* Hero Image Section */}
       <div className="relative w-full mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
         <img
@@ -47,68 +57,82 @@ export default function ScoutEducation() {
           alt="Scout Education Hero"
           className="w-full h-auto max-h-[600px] object-cover"
         />
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-white text-center" data-aos="fade-up">
+            {translations.title[isTamil ? 'ta' : 'en']}
+          </h1>
+        </div>
       </div>
 
       {/* Navigation Menu Below the Image */}
       <NavigationMenu />
 
-      <div className="max-w-7xl mx-auto px-4 mt-16">
-       {/* First Section: Image Left, Text Right */}
-<div className="flex flex-col md:flex-row items-center mb-16">
-  <img
-    src={mediaData.scoutEducation.educationImage1}
-    alt="Scout Education"
-    className="w-full md:w-3/5 h-auto object-cover mb-8 md:mb-0 md:mr-8" // Changed md:w-1/2 to md:w-3/5
-  />
-  <div className="md:w-1/2">
-    <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-      {translations.title[isTamil ? 'ta' : 'en']}
-    </h1>
-    <p className="text-gray-600 mb-4">
-      {translations.description[isTamil ? 'ta' : 'en']}
-    </p>
-  </div>
-</div>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        {/* First Section: Image Left, Text Right */}
+        <div className="flex flex-col md:flex-row items-center mb-24">
+          <div className="md:w-3/5 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
+            <img
+              src={mediaData.scoutEducation.educationImage1}
+              alt="Scout Education"
+              className="w-full h-auto object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+          <div className="md:w-2/5" data-aos="fade-left">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">
+              {translations.title[isTamil ? 'ta' : 'en']}
+            </h2>
+            <p className="text-gray-600 leading-relaxed">
+              {translations.description[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
 
-{/* Second Section: Text Left, Image Right */}
-<div className="flex flex-col md:flex-row-reverse items-center mb-16">
-  <img
-    src={mediaData.scoutEducation.educationImage2}
-    alt="Scout Activities"
-    className="w-full md:w-3/5 h-auto object-cover mb-8 md:mb-0 md:ml-8" // Changed md:w-1/2 to md:w-3/5
-  />
-  <div className="md:w-1/2">
-    <h2 className="text-2xl font-bold mb-4">
-      {translations.programs[isTamil ? 'ta' : 'en']}
-    </h2>
-    <p className="text-gray-600 mb-4">
-      {translations.programsDescription[isTamil ? 'ta' : 'en']}
-    </p>
-  </div>
-</div>
+        {/* Second Section: Text Left, Image Right */}
+        <div className="flex flex-col md:flex-row-reverse items-center mb-24">
+          <div className="md:w-3/5 mb-8 md:mb-0 md:ml-8" data-aos="fade-left">
+            <img
+              src={mediaData.scoutEducation.educationImage2}
+              alt="Scout Activities"
+              className="w-full h-auto object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+          <div className="md:w-2/5" data-aos="fade-right">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">
+              {translations.programs[isTamil ? 'ta' : 'en']}
+            </h2>
+            <p className="text-gray-600 leading-relaxed">
+              {translations.programsDescription[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
 
-        {/* Horizontal Card Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-16">
-          <p className="text-gray-600 mb-4">
-            {translations.quote[isTamil ? 'ta' : 'en']}
+        {/* Quote Section */}
+        <div className="bg-white shadow-2xl rounded-lg p-10 mb-24" data-aos="zoom-in">
+          <p className="text-2xl text-gray-700 italic mb-6 leading-relaxed">
+            "{translations.quote[isTamil ? 'ta' : 'en']}"
           </p>
           <div className="flex items-center">
-            <Book className="w-10 h-10 text-blue-500 mr-4" />
-            <p className="text-gray-700 font-semibold">
+            <Book className="w-12 h-12 text-blue-600 mr-4" />
+            <p className="text-xl text-gray-800 font-semibold">
               {translations.skills[isTamil ? 'ta' : 'en']}
             </p>
           </div>
         </div>
 
         {/* Video Players Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <h2 className="text-3xl font-bold mb-10 text-center text-gray-800" data-aos="fade-up">
+          Educational Videos
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
           {mediaData.scoutEducation.videos.map((video, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <video controls className="w-full h-auto mb-4" poster={mediaData.scoutEducation.videoPoster}>
-                <source src={video.src} type="video/mp4" />
-                {translations.videoError[isTamil ? 'ta' : 'en']}
-              </video>
-              <p className="text-violet-700 font-semibold">{isTamil ? video.title.ta : video.title.en}</p>
+            <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
+              <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
+                <video controls className="w-full h-auto" poster={mediaData.scoutEducation.videoPoster}>
+                  <source src={video.src} type="video/mp4" />
+                  {translations.videoError[isTamil ? 'ta' : 'en']}
+                </video>
+              </div>
+              <p className="text-xl text-violet-700 font-semibold">{isTamil ? video.title.ta : video.title.en}</p>
             </div>
           ))}
         </div>

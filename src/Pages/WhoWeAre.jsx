@@ -17,7 +17,8 @@ export default function WhoWeAre() {
   };
 
   return (
-    <div className="relative w-full bg-gradient-to-b from-gray-50 to-white">
+<div className="relative w-full bg-gradient-to-b from-blue-100 to-white">
+
       {/* Hero Section with Parallax Effect */}
       <div className="relative w-full h-[70vh] mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
         <motion.div
@@ -113,25 +114,27 @@ export default function WhoWeAre() {
           ))}
         </div>
 
-        {/* Enhanced Video Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="relative w-full mx-auto mb-20"
-        >
-          <div className="aspect-w-16 aspect-h-9">
-            <video 
-              controls 
-              className="w-full rounded-xl shadow-2xl"
-              poster={mediaData.whoWeAre.videoPoster}
-              onPlay={() => setIsVideoPlaying(true)}
-              onPause={() => setIsVideoPlaying(false)}
-            >
-              <source src={mediaData.whoWeAre.video} type="video/mp4" />
-            </video>
-          </div>
-        </motion.div>
+{/* Enhanced Video Section */}
+<motion.div
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  transition={{ duration: 0.8 }}
+  className="relative w-full mx-auto mb-20"
+>
+  <div className="aspect-w-16 aspect-h-9 w-full sm:w-3/5 mx-auto"> {/* Full width on mobile and 60% on larger screens */}
+    <video 
+      controls 
+      className="w-full rounded-xl shadow-2xl"
+      poster={mediaData.whoWeAre.videoPoster}
+      onPlay={() => setIsVideoPlaying(true)}
+      onPause={() => setIsVideoPlaying(false)}
+    >
+      <source src={mediaData.whoWeAre.video} type="video/mp4" />
+    </video>
+  </div>
+</motion.div>
+
+
 
         {/* Enhanced Organization Cards Section */}
         <motion.div 

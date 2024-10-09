@@ -103,22 +103,30 @@ const ScoutHomepage = () => {
 
   return (
     <div className="pt-20 md:pt-36 smooth-scroll">
-      {/* First Page with Light Sandal Color */}
+      {/* Hero Section */}
       <div className="bg-[#feeecf]">
-        <header className="container mx-auto px-4 py-8 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-6 md:mb-0 md:pr-8">
-            <h1 className="text-3xl font-bold mb-4 text-left leading-tight md:leading-snug ml-5 animate-fade-in-up">
+        <header className="container mx-auto px-4 py-12 md:py-16 flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-left leading-tight md:leading-snug animate-fade-in-up">
               {isTamil ? translations.title.ta : translations.title.en}
             </h1>
-            <button className="bg-red-600 text-white px-6 py-2 rounded-md ml-5 hover:scale-105 transition-transform duration-300" style={{ borderRadius: '8px' }}>
+            <button className="bg-red-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-red-700 transition-colors duration-300 shadow-lg">
               {translations.learnMore[isTamil ? 'ta' : 'en']}
             </button>
           </div>
           <div className="md:w-1/2">
-            <Carousel autoPlay infiniteLoop interval={3000} showThumbs={false} showStatus={false} transitionTime={1000}>
+            <Carousel 
+              autoPlay 
+              infiniteLoop 
+              interval={5000} 
+              showThumbs={false} 
+              showStatus={false} 
+              transitionTime={1000}
+              className="rounded-lg shadow-2xl overflow-hidden"
+            >
               {mediaData.carouselImages.map((image, index) => (
                 <div key={index}>
-                  <img src={image} alt={`Scouts marching ${index + 1}`} className="w-full h-auto object-contain" loading="lazy" />
+                  <img src={image} alt={`Scouts marching ${index + 1}`} className="w-full h-auto object-cover" loading="lazy" />
                 </div>
               ))}
             </Carousel>
@@ -126,27 +134,24 @@ const ScoutHomepage = () => {
         </header>
       </div>
 
-      {/* Featured Stories Title */}
-      <section className="py-2 px-4 sm:px-6 lg:px-8 pt-7 animate-fade-in">
-        <h2 className="text-2xl font-bold text-center mb-8">
-          {isTamil ? translations.featuredStories.ta : translations.featuredStories.en}
-        </h2>
-      </section>
-
-      <section className="py-12 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+      {/* Featured Stories Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-3xl font-bold text-center mb-12 animate-fade-in">
+            {isTamil ? translations.featuredStories.ta : translations.featuredStories.en}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {mediaData.featuredStories.map((image, index) => (
-              <div key={index} className={`flex flex-col shadow-md overflow-hidden ${index === 0 ? 'bg-green-300' : index === 1 ? 'bg-blue-300' : 'bg-orange-300'} w-full ${index === 0 ? 'h-104' : index === 1 ? 'h-156' : 'h-208'} transform hover:scale-105 transition-transform duration-300`}>
-                <div className="flex-shrink-0">
+              <div key={index} className={`flex flex-col rounded-lg shadow-lg overflow-hidden ${index === 0 ? 'bg-green-300' : index === 1 ? 'bg-blue-300' : 'bg-orange-300'} transform hover:scale-105 transition-transform duration-300 animate-fade-in-up`}>
+                <div className="flex-shrink-0 h-48 md:h-64">
                   <img
                     src={image}
                     alt={`Featured story ${index + 1}`}
-                    className="w-full h-auto object-contain"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
                 </div>
-                <div className="flex-grow p-4 flex items-center justify-center">
+                <div className="flex-grow p-6 flex items-center justify-center">
                   <p className="text-lg text-white font-bold text-center">
                     {isTamil ? translations.featuredStoryTitles[`story${index + 1}`].ta : translations.featuredStoryTitles[`story${index + 1}`].en}
                   </p>
@@ -156,91 +161,93 @@ const ScoutHomepage = () => {
           </div>
         </div>
       </section>
-
-      {/* Updated New Organization Section with Lazy Loading */}
-      <section className="py-12 px-4 sm:px-9 mt-10 animate-fade-in-up">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-8">
-            {mediaData.organizationImages.map((image, index) => (
-              <div key={index} className="relative mb-24 md:mb-0 hover:scale-105 transition-transform duration-300">
-                <div className="w-full">
-                  <img
-                    src={image}
-                    alt={`Organization ${index + 1}`}
-                    className="w-full h-auto object-contain"
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-0 left-0 transform translate-y-1/2 md:translate-y-2/3 bg-white shadow-md p-4 w-full md:w-3/4">
-                    <h2 className="text-xl font-bold mb-2 text-black">
-                      {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
-                    </h2>
-                    <p className="text-sm mb-3 text-gray-800">
-                      {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
-                    </p>
-                    <button className="text-sm border border-black px-4 py-1 rounded-full hover:bg-black hover:text-white transition-colors duration-300">
-                      {isTamil ? translations.learnMore.ta : translations.learnMore.en}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+{/* New Organization Section */}
+<section className="py-20 px-4 sm:px-9 bg-gradient-to-b from-white to-blue-50">
+  <div className="container mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      {mediaData.organizationImages.map((image, index) => (
+        <div key={index} className="group animate-fade-in-up">
+          <div className="relative rounded-xl overflow-hidden shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl bg-white">
+            <div className="aspect-w-16 aspect-h-9">
+              <img
+                src={image}
+                alt={`Organization ${index + 1}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-3 text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+                {isTamil ? translations.newOrganization.title.ta : translations.newOrganization.title.en}
+              </h2>
+              <p className="text-sm mb-4 text-gray-600">
+                {isTamil ? translations.newOrganization.description.ta : translations.newOrganization.description.en}
+              </p>
+              <button className="text-sm bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 font-semibold shadow-md hover:shadow-lg">
+                {isTamil ? translations.learnMore.ta : translations.learnMore.en}
+              </button>
+            </div>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Latest News Section */}
-      <section className="py-8 mt-8 md:mt-48 animate-fade-in">
+      <section className="py-16 bg-gray-100 animate-fade-in">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-8 text-center">{isTamil ? translations.latestNews.ta : translations.latestNews.en}</h2>
-          <div className="flex flex-col md:flex-row justify-between gap-6">
+          <h2 className="text-3xl font-bold mb-12 text-center">{isTamil ? translations.latestNews.ta : translations.latestNews.en}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {mediaData.newsImages.map((image, index) => (
-              <div key={index} className="bg-gray-200 shadow-md overflow-hidden w-full md:w-1/3 h-104 md:h-208 hover:shadow-lg transition-shadow duration-300">
+              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <img
                   src={image}
                   alt={`Latest news ${index + 1}`}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-48 object-cover"
                   loading="lazy"
                 />
-                <div className="p-4">
-                  <h3 className="text-lg font-bold mb-2">{translations.newsDescription[isTamil ? 'ta' : 'en']}</h3>
+                <div className="p-6">
+                  <h3 className="text-lg font-bold mb-3">{translations.newsDescription[isTamil ? 'ta' : 'en']}</h3>
+                  <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                  <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Scouting Stories Video */}
-      <section className="py-12 px-4 sm:px-9 mt-8 animate-fade-in-up">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">
-            {isTamil ? translations.watchScoutingStories.ta : translations.watchScoutingStories.en}
-          </h2>
-          <div className="flex flex-col md:flex-row justify-center space-x-4">
-            {/* Video Player 1 */}
-            <div className="relative mb-8 md:mb-0 md:w-1/3">
-              <video controls className="w-full h-auto object-cover">
-                <source src={mediaData.whoWeAre.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-            {/* Video Player 2 */}
-            <div className="relative mb-8 md:mb-0 md:w-1/3">
-              <video controls className="w-full h-auto object-cover">
-                <source src={mediaData.whoWeAre.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-            {/* Video Player 3 */}
-            <div className="relative mb-8 md:mb-0 md:w-1/3">
-              <video controls className="w-full h-auto object-cover">
-                <source src={mediaData.whoWeAre.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
+          <div className="text-center mt-12">
+            <button className="bg-blue-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg">
+              {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
+            </button>
           </div>
         </div>
       </section>
+
+{/* Scouting Stories Video Section */}
+<section className="py-16 px-4 sm:px-9 bg-white animate-fade-in-up">
+  <div className="container mx-auto">
+    <h2 className="text-3xl font-bold text-center mb-12">
+      {isTamil ? translations.watchScoutingStories.ta : translations.watchScoutingStories.en}
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[1, 2, 3].map((index) => (
+        <div key={index} className="rounded-lg overflow-hidden shadow-lg">
+          <div className="aspect-w-16 aspect-h-9">
+            <video controls className="w-full h-full object-cover">
+              <source src={mediaData.whoWeAre.video} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div className="p-4 bg-gray-100">
+            <p className="font-semibold text-sm">
+              {translations.videoDescription[isTamil ? 'ta' : 'en']} {index}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
     </div>
   );
 };
