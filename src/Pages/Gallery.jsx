@@ -76,10 +76,10 @@ const Gallery = () => {
   return (
     <div className="min-h-screen bg-gray-100 pt-16 sm:pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col items-center mb-8 space-y-4">
+        <div className="flex flex-col items-center mb-8 space-y-4 pt-16">
           <button
             onClick={toggleLayout}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 "
           >
             {translations.layoutToggle[isTamil ? 'ta' : 'en']}
           </button>
