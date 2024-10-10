@@ -67,7 +67,7 @@ const GetInvolved = () => {
           title: "Community Service",
           description: "Scouts are active citizens, making a positive impact in their local communities and addressing global challenges.",
           details: [
-            "Regular community service projects",
+            "Regular community services",
             "Disaster relief and emergency preparedness training",
             "Sustainable development initiatives aligned with UN SDGs"
           ]

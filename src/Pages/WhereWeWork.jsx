@@ -86,7 +86,7 @@ const WhereWeWork = () => {
           "90% of our members report improved leadership skills",
           "75,000+ community service projects completed annually",
           "200+ international exchange programs",
-          "500+ skill development workshops conducted monthly"
+          "300+ skill development workshops conducted monthly"
         ]
       }
     },
