@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
-import { Link } from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom'; 
 import mediaData from '../MediaData.json';
 
 const Navbar = () => {
   const { isTamil, toggleLanguage } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,15 +56,25 @@ const Navbar = () => {
 
   const t = translations[isTamil ? 'ta' : 'en'];
 
+  const navItems = [
+    { path: "/ScoutHomepage", label: t.home },
+    { path: "/whoweare", label: t.whoWeAre },
+    { path: "/what-we-do", label: t.whatWeDo },
+    { path: "/where-we-work", label: t.whereWeWork },
+    { path: "/get-involved", label: t.getInvolved },
+    { path: "/gallery", label: t.shop },
+    { path: "/product", label: t.product },
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white">
       {isMobile ? (
         <>
           <div className="bg-blue-900 text-white py-4 px-4 flex items-center justify-between">
-            <img src="/Images/ScoutLogo.png" alt="Bharat Scouts and Guides Logo" className="h-12 w-12 object-contain" />
+            <img src={mediaData.headerImages.scoutLogo} alt="Bharat Scouts and Guides Logo" className="h-12 w-12 object-contain" />
             <h1 className="text-lg font-semibold">BSG</h1>
             <div className="flex items-center space-x-4">
-              <img src="/Images/tn-logo.png" alt="TN Logo" className="h-12 w-12 object-contain" />
+              <img src={mediaData.headerImages.tnLogo} alt="TN Logo" className="h-12 w-12 object-contain" />
               <button onClick={toggleMenu}>
                 {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -73,27 +84,11 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className="bg-white text-black shadow-md py-4 px-4">
               <ul className="flex flex-col space-y-4 mb-4">
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/ScoutHomepage">{t.home}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/whoweare">{t.whoWeAre}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/what-we-do">{t.whatWeDo}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/where-we-work">{t.whereWeWork}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/get-involved">{t.getInvolved}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/gallery">{t.shop}</Link>
-                </li>
-                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/product">{t.product}</Link>
-                </li>
+                {navItems.map((item) => (
+                  <li key={item.path} className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'} ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
+                    <Link to={item.path}>{item.label}</Link>
+                  </li>
+                ))}
               </ul>
               <div className="flex justify-between items-center mb-4">
                 <button className="flex flex-col items-center">
@@ -132,7 +127,7 @@ const Navbar = () => {
         </>
       ) : (
         <>
-          <div className="bg-blue-900 text-white py-6 md:py-4 lg:py-4">
+          <div className="bg-blue-900 text-white py-4 md:py-4 lg:py-4 ">
             <div className="container mx-auto flex items-center justify-between px-4 lg:px-16">
               <div className="w-16 lg:w-24"></div>
               <h1 className="text-xs lg:text-base font-semibold text-center flex-grow px-2 lg:px-4 -ml-40">
@@ -162,33 +157,14 @@ const Navbar = () => {
             <div className="container mx-auto px-4">
               <div className="flex flex-col lg:flex-row lg:justify-between items-center">
                 <ul className="flex flex-wrap lg:justify-start items-center space-x-2 lg:space-x-4 mb-4 lg:mb-0 lg:ml-32">
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/ScoutHomepage">{t.home}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/whoweare">{t.whoWeAre}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/what-we-do">{t.whatWeDo}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/where-we-work">{t.whereWeWork}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/get-involved">{t.getInvolved}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/gallery">{t.shop}</Link>
-                  </li>
-                  <li className="text-gray-400 hidden lg:block">/</li>
-                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/product">{t.product}</Link>
-                  </li>
+                  {navItems.map((item, index) => (
+                    <React.Fragment key={item.path}>
+                      <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
+                        <Link to={item.path}>{item.label}</Link>
+                      </li>
+                      {index < navItems.length - 1 && <li className="text-gray-400 hidden lg:block">/</li>}
+                    </React.Fragment>
+                  ))}
                 </ul>
 
                 <div className="flex items-center space-x-4 lg:space-x-8 lg:mr-32">
@@ -215,19 +191,19 @@ const Navbar = () => {
             </div>
           </div>
           <div className="absolute left-2 top-2 z-10">
-        <img
-          src={mediaData.headerImages.scoutLogo}
-          alt="Bharat Scouts and Guides Logo"
-          className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
-        />
-      </div>
-      <div className="absolute right-2 top-2 z-10">
-        <img
-          src={mediaData.headerImages.tnLogo}
-          alt="TN Logo"
-          className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
-        />
-      </div>
+            <img
+              src={mediaData.headerImages.scoutLogo}
+              alt="Bharat Scouts and Guides Logo"
+              className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
+            />
+          </div>
+          <div className="absolute right-2 top-2 z-10">
+            <img
+              src={mediaData.headerImages.tnLogo}
+              alt="TN Logo"
+              className="h-16 w-16 lg:h-24 lg:w-24 object-contain"
+            />
+          </div>
         </>
       )}
     </nav>
