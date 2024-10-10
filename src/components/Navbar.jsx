@@ -31,7 +31,7 @@ const Navbar = () => {
       whatWeDo: "What we do",
       whereWeWork: "Where we work",
       getInvolved: "Get involved",
-      shop: "Shop",
+      shop: "Gallery",
       donate: "Donate",
       cart: "Cart",
       login: "Login",
@@ -44,7 +44,7 @@ const Navbar = () => {
       whatWeDo: "என்ன செய்கிறோம்",
       whereWeWork: " இடம்",
       getInvolved: "பங்கேற்க",
-      shop: "கடை",
+      shop: "தொகுப்பு",
       donate: "நன்கொடை",
       cart: "வண்டி",
       login: "உள்நுழைய",
@@ -89,8 +89,8 @@ const Navbar = () => {
                   <Link to="/get-involved">{t.getInvolved}</Link>
                 </li>
                 <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-                  <Link to="/shop">{t.shop}</Link>
-                </li>
+  <Link to="/gallery">{t.shop}</Link>
+</li>
               </ul>
               <div className="flex justify-between items-center mb-4">
                 <button className="flex flex-col items-center">
@@ -195,8 +195,8 @@ const Navbar = () => {
                   </li>
                   <li className="text-gray-400 hidden lg:block">/</li>
                   <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-                    <Link to="/shop">{t.shop}</Link>
-                  </li>
+  <Link to="/gallery">{t.shop}</Link>
+</li>
                 </ul>
 
                 <div className="flex items-center space-x-4 lg:space-x-8 lg:mr-32">
