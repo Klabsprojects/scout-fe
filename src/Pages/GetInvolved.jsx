@@ -25,7 +25,7 @@ const GetInvolved = () => {
         {
           icon: <Globe size={32} />,
           title: "Global Brotherhood",
-          description: "Scouting is a worldwide movement that brings together young people from diverse backgrounds, fostering understanding and peace across cultures.",
+          description: "Scouting is a worldwide movement that brings together  people from diverse backgrounds, fostering understanding and peace across cultures.",
           details: [
             "54 million Scouts across 170 countries",
             "Annual events like World Scout  and JOTA-JOTI",
