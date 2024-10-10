@@ -105,12 +105,17 @@ const WhatWeDoPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <header className="bg-blue-600 text-white py-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl font-bold mb-4">{translations.title[isTamil ? 'ta' : 'en']}</h1>
-          <p className="text-xl">{translations.subtitle[isTamil ? 'ta' : 'en']}</p>
-        </div>
-      </header>
+<header className="bg-blue-600 text-white py-10">
+  <div className="container mx-auto text-center mt-32"> {/* Increased mt to mt-12 */}
+    <h1 className="text-4xl font-bold mb-4">{translations.title[isTamil ? 'ta' : 'en']}</h1>
+    <p className="text-xl">{translations.subtitle[isTamil ? 'ta' : 'en']}</p>
+  </div>
+</header>
+
+
+
+
+
 
       <main className="container mx-auto py-12">
         <section className="mb-16">

@@ -9,6 +9,7 @@ import ScoutEducation from "./Pages/ScoutEducation";
 import WhatWeDo from "./Pages/WhatWeDo";
 import Gallery from "./Pages/Gallery";
 import WhereWeWork from "./Pages/WhereWeWork";
+import GetInvolved from "./Pages/GetInvolved";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
           <Route path="/scout-education" element={<ScoutEducation />} />
           <Route path="/what-we-do" element={<WhatWeDo />} />
           <Route path="/where-we-work" element={<WhereWeWork/>} />
-          <Route path="/get-involved" element={<div>Get Involved Page</div>} />
+          <Route path="/get-involved" element={<GetInvolved />} />
+          <Route path="/where-we-work" element={<WhereWeWork/>} />
           <Route path="/gallery" element={<Gallery />} />
         </Routes>
         <Footer />

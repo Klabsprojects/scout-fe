@@ -133,7 +133,7 @@ const WhereWeWork = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">{currentContent.title}</h1>
+        <h1 className="text-4xl font-bold mb-4 mt-32">{currentContent.title}</h1>
         <p className="text-xl text-gray-600 mb-6">{currentContent.subtitle}</p>
         <p className="text-lg text-gray-500 max-w-3xl mx-auto">
           {currentContent.description}
