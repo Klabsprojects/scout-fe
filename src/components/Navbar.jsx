@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import { Link } from 'react-router-dom'; 
 import mediaData from '../MediaData.json';
@@ -35,7 +35,7 @@ const Navbar = () => {
       donate: "Donate",
       cart: "Cart",
       login: "Login",
-      searchPlaceholder: "Search Me!",
+      product: "Products",
       headerText: "Bharat Scouts and Guides"
     },
     ta: {
@@ -48,7 +48,7 @@ const Navbar = () => {
       donate: "நன்கொடை",
       cart: "வண்டி",
       login: "உள்நுழைய",
-      searchPlaceholder: "தேடுங்கள்!",
+      product: "பொருட்கள்",
       headerText: "பாரத சாரணர் மற்றும் வழிகாட்டிகள்"
     }
   };
@@ -89,8 +89,11 @@ const Navbar = () => {
                   <Link to="/get-involved">{t.getInvolved}</Link>
                 </li>
                 <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
-  <Link to="/gallery">{t.shop}</Link>
-</li>
+                  <Link to="/gallery">{t.shop}</Link>
+                </li>
+                <li className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'}`}>
+                  <Link to="/product">{t.product}</Link>
+                </li>
               </ul>
               <div className="flex justify-between items-center mb-4">
                 <button className="flex flex-col items-center">
@@ -124,13 +127,6 @@ const Navbar = () => {
                 </div>
                 <span className="text-sm">{isTamil ? 'En' : 'த'}</span>
               </div>
-              <div className="mt-4">
-                <input
-                  type="text"
-                  placeholder={t.searchPlaceholder}
-                  className="w-full bg-gray-100 text-black px-3 py-2 rounded text-sm"
-                />
-              </div>
             </div>
           )}
         </>
@@ -143,14 +139,6 @@ const Navbar = () => {
                 Bharat Scouts and Guides - பாரத சாரணியர் & வழிகாட்டுநர் மாநில தலைமையகம்
               </h1>
               <div className="flex items-center space-x-2 lg:space-x-4 mr-4 lg:mr-16">
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    placeholder={t.searchPlaceholder}
-                    className="bg-white text-black px-3 py-1 rounded text-sm w-32 lg:w-48"
-                  />
-                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                </div>
                 <div className="relative flex items-center">
                   <input
                     type="checkbox"
@@ -195,8 +183,12 @@ const Navbar = () => {
                   </li>
                   <li className="text-gray-400 hidden lg:block">/</li>
                   <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
-  <Link to="/gallery">{t.shop}</Link>
-</li>
+                    <Link to="/gallery">{t.shop}</Link>
+                  </li>
+                  <li className="text-gray-400 hidden lg:block">/</li>
+                  <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap`}>
+                    <Link to="/product">{t.product}</Link>
+                  </li>
                 </ul>
 
                 <div className="flex items-center space-x-4 lg:space-x-8 lg:mr-32">

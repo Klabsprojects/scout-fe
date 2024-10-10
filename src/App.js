@@ -10,6 +10,7 @@ import WhatWeDo from "./Pages/WhatWeDo";
 import Gallery from "./Pages/Gallery";
 import WhereWeWork from "./Pages/WhereWeWork";
 import GetInvolved from "./Pages/GetInvolved";
+import Products from "./Pages/Products";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/get-involved" element={<GetInvolved />} />
           <Route path="/where-we-work" element={<WhereWeWork/>} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/product" element={<Products />} />
         </Routes>
         <Footer />
       </TranslationProvider>
