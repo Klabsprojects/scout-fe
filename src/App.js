@@ -6,6 +6,8 @@ import ScoutHomepage from "./Pages/ScoutHomePage";
 import Footer from "./components/Footer";
 import WhoWeAre from "./Pages/WhoWeAre";
 import ScoutEducation from "./Pages/ScoutEducation";
+import ScoutMethod from "./Pages/ScoutMethod";
+import ScoutPromiseLaw from "./Pages/ScoutPromiseAndLaw";
 import WhatWeDo from "./Pages/WhatWeDo";
 import Gallery from "./Pages/Gallery";
 import WhereWeWork from "./Pages/WhereWeWork";
@@ -23,14 +25,14 @@ function App() {
           <Route path="/ScoutHomepage" element={<ScoutHomepage />} />
           <Route path="/whoweare" element={<WhoWeAre />} />
           <Route path="/scout-education" element={<ScoutEducation />} />
+          <Route path="/scout-method" element={<ScoutMethod />} />
+          <Route path="/scout-promising-law" element={<ScoutPromiseLaw />} /> {/* Add this line */}
           <Route path="/what-we-do" element={<WhatWeDo />} />
           <Route path="/where-we-work" element={<WhereWeWork/>} />
           <Route path="/get-involved" element={<GetInvolved />} />
-          <Route path="/where-we-work" element={<WhereWeWork/>} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/product" element={<Products />} />
           <Route path="/login" element={<LoginPage />} />
-
         </Routes>
         <Footer />
       </TranslationProvider>
