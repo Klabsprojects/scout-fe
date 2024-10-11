@@ -134,7 +134,7 @@ const Navbar = () => {
           <div className="bg-blue-900 text-white py-4 md:py-4 lg:py-4 ">
             <div className="container mx-auto flex items-center justify-between px-4 lg:px-16">
               <div className="w-16 lg:w-24"></div>
-              <h1 className="text-xs lg:text-base font-semibold text-center flex-grow px-2 lg:px-4 -ml-40">
+              <h1 className="text-xs lg:text-base font-semibold ml-4 lg:ml-2 flex-grow">
                 Bharat Scouts and Guides - பாரத சாரணியர் & வழிகாட்டுநர் மாநில தலைமையகம்
               </h1>
               <div className="flex items-center space-x-2 lg:space-x-4 mr-4 lg:mr-16">
