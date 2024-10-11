@@ -57,7 +57,7 @@ const ScoutingHistoryPage = () => {
     <div className="bg-blue-50 min-h-screen p-8 pt-32">
       <NavigationMenu /> {/* Add the Navigation Menu here */}
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-6">{t.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-6 pt-8">{t.title}</h1>
         <p className="text-lg text-gray-700 mb-8">{t.intro}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">

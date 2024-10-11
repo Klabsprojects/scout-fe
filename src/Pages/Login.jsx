@@ -21,7 +21,7 @@ export default function LoginPage() {
             className="h-12 w-auto object-contain"
           />
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 text-center order-first sm:order-none">
-            Tamil Nadu Scout and Guide
+            Tamil Nadu Scout 
           </h1>
           <img 
             src="/Images/tn-logo.png" 

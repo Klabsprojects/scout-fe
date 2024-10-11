@@ -15,6 +15,7 @@ import GetInvolved from "./Pages/GetInvolved";
 import Products from "./Pages/Products";
 import LoginPage from "./Pages/Login";
 import ScoutingHistoryPage from "./Pages/ScoutingHistory";
+import DonationPage from "./Pages/DonationPage";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/product" element={<Products />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
+          <Route path="/donation" element={<DonationPage/>}/>
         </Routes>
         <Footer />
       </TranslationProvider>

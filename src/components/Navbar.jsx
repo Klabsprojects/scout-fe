@@ -91,10 +91,12 @@ const Navbar = () => {
                 ))}
               </ul>
               <div className="flex justify-between items-center mb-4">
-                <button className="flex flex-col items-center">
-                  <img src="/Images/cash.png" alt="Donate" className="h-6 w-6" />
-                  <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>{t.donate}</span>
-                </button>
+              <Link to="/donation" className="flex flex-col items-center">
+      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>
+        {t.donate}
+      </span>
+    </Link>
                 <button className="flex flex-col items-center">
                   <img src="/Images/cart.png" alt="Add to Cart" className="h-6 w-6" />
                   <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>{t.cart}</span>
@@ -170,13 +172,15 @@ const Navbar = () => {
                 </ul>
 
                 <div className="flex items-center space-x-4 lg:space-x-8 lg:mr-32">
-                  <div className="flex flex-col items-center space-y-1">
-                    <button className="flex flex-col items-center">
-                      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
-                      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>{t.donate}</span>
-                    </button>
-                  </div>
-                  <div className="flex flex-col items-center space-y-1">
+  <div className="flex flex-col items-center space-y-1">
+    <Link to="/donation" className="flex flex-col items-center">
+      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>
+        {t.donate}
+      </span>
+    </Link>
+  </div>
+           <div className="flex flex-col items-center space-y-1">
                     <button className="flex flex-col items-center">
                       <img src="/Images/cart.png" alt="Add to Cart" className="h-6 w-6 lg:h-8 lg:w-8" />
                       <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>{t.cart}</span>
