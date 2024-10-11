@@ -110,7 +110,7 @@ const ScoutHomepage = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-left leading-tight md:leading-snug animate-fade-in-up">
               {isTamil ? translations.title.ta : translations.title.en}
             </h1>
-            <button className="bg-red-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-red-700 transition-colors duration-300 shadow-lg">
+            <button className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-red-700 transition-colors duration-300 shadow-lg">
               {translations.learnMore[isTamil ? 'ta' : 'en']}
             </button>
           </div>
@@ -216,7 +216,7 @@ const ScoutHomepage = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg">
+            <button className="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg">
               {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
             </button>
           </div>
