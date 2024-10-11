@@ -102,7 +102,7 @@ const ScoutHomepage = () => {
   };
 
   return (
-    <div className="pt-20 md:pt-36 smooth-scroll">
+    <div className="pt-20 md:pt-34 smooth-scroll">
       {/* Hero Section */}
       <div className="bg-[#feeecf]">
         <header className="container mx-auto px-4 py-12 md:py-16 flex flex-col md:flex-row items-center">
