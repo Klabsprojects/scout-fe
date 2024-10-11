@@ -1,144 +1,310 @@
 import React, { useRef } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
+import { Users, HandHeart, IndianRupee, Copy } from 'lucide-react';
 
 const DonationPage = () => {
   const { isTamil } = useTranslation();
   const formRef = useRef(null);
 
   const scrollToForm = () => {
-    formRef.current.scrollIntoView({ behavior: 'smooth' });
+    formRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const donationText = {
-    /* ... */
+    banner: {
+      tamil: 'இன்றே கொடுங்கள் - பாரத சாரணர் & சாரணியரை ஆதரியுங்கள்!',
+      english: 'Give Today - Support Bharat Scouts & Guides!'
+    },
+    statsTitle: {
+      tamil: 'நன்கொடை புள்ளிவிவரங்கள்',
+      english: 'Donation Statistics'
+    },
+    statsLabels: {
+      donors: {
+        tamil: 'நன்கொடையாளர்கள்',
+        english: 'Donors'
+      },
+      volunteers: {
+        tamil: 'தன்னார்வலர்கள்',
+        english: 'Volunteers'
+      },
+      funds: {
+        tamil: 'திரட்டிய நிதி',
+        english: 'Raised Funds'
+      }
+    },
+    buttons: {
+      donateNow: {
+        tamil: 'நன்கொடை அளி',
+        english: 'Donate Now'
+      },
+      seeDetails: {
+        tamil: 'விவரங்கள்',
+        english: 'See Details'
+      }
+    },
+    description: {
+      tamil: 'பாரத சாரணர் மற்றும் சாரணியர் இந்தியாவின் எதிர்கால தலைவர்களை உருவாக்குவதில் முக்கிய பங்கு வகிக்கிறது. நாங்கள் இளைஞர்களுக்கு தலைமைத்துவம், சமூக சேவை மற்றும் வாழ்க்கைத் திறன்கள் பயிற்சிகளை வழங்குகிறோம்.',
+      english: 'Bharat Scouts and Guides play a crucial role in shaping the future leaders of India. We provide youth with training in leadership, community service, and life skills.'
+    },
+    contact: {
+      address: 'Bharat Scouts & Guides HQ, Lakshmi Mazumdar Bhawan, 16, M. G. Marg, New Delhi-110002',
+      phone: '+91-11-2337-0724',
+      email: 'info@bsgindia.org'
+    },
+    // New translations
+    donateHere: {
+      tamil: 'இங்கே நன்கொடை அளியுங்கள்',
+      english: 'Donate Here'
+    },
+    donateDescription: {
+      tamil: 'வெனியாம் குவே. எங்கள் செயல்பாட்டை மறுக்கும் குறைவான விஷயங்கள் அல்லது எதையும் நேக்குஎ.',
+      english: 'Veniam quae. Nostrum facere repellendus minus quod aut aliquam neque.'
+    },
+    scanQRCode: {
+      tamil: 'இந்த QR குறியீட்டை ஸ்கேன் செய்யவும்<br />நன்கொடை அளிக்க <span class="text-red-500 font-semibold">வெல்ஃபேர்</span>',
+      english: 'Scan this QR code<br />to Donate <span class="text-red-500 font-semibold">WALFARE</span>'
+    },
+    bankDetails: {
+      tamil: 'வங்கி விவரங்கள்',
+      english: 'Bank Details'
+    },
+    bankDescription: {
+      tamil: 'தலைப்புகள், பத்திகள், பிளாக்கோட்ஸ் படங்கள் மற்றும் வீடியோக்களை ஒரே இடத்தில் உருவாக்கி வடிவமைக்கவும்',
+      english: 'Create and format headings, paragraphs, blockquotes images and video all in one place instead'
+    },
+    accountNumber: {
+      tamil: 'கணக்கு எண்',
+      english: 'Account Number'
+    },
+    beneficiaryName: {
+      tamil: 'பயனாளியின் பெயர்',
+      english: 'Beneficiary Name'
+    },
+    ifscCode: {
+      tamil: 'IFSC குறியீடு',
+      english: 'IFSC Code'
+    },
+    copyAccountDetails: {
+      tamil: 'கணக்கு விவரங்களை நகலெடுக்கவும்',
+      english: 'COPY ACCOUNT DETAILS'
+    },
+    acceptedPaymentMethods: {
+      tamil: 'ஏற்றுக்கொள்ளப்பட்ட கட்டண முறைகள்',
+      english: 'Accepted Payment Methods'
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // TODO: Implement secure donation processing
-    alert('Thank you for your donation!');
+  const events = [
+    {
+      id: 1,
+      image: "/Images/stories1.png",
+      name: {
+        tamil: "வருடாந்திர சாரணர் சந்திப்பு 2023",
+        english: "Annual Scouts Meet 2023"
+      },
+      target: 320000,
+      raised: 200000
+    },
+    {
+      id: 2,
+      image: "/Images/stories2.png",
+      name: {
+        tamil: "சாரணர் தலைமைத்துவ முகாம்",
+        english: "Scouts Leadership Camp"
+      },
+      target: 250000,
+      raised: 15000
+    },
+    {
+      id: 3,
+      image: "/Images/stories3.png",
+      name: {
+        tamil: "சுற்றுச்சூழலுக்கான சாரணர்கள்",
+        english: "Scouts for Environment"
+      },
+      target: 500000,
+      raised: 30000
+    }
+  ];
+
+  const stats = [
+    { icon: Users, label: donationText.statsLabels.donors, value: '14,670' },
+    { icon: HandHeart, label: donationText.statsLabels.volunteers, value: '35,608' },
+    { icon: IndianRupee, label: donationText.statsLabels.funds, value: '2,45,150' }
+  ];
+
+  const getText = (textObj) => isTamil ? textObj.tamil : textObj.english;
+
+  const copyAccountDetails = () => {
+    const details = `Account Number: 2223330000456987\nBeneficiary Name: Walfare Organization\nIFSC Code: WRDSBIOBNKPIS`;
+    navigator.clipboard.writeText(details).then(() => {
+      alert('Account details copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-8 bg-gray-50">
-      {/* Banner section */}
-      <div className="relative w-full mb-12 pt-20">
-        <img
-          src="/images/banner.jpg" 
-          alt="Bharat Scouts & Guides Banner"
-          className="w-full h-96 object-cover rounded-lg shadow-lg"
+    <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-20 md:pt-32">
+      {/* Hero Image */}
+      <div className="relative w-full h-48 md:h-96 mb-4 md:mb-8">
+        <img 
+          src="/Images/ScoutMarch2.png"
+          alt="Hero Banner"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center rounded-lg">
-          <h1 className="text-white text-4xl md:text-5xl font-bold mb-6 text-center max-w-3xl mx-auto">
-            {donationText.supportText}
-          </h1>
-          <button
-            className="bg-green-600 text-white px-6 py-3 rounded-md shadow-lg hover:bg-green-700 flex items-center space-x-2 text-lg"
+      </div>
+
+      {/* Banner */}
+      <div className="relative w-full mb-6 md:mb-8 px-4">
+        <div className="p-4 md:p-6 bg-black bg-opacity-50 text-white rounded-lg">
+          <h1 className="text-lg md:text-xl font-semibold mb-2">{getText(donationText.banner)}</h1>
+          <button 
+            className="bg-[#F5CB5C] text-black font-semibold py-2 px-4 md:px-6 rounded-full shadow-md hover:bg-[#f7d380] transition duration-200 text-sm md:text-base"
             onClick={scrollToForm}
           >
-            <span>{donationText.donateButton}</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            {getText(donationText.buttons.donateNow)}
           </button>
         </div>
       </div>
 
-      {/* Testimonial */}
-      <blockquote className="text-2xl md:text-3xl italic text-center mb-12 max-w-3xl mx-auto">
-        &ldquo;The Bharat Scouts and Guides program taught me invaluable life skills and shaped me into a responsible citizen. I&apos;m proud to support their mission.&rdquo;
-      </blockquote>
-      <p className="text-lg text-gray-600 text-center mb-16">
-        - Rajeev S., Scout Leader and Donor
-      </p>
-
-      {/* Impact section */}
-      <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 mb-20 max-w-6xl w-full">
-        <div className="flex-1 mb-8 md:mb-0">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">{isTamil ? 'நமது தாக்கம்' : 'Our Impact'}</h2>
-          <p className="text-lg">
-            {isTamil
-              ? 'பாரத் ஸ்கவுட்ஸ் மற்றும் கைட்ஸ் பல தசாப்தங்களாக இளைஞர்களின் வாழ்க்கையை மாற்றியமைத்து வருகிறது. உங்கள் தானம் இந்த முக்கிய திட்டத்தை ஒரு உறங்குமட்டத்தை அடையச் செய்யும்.'
-              : 'Bharat Scouts and Guides has been transforming young lives for decades. Your donation helps sustain this critical program to reach new heights.'}  
-          </p>
-        </div>
-        <div className="flex-1 grid grid-cols-2 gap-8">
-          <div className="flex flex-col items-center">
-            <div className="bg-green-600 text-white p-3 rounded-full mb-3">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+      {/* Stats */}
+      <div className="w-full mb-8 md:mb-12 px-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">
+          {getText(donationText.statsTitle)}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+          {stats.map((stat, index) => (
+            <div key={index} className="bg-white rounded-xl shadow-lg p-4 md:p-6 transition-all duration-300 hover:shadow-xl hover:scale-105">
+              <div className="flex items-center justify-center mb-3 md:mb-4">
+                <stat.icon size={32} className="text-[#F5CB5C]" />
+              </div>
+              <p className="text-2xl md:text-4xl font-bold text-center mb-1 md:mb-2">{stat.value}</p>
+              <p className="text-gray-600 text-center text-sm md:text-base">
+                {getText(stat.label)}
+              </p>
             </div>
-            <h3 className="text-xl font-bold">500,000+</h3>
-            <p className="text-gray-600">{isTamil ? 'பயனாளிகள்' : 'Beneficiaries'}</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="bg-blue-600 text-white p-3 rounded-full mb-3">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-              </svg>  
-            </div>  
-            <h3 className="text-xl font-bold">2,500+</h3>
-            <p className="text-gray-600">{isTamil ? 'முகாம்கள்' : 'Camps Organized'}</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="bg-yellow-500 text-white p-3 rounded-full mb-3">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold">50,000,000+</h3>  
-            <p className="text-gray-600">{isTamil ? 'நிதி திரட்டப்பட்டது' : 'Funds Raised'}</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="bg-red-600 text-white p-3 rounded-full mb-3">
-              <img src="/images/partner-logo.png" alt="Partner" className="w-6 h-6" />  
-            </div>
-            <h3 className="text-xl font-bold">50+</h3>
-            <p className="text-gray-600">{isTamil ? 'பங்குதாரர்கள்' : 'Partner NGOs'}</p>  
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Donation stats */}
-      {/* ... */}
-
-      {/* Donation form */}
-      <div ref={formRef} className="flex flex-col items-center w-full max-w-3xl mx-auto px-4 mb-12">
-        <div className="w-full bg-white p-8 md:p-12 rounded-lg shadow-lg">
-          {/* ... */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* ... */}
-
-            {/* Add recurring donation option */}
-            <div>
-              <label htmlFor="recurring" className="block text-sm font-medium text-gray-700 mb-2">
-                {isTamil ? 'தொடர் தானம்' : 'Recurring Donation'}  
-              </label>
-              <select 
-                id="recurring"
-                name="recurring"
-                className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
-              >
-                <option value="one-time">{isTamil ? 'ஒரு முறை' : 'One Time'}</option>
-                <option value="monthly">{isTamil ? 'மாதந்தோறும்' : 'Monthly'}</option>
-                <option value="quarterly">{isTamil ? 'காலாண்டு' : 'Quarterly'}</option>  
-                <option value="annual">{isTamil ? 'வருடாந்திரம்' : 'Annually'}</option>
-              </select>
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-green-600 text-white px-6 py-3 text-lg rounded-md shadow-lg hover:bg-green-700 transition duration-200"  
-            >
-              {donationText.submitButton}
-            </button>
-          </form>
-        </div>
+      {/* Contact Info */}
+      <div className="bg-[#F4F4F4] p-4 md:p-6 rounded-xl text-gray-700 mb-6 md:mb-8 w-full text-center text-sm md:text-base px-4">
+        <p className="mb-1">{donationText.contact.address}</p>
+        <p>{donationText.contact.phone} | {donationText.contact.email}</p>
       </div>
 
-      {/* Call to action section */}
-      {/* ... */}
+      {/* Description with Image */}
+      <div className="flex flex-col items-center mb-6 md:mb-8 w-full px-4">
+        <div className="w-full md:w-1/2 mb-4">
+          <img 
+            src="/Images/ScoutMarch.png"
+            alt="Scouts Education"
+            className="w-full h-auto rounded-xl object-contain"
+          />
+        </div>
+        <p className="text-gray-700 text-center text-sm md:text-base max-w-2xl">
+          {getText(donationText.description)}
+        </p>
+      </div>
+      
+      {/* Donation Events */}
+      <div ref={formRef} className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 px-4 w-full">
+        {events.map(event => (
+          <div key={event.id} className="bg-white shadow-lg rounded-xl overflow-hidden">
+            <img 
+              src={event.image}
+              alt={getText(event.name)}
+              className="w-full h-48 md:h-60 object-cover"
+            />
+            <div className="p-4">
+              <h3 className="text-lg md:text-xl font-semibold mb-2 h-12 md:h-14 flex items-center">
+                {getText(event.name)}
+              </h3>
+              <div className="flex items-center space-x-2 md:space-x-4 mb-4">
+                <div className="flex-1 bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-[#F5CB5C] h-2.5 rounded-full" 
+                    style={{ width: `${(event.raised / event.target) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-gray-700 text-xs md:text-sm whitespace-nowrap">
+                  ₹{event.raised.toLocaleString()}/₹{event.target.toLocaleString()}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
+                <button 
+                  className="bg-[#F5CB5C] text-black font-semibold py-2 md:py-3 px-3 md:px-5 rounded-full shadow-md hover:bg-[#f7d380] transition duration-200 text-xs md:text-sm"
+                  onClick={scrollToForm}
+                >
+                  {getText(donationText.buttons.donateNow)}
+                </button>
+                <button className="bg-gray-200 text-gray-700 font-semibold py-2 md:py-3 px-3 md:px-5 rounded-full shadow-md hover:bg-gray-300 transition duration-200 text-xs md:text-sm">
+                  {getText(donationText.buttons.seeDetails)}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* New Donation and Bank Details Section */}
+      <div className="w-full bg-gray-100 p-6 md:p-8 rounded-xl shadow-md mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Donate Here Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Donate Here</h2>
+            <p className="text-gray-600 mb-4">Veniam quae. Nostrum facere repellendus minus quod aut aliquam neque.</p>
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <img 
+                src="/Images/qrimage.png" 
+                alt="QR Code" 
+                className="w-32 h-32 mx-auto mb-2"
+              />
+              <p className="text-center text-sm">
+                Scan this QR code<br />to Donate <span className="text-red-500 font-semibold">WALFARE</span>
+              </p>
+            </div>
+          </div>
+
+        {/* Bank Details Section */}
+    <div>
+      <h2 className="text-2xl font-bold mb-4">{getText(donationText.bankDetails)}</h2>
+      <p className="text-gray-600 mb-4">{getText(donationText.bankDescription)}</p>
+      <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="mb-2">
+          <p className="font-semibold">{getText(donationText.accountNumber)}</p>
+          <p>2223330000456987</p>
+        </div>
+        <div className="mb-2">
+          <p className="font-semibold">{getText(donationText.beneficiaryName)}</p>
+          <p>Walfare Organization</p>
+        </div>
+        <div className="mb-4">
+          <p className="font-semibold">{getText(donationText.ifscCode)}</p>
+          <p>WRDSBIOBNKPIS</p>
+        </div>
+        <button 
+          onClick={copyAccountDetails}
+          className="flex items-center justify-center w-full bg-[#F5CB5C] text-black font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#f7d380] transition duration-200"
+        >
+          <Copy size={18} className="mr-2" />
+          {getText(donationText.copyAccountDetails)}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div className="w-full mb-8">
+  <h3 className="text-xl font-semibold mb-4 text-center">{getText(donationText.acceptedPaymentMethods)}</h3>
+  <div className="flex justify-center space-x-4">
+    <img src="/Images/VisaLogo.png" alt="Visa" className="h-8" />
+    <img src="/Images/mastercardlogo.png" alt="Mastercard" className="h-8" />
+    <img src="/Images/paypallogo.png" alt="PayPal" className="h-8" />
+    <img src="/Images/amazonpay.png" alt="Amazon Pay" className="h-8" />
+  </div>
+</div>
     </div>
   );
 };

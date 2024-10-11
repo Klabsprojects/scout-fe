@@ -31,18 +31,20 @@ const Footer = () => {
           <div className="mb-6 md:mb-0">
             <div className="flex items-center mb-4">
               <img src="/Images/tn-logo.png" alt="Bharath Scouts And Guides" className="w-30 h-20 mr-4" />
-              <h2 className="text-2xl font-bold">{isTamil ? translations.title.ta : translations.title.en}</h2>
+              <h2 className={`text-2xl font-bold ${isTamil ? 'text-base' : ''}`}>
+                {isTamil ? translations.title.ta : translations.title.en}
+              </h2>
             </div>
-            <p className="text-sm max-w-md">
+            <p className={`text-sm max-w-md ${isTamil ? 'text-xs' : ''}`}>
               {isTamil ? translations.description.ta : translations.description.en}
             </p>
           </div>
 
           {/* Quick Links Section */}
-          <div className="flex flex-wrap md:flex-nowrap space-x-4 mt-6 md:mt-0 md:ml-2 justify-start md:justify-between">
+          <div className="flex flex-wrap md:flex-nowrap space-x-4 mt-6 md:mt-0 md:ml-2 justify-start md:justify-between md:pr-56">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {(isTamil ? translations.links.ta : translations.links.en).map((link, index) => (
-                <a key={index} href="#" className="text-sm hover:underline">{link}</a>
+                <a key={index} href="#" className={`text-sm hover:underline ${isTamil ? 'text-xs' : ''}`}>{link}</a>
               ))}
             </div>
           </div>
@@ -50,8 +52,10 @@ const Footer = () => {
 
         {/* Footer Bottom */}
         <div className="mt-8 pt-8 border-t border-gray-700 flex flex-wrap justify-between items-center">
-          <p className="text-sm">{isTamil ? translations.copyright.ta : translations.copyright.en}</p>
-          
+          <p className={`text-sm ${isTamil ? 'text-xs' : ''}`}>
+            {isTamil ? translations.copyright.ta : translations.copyright.en}
+          </p>
+
           {/* Social Media Icons */}
           <div className="flex space-x-4 mt-4 md:mt-0">
             <a href="#" className="text-white hover:text-gray-300">
