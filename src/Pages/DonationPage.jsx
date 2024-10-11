@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
 import { Users, HandHeart, IndianRupee, Copy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DonationPage = () => {
   const { isTamil } = useTranslation();
@@ -145,6 +146,8 @@ const DonationPage = () => {
     });
   };
 
+
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-white pt-20 md:pt-32">
       {/* Hero Image */}
@@ -209,7 +212,7 @@ const DonationPage = () => {
         </p>
       </div>
       
-      {/* Donation Events */}
+
       <div ref={formRef} className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 px-4 w-full">
         {events.map(event => (
           <div key={event.id} className="bg-white shadow-lg rounded-xl overflow-hidden">
@@ -234,12 +237,12 @@ const DonationPage = () => {
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 md:gap-4">
-                <button 
-                  className="bg-[#F5CB5C] text-black font-semibold py-2 md:py-3 px-3 md:px-5 rounded-full shadow-md hover:bg-[#f7d380] transition duration-200 text-xs md:text-sm"
-                  onClick={scrollToForm}
+                <Link 
+                  to={`/donate/${event.id}`}
+                  className="bg-[#F5CB5C] text-black font-semibold py-2 md:py-3 px-3 md:px-5 rounded-full shadow-md hover:bg-[#f7d380] transition duration-200 text-xs md:text-sm text-center"
                 >
                   {getText(donationText.buttons.donateNow)}
-                </button>
+                </Link>
                 <button className="bg-gray-200 text-gray-700 font-semibold py-2 md:py-3 px-3 md:px-5 rounded-full shadow-md hover:bg-gray-300 transition duration-200 text-xs md:text-sm">
                   {getText(donationText.buttons.seeDetails)}
                 </button>
@@ -249,8 +252,8 @@ const DonationPage = () => {
         ))}
       </div>
 
-      {/* New Donation and Bank Details Section */}
-      <div className="w-full bg-gray-100 p-6 md:p-8 rounded-xl shadow-md mb-8">
+         {/* New Donation and Bank Details Section */}
+         <div className="w-full bg-gray-100 p-6 md:p-8 rounded-xl shadow-md mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Donate Here Section */}
           <div>

@@ -16,6 +16,7 @@ import Products from "./Pages/Products";
 import LoginPage from "./Pages/Login";
 import ScoutingHistoryPage from "./Pages/ScoutingHistory";
 import DonationPage from "./Pages/DonationPage";
+import DonationPayment from "./Pages/DonationPayment";  // Add this import
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Route path="/whoweare" element={<WhoWeAre />} />
           <Route path="/scout-education" element={<ScoutEducation />} />
           <Route path="/scout-method" element={<ScoutMethod />} />
-          <Route path="/scout-promising-law" element={<ScoutPromiseLaw />} /> {/* Add this line */}
+          <Route path="/scout-promising-law" element={<ScoutPromiseLaw />} />
           <Route path="/what-we-do" element={<WhatWeDo />} />
           <Route path="/where-we-work" element={<WhereWeWork/>} />
           <Route path="/get-involved" element={<GetInvolved />} />
@@ -37,6 +38,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
           <Route path="/donation" element={<DonationPage/>}/>
+          <Route path="/donate/:eventId" element={<DonationPayment />} />  {/* Add this new route */}
         </Routes>
         <Footer />
       </TranslationProvider>
