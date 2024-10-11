@@ -27,7 +27,8 @@ const WhereWeWork = () => {
     english: {
       title: "Where We Work",
       subtitle: "Building Character, Leadership & Service Across India",
-      description: "The Bharat Scouts and Guides, established in 1950, is India's largest voluntary youth organization. We foster leadership, citizenship, and outdoor skills in young people across the nation, preparing them to be responsible global citizens.",
+      description:
+        "The Bharat Scouts and Guides, established in 1950, is India's largest voluntary youth organization. We foster leadership, citizenship, and outdoor skills in young people across the nation, preparing them to be responsible global citizens.",
       stats: [
         { icon: <Users className="w-6 h-6 mb-2" />, value: "5.7M+", label: "Active Members" },
         { icon: <Building className="w-6 h-6 mb-2" />, value: "28", label: "State Associations" },
@@ -41,8 +42,16 @@ const WhereWeWork = () => {
       regions: [
         {
           name: "North India",
-          states: ["Delhi", "Uttar Pradesh", "Punjab", "Haryana", "Himachal Pradesh", "Uttarakhand"],
-          description: "Our northern chapters excel in mountaineering and adventure activities, leveraging the Himalayan terrain. Key initiatives include disaster preparedness training, environmental conservation projects, and cultural exchange programs with neighboring states.",
+          states: [
+            "Delhi",
+            "Uttar Pradesh",
+            "Punjab",
+            "Haryana",
+            "Himachal Pradesh",
+            "Uttarakhand"
+          ],
+          description:
+            "Our northern chapters excel in mountaineering and adventure activities, leveraging the Himalayan terrain. Key initiatives include disaster preparedness training, environmental conservation projects, and cultural exchange programs with neighboring states.",
           highlights: [
             "Annual Himalayan Trek Program",
             "Winter Leadership Camps",
@@ -51,8 +60,15 @@ const WhereWeWork = () => {
         },
         {
           name: "South India",
-          states: ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh", "Telangana"],
-          description: "Southern regions are known for their innovative STEM integration in scouting activities, coastal conservation programs, and strong community service initiatives. Our unique 'Tech Scouts' program has won national recognition.",
+          states: [
+            "Tamil Nadu",
+            "Kerala",
+            "Karnataka",
+            "Andhra Pradesh",
+            "Telangana"
+          ],
+          description:
+            "Southern regions are known for their innovative STEM integration in scouting activities, coastal conservation programs, and strong community service initiatives. Our unique 'Tech Scouts' program has won national recognition.",
           highlights: [
             "Coastal Cleanup Campaigns",
             "Digital Literacy Workshops",
@@ -61,8 +77,16 @@ const WhereWeWork = () => {
         },
         {
           name: "East India",
-          states: ["West Bengal", "Odisha", "Bihar", "Assam", "Jharkhand", "Sikkim"],
-          description: "Eastern chapters focus on preserving indigenous knowledge while promoting modern scouting practices. We run specialized programs for tribal youth, biodiversity conservation, and flood management training.",
+          states: [
+            "West Bengal",
+            "Odisha",
+            "Bihar",
+            "Assam",
+            "Jharkhand",
+            "Sikkim"
+          ],
+          description:
+            "Eastern chapters focus on preserving indigenous knowledge while promoting modern scouting practices. We run specialized programs for tribal youth, biodiversity conservation, and flood management training.",
           highlights: [
             "Tribal Youth Leadership Program",
             "Tea Garden Community Outreach",
@@ -71,8 +95,15 @@ const WhereWeWork = () => {
         },
         {
           name: "West India",
-          states: ["Maharashtra", "Gujarat", "Rajasthan", "Goa", "Madhya Pradesh"],
-          description: "Western India leads in urban scouting programs, desert ecology initiatives, and heritage conservation projects. Our 'Scout Startup' program encourages young entrepreneurs to solve community challenges.",
+          states: [
+            "Maharashtra",
+            "Gujarat",
+            "Rajasthan",
+            "Goa",
+            "Madhya Pradesh"
+          ],
+          description:
+            "Western India leads in urban scouting programs, desert ecology initiatives, and heritage conservation projects. Our 'Scout Startup' program encourages young entrepreneurs to solve community challenges.",
           highlights: [
             "Desert Survival Skills Training",
             "Heritage Site Adoption Program",
@@ -93,7 +124,8 @@ const WhereWeWork = () => {
     tamil: {
       title: "நாங்கள் எங்கே பணிபுரிகிறோம்",
       subtitle: "இந்தியா முழுவதும் குணாதிசயம், தலைமைத்துவம் & சேவையை உருவாக்குதல்",
-      description: "1950 ஆம் ஆண்டு நிறுவப்பட்ட பாரத சாரணர் மற்றும் சாரணிகள், இந்தியாவின் மிகப்பெரிய தன்னார்வ இளைஞர் அமைப்பாகும். நாங்கள் நாடு முழுவதும் உள்ள இளைஞர்களிடையே தலைமைத்துவம், குடியுரிமை மற்றும் வெளிப்புற திறன்களை வளர்க்கிறோம்.",
+      description:
+        "1950 ஆம் ஆண்டு நிறுவப்பட்ட பாரத சாரணர் மற்றும் சாரணிகள், இந்தியாவின் மிகப்பெரிய தன்னார்வ இளைஞர் அமைப்பாகும். நாங்கள் நாடு முழுவதும் உள்ள இளைஞர்களிடையே தலைமைத்துவம், குடியுரிமை மற்றும் வெளிப்புற திறன்களை வளர்க்கிறோம்.",
       stats: [
         { icon: <Users className="w-6 h-6 mb-2" />, value: "5.7M+", label: "செயலில் உள்ள உறுப்பினர்கள்" },
         { icon: <Building className="w-6 h-6 mb-2" />, value: "28", label: "மாநில சங்கங்கள்" },
@@ -107,27 +139,87 @@ const WhereWeWork = () => {
       regions: [
         {
           name: "வட இந்தியா",
-          states: ["டெல்லி", "உத்தரப் பிரதேசம்", "பஞ்சாப்", "ஹரியானா", "இமாச்சல பிரதேசம்", "உத்தரகண்ட்"],
-          description: "எங்கள் வடக்கு அத்தியாயங்கள் மலையேற்றம் மற்றும் சாகச நடவடிக்கைகளில் சிறந்து விளங்குகின்றன. முக்கிய முயற்சிகளில் பேரிடர் தயார்நிலை பயிற்சி, சுற்றுச்சூழல் பாதுகாப்பு திட்டங்கள் ஆகியவை அடங்கும்.",
+          states: [
+            "டெல்லி",
+            "உத்தரப் பிரதேசம்",
+            "பஞ்சாப்",
+            "ஹரியானா",
+            "இமாச்சல பிரதேசம்",
+            "உத்தரகண்ட்"
+          ],
+          description:
+            "எங்கள் வடக்கு அத்தியாயங்கள் மலையேற்றம் மற்றும் சாகச நடவடிக்கைகளில் சிறந்து விளங்குகின்றன. முக்கிய முயற்சிகளில் பேரிடர் தயார்நிலை பயிற்சி, சுற்றுச்சூழல் பாதுகாப்பு திட்டங்கள் ஆகியவை அடங்கும்.",
           highlights: [
             "வருடாந்திர இமயமலை பயண திட்டம்",
             "குளிர்கால தலைமைத்துவ முகாம்கள்",
             "கிராமப்புற மேம்பாட்டு முயற்சி"
+          ]
+        },
+        {
+          name: "தென் இந்தியா",
+          states: [
+            "தமிழ்நாடு",
+            "கேரளா",
+            "கர்நாடகா",
+            "ஆந்திரப் பிரதேசம்",
+            "தெலங்கானா"
+          ],
+          description:
+            "தென் இந்தியா பிராந்தியங்கள் புவிசார் அமைப்பு மற்றும் கோட்பாடுகளை சாரணர் செயல்பாடுகளுடன் ஒருங்கிணைக்கும் புதுமைப்பாடுகளுக்காக பெயர் பெற்றவை. கடலோர பாதுகாப்பு திட்டங்கள் மற்றும் சமூக சேவை முயற்சிகள் என பல்வேறு செயல்பாடுகளில் அவை முன்னிலையில் உள்ளன. எங்கள் 'டெக் சாரணர்கள்' திட்டம் தேசிய அளவில் பாராட்டப்பட்டுள்ளது.",
+          highlights: [
+            "கடலோர தூய்மைப் பிரச்சாரம்",
+            "இணைய துல்லிய பயிற்சி",
+            "பாரம்பரிய கைத்தொழில் பாதுகாப்பு"
+          ]
+        },
+        {
+          name: "கிழக்கு இந்தியா",
+          states: [
+            "மேற்கு வங்காளம்",
+            "ஒடிசா",
+            "பீகார்",
+            "அசாம்",
+            "ஜார்க்கண்ட்",
+            "சிக்கிம்"
+          ],
+          description:
+            "கிழக்கு பிராந்தியங்கள் பழங்குடி அறிவை காப்பாற்றுவதற்கும் நவீன சாரணர் நடைமுறைகளை ஊக்குவிக்கவும் மையமாக செயல்படுகின்றன. பழங்குடி இளைஞர்களுக்கான சிறப்பு திட்டங்கள், உயிர் வேளாண்மை மற்றும் வெள்ள மேலாண்மை பயிற்சி என்பவற்றை எங்கள் அத்தியாயங்கள் முன்னிலைப்படுத்துகின்றன.",
+          highlights: [
+            "பழங்குடி இளைஞர் தலைமைத்துவ திட்டம்",
+            "தேயிலை தோட்ட சமூக ஒத்துழைப்பு",
+            "சுந்தர்பான்ஸ் பாதுகாப்பு திட்டம்"
+          ]
+        },
+        {
+          name: "மேற்கு இந்தியா",
+          states: [
+            "மகாராஷ்டிரா",
+            "குஜராத்",
+            "ராஜஸ்தான்",
+            "கோவா",
+            "மத்திய பிரதேசம்"
+          ],
+          description:
+            "மேற்கு இந்தியா நகர்ப்புற சாரணர் திட்டங்கள், பாலைவன சூழலியல் முன்முயற்சிகள், பாரம்பரிய பாதுகாப்பு திட்டங்கள் ஆகியவற்றில் முன்னிலை வகிக்கிறது. எங்கள் 'ஸ்கவுட் ஸ்டார்ட்அப்' திட்டம் இளைஞர்களை சமூக சவால்களை தீர்க்கத் தூண்டுகிறது.",
+          highlights: [
+            "பாலைவன மேலாண்மை திறன்கள் பயிற்சி",
+            "பாரம்பரிய பாரம்பரியம் காப்பாற்றுதல்",
+            "நகர்ப்புற வேளாண் முன்முயற்சி"
           ]
         }
       ],
       impactStats: {
         title: "எங்கள் தாக்கம்",
         stats: [
-          "90% உறுப்பினர்கள் மேம்பட்ட தலைமைத்துவ திறன்களை தெரிவிக்கின்றனர்",
-          "ஆண்டுதோறும் 75,000+ சமூக சேவை திட்டங்கள் நிறைவு",
+          "எங்கள் உறுப்பினர்களில் 90% தலைமைத்துவ திறன்களில் முன்னேற்றம் பெற்றுள்ளனர்",
+          "75,000+ சமூக சேவை திட்டங்கள் ஆண்டுதோறும் நிறைவேற்றப்படுகின்றன",
           "200+ சர்வதேச பரிமாற்ற திட்டங்கள்",
-          "மாதந்தோறும் 500+ திறன் மேம்பாட்டு பயிலரங்குகள்"
+          "300+ திறன் மேம்பாட்டுப் பணிகள் மாதாந்திரம் நடத்தப்படுகின்றன"
         ]
       }
     }
   };
-
+  
   const currentContent = isTamil ? content.tamil : content.english;
 
   return (
