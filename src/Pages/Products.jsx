@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
 import mediaData from '../MediaData.json';
-import { ShoppingCart, Eye, Star, Search, ChevronDown, Filter } from 'lucide-react';
+import { ShoppingCart, Eye, Star, Search, ChevronDown, Filter, X } from 'lucide-react';
 
 const dummyProducts = [
   { id: 1, name: { en: 'Smartphone X', ta: 'ஸ்மார்ட்போன் X' }, price: 599.99, rating: 4.5, reviews: 120, inStock: true },
@@ -131,8 +131,8 @@ const Products = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-  <div className="container mx-auto px-4 py-8 pt-40">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">{t.title}</h1>
+      <div className="container mx-auto px-4 py-8 pt-40">
+      <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">{t.title}</h1>
         
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <div className="relative w-full md:w-1/3 mb-4 md:mb-0">
@@ -173,6 +173,7 @@ const Products = () => {
           </div>
         )}
 
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.slice(0, visibleProducts).map((product, index) => (
             <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105">
@@ -197,26 +198,26 @@ const Products = () => {
                   <span className="text-gray-600 ml-2 text-sm">({product.reviews} {t.reviews})</span>
                 </div>
                 <p className="text-2xl font-bold mb-4 text-blue-600">₹{product.price.toFixed(2)}</p>
-                <div className="flex justify-between space-x-2">
+                <div className="flex flex-col space-y-2">
                   <button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-2/3 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors duration-300"
+                    className="w-full px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors duration-300 shadow-md hover:shadow-lg"
                   >
                     <ShoppingCart className="mr-2" size={20} />
                     {t.addToCart}
                   </button>
                   <button 
                     onClick={() => handleViewProduct(product)}
-                    className="w-1/3 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 flex items-center justify-center transition-colors duration-300"
+                    className="w-full px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 flex items-center justify-center transition-colors duration-300 shadow-md hover:shadow-lg"
                   >
-                    <Eye size={20} />
+                    <Eye size={20} className="mr-2" />
+                    {t.viewProduct}
                   </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-
         {visibleProducts < products.length && (
           <div className="flex justify-center mt-12">
             <button
@@ -227,8 +228,8 @@ const Products = () => {
             </button>
           </div>
         )}
-      </div>
 
+      </div>
       {snackbarOpen && (
         <div className="fixed bottom-5 right-5 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
           {snackbarMessage}
@@ -236,9 +237,15 @@ const Products = () => {
       )}
 
 
-      {modalOpen && (
+{modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-4xl max-h-90vh overflow-y-auto">
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-4xl max-h-90vh overflow-y-auto">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-300"
+            >
+              <X size={24} />
+            </button>
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/2 pr-4">
                 <img
@@ -281,13 +288,7 @@ const Products = () => {
                     selectedProduct.description[isTamil ? 'ta' : 'en'] : 
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
                 </p>
-                <div className="flex justify-between">
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors duration-300"
-                  >
-                    {t.close}
-                  </button>
+                <div className="flex justify-end">
                   <button
                     onClick={() => {
                       handleAddToCart(selectedProduct);
@@ -304,6 +305,7 @@ const Products = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
