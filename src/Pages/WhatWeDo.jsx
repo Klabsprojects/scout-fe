@@ -105,19 +105,14 @@ const WhatWeDoPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-<header className="bg-blue-600 text-white py-10">
-  <div className="container mx-auto text-center mt-32"> {/* Increased mt to mt-12 */}
-    <h1 className="text-4xl font-bold mb-4">{translations.title[isTamil ? 'ta' : 'en']}</h1>
-    <p className="text-xl">{translations.subtitle[isTamil ? 'ta' : 'en']}</p>
-  </div>
-</header>
+      <header className="bg-blue-600 text-white py-16 px-4">
+        <div className="container mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-4">{translations.title[isTamil ? 'ta' : 'en']}</h1>
+          <p className="text-xl">{translations.subtitle[isTamil ? 'ta' : 'en']}</p>
+        </div>
+      </header>
 
-
-
-
-
-
-      <main className="container mx-auto py-12">
+      <main className="container mx-auto px-4 py-12">
         <section className="mb-16">
           <motion.div
             ref={ref}
@@ -135,7 +130,8 @@ const WhatWeDoPage = () => {
             initial="hidden"
             animate={controls}
             variants={imageVariants}
-            className="relative h-96 overflow-hidden rounded-lg shadow-xl"
+            className="relative overflow-hidden rounded-lg shadow-xl mb-8"
+            style={{ paddingBottom: '56.25%' }} // 16:9 aspect ratio
           >
             {mediaData.carouselImages.map((image, index) => (
               <motion.div
@@ -150,7 +146,7 @@ const WhatWeDoPage = () => {
                 <img
                   src={image}
                   alt={`Scout Activity ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </motion.div>
             ))}
@@ -179,13 +175,15 @@ const WhatWeDoPage = () => {
                 variants={imageVariants}
                 className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
               >
-                <img
-                  src={mediaData.organizationImages[index]}
-                  alt={activity.title[isTamil ? 'ta' : 'en']}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4 flex-grow flex flex-col justify-between">
-                  <h3 className="text-xl font-semibold mb-2">{activity.title[isTamil ? 'ta' : 'en']}</h3>
+                <div className="relative" style={{ paddingBottom: '75%' }}> {/* 4:3 aspect ratio */}
+                  <img
+                    src={mediaData.organizationImages[index]}
+                    alt={activity.title[isTamil ? 'ta' : 'en']}
+                    className="absolute top-0 left-0 w-full h-full object-contain"
+                  />
+                </div>
+                <div className="p-6 flex-grow flex flex-col justify-between">
+                  <h3 className="text-xl font-semibold mb-4">{activity.title[isTamil ? 'ta' : 'en']}</h3>
                   <p className="text-gray-600">{activity.description[isTamil ? 'ta' : 'en']}</p>
                 </div>
               </motion.div>
@@ -206,20 +204,20 @@ const WhatWeDoPage = () => {
             initial="hidden"
             animate={controls}
             variants={textVariants}
-            className="text-lg text-center mb-8"
+            className="text-lg text-center mb-12"
           >
             {translations.impactDescription[isTamil ? 'ta' : 'en']}
           </motion.p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {translations.impactStats.map((stat, index) => (
               <motion.div
                 key={index}
                 initial="hidden"
                 animate={controls}
                 variants={imageVariants}
-                className="bg-white rounded-lg shadow-md p-6 text-center"
+                className="bg-white rounded-lg shadow-md p-8 text-center"
               >
-                <h3 className="text-2xl font-bold mb-2">{stat.value}</h3>
+                <h3 className="text-3xl font-bold mb-4">{stat.value}</h3>
                 <p className="text-gray-600">{stat.title[isTamil ? 'ta' : 'en']}</p>
               </motion.div>
             ))}
@@ -233,7 +231,13 @@ const WhatWeDoPage = () => {
                 variants={imageVariants}
                 className="bg-white rounded-lg shadow-md overflow-hidden"
               >
-                <img src={image} alt={`Featured Story ${index + 1}`} className="w-full h-48 object-cover" />
+                <div className="relative" style={{ paddingBottom: '75%' }}> {/* 4:3 aspect ratio */}
+                  <img 
+                    src={image} 
+                    alt={`Featured Story ${index + 1}`} 
+                    className="absolute top-0 left-0 w-full h-full object-contain" 
+                  />
+                </div>
               </motion.div>
             ))}
           </div>
