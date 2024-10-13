@@ -104,7 +104,7 @@ const WhatWeDoPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen pt-24">
       <header className="bg-blue-600 text-white py-16 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4">{translations.title[isTamil ? 'ta' : 'en']}</h1>
