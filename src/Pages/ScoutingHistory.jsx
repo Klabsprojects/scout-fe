@@ -108,50 +108,52 @@ const ScoutingHistoryPage = () => {
       </div>
       
       {/* Hero Section */}
-      <div className="relative h-[60vh]">
+      <div className="relative h-[70vh]">
         <img 
           src={mediaData.carouselImages[1]}
           alt="Scouts marching"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
           <div className="text-center text-white p-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{t.title}</h1>
-            <p className="text-xl md:text-2xl">{t.subtitle}</p>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">{t.title}</h1>
+            <p className="text-2xl md:text-3xl">{t.subtitle}</p>
           </div>
         </div>
       </div>
 
       {/* Navigation Menu */}
-      <div className="bg-white shadow-md">
+      <div className="bg-white shadow-md sticky top-0 z-10">
         <div className="container mx-auto">
           <NavigationMenu />
         </div>
       </div>
 
       {/* Content Sections */}
-      <div className="pt-4">
+      <div className="pt-8">
         {/* Timeline Section */}
         <div className="max-w-7xl mx-auto px-4 py-16">
+          <h2 className="text-4xl font-bold text-center mb-12">Our Journey Through Time</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {t.timeline.map((item, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                <div className="text-3xl font-bold text-blue-600 mb-2">{item.year}</div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+              <div key={index} className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-4xl font-bold text-blue-600 mb-4">{item.year}</div>
+                <h3 className="text-2xl font-semibold mb-4">{item.title}</h3>
+                <p className="text-gray-600 text-lg">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Stats Section */}
-        <div className="bg-blue-600 text-white py-16">
+        <div className="bg-blue-600 text-white py-20">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <h2 className="text-4xl font-bold text-center mb-12">Our Impact in Numbers</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
               {t.stats.map((stat, index) => (
-                <div key={index}>
-                  <div className="text-4xl font-bold mb-2">{stat.number}</div>
-                  <div className="text-xl">{stat.label}</div>
+                <div key={index} className="bg-white bg-opacity-10 p-8 rounded-lg">
+                  <div className="text-5xl font-bold mb-4">{stat.number}</div>
+                  <div className="text-2xl">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -159,47 +161,70 @@ const ScoutingHistoryPage = () => {
         </div>
 
         {/* Main Content Sections */}
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-3xl font-bold mb-6">{t.sections.growth.title}</h2>
-              <p className="text-gray-700 mb-8">{t.sections.growth.description}</p>
-              <div className="grid grid-cols-2 gap-4">
+        <div className="max-w-7xl mx-auto px-4 py-20">
+          {/* Growth & Development Section */}
+          <div className="mb-20">
+            <h2 className="text-4xl font-bold mb-8 text-center">{t.sections.growth.title}</h2>
+            <div className="flex flex-col md:flex-row items-center gap-12">
+              <div className="md:w-1/2">
+                <p className="text-gray-700 text-lg mb-8">{t.sections.growth.description}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <img 
+                    src={mediaData.organizationImages[0]}
+                    alt="Organization growth"
+                    className="w-full h-48 object-cover rounded-lg shadow-md"
+                  />
+                  <img 
+                    src={mediaData.organizationImages[1]}
+                    alt="Organization development"
+                    className="w-full h-48 object-cover rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+              <div className="md:w-1/2">
                 <img 
-                  src={mediaData.organizationImages[0]}
-                  alt="Organization growth"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <img 
-                  src={mediaData.organizationImages[1]}
-                  alt="Organization development"
-                  className="w-full h-48 object-cover rounded-lg"
+                  src={mediaData.carouselImages[2]}
+                  alt="Scouts in action"
+                  className="w-full h-96 object-cover rounded-lg shadow-lg"
                 />
               </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-6">{t.sections.impact.title}</h2>
-              <p className="text-gray-700 mb-8">{t.sections.impact.description}</p>
-              <div className="grid grid-cols-2 gap-4">
-                {mediaData.featuredStories.slice(0, 2).map((img, index) => (
-                  <img 
-                    key={index}
-                    src={img}
-                    alt={`Impact story ${index + 1}`}
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                ))}
+          </div>
+
+          {/* Our Impact Section */}
+          <div>
+            <h2 className="text-4xl font-bold mb-8 text-center">{t.sections.impact.title}</h2>
+            <div className="flex flex-col md:flex-row-reverse items-center gap-12">
+              <div className="md:w-1/2">
+                <p className="text-gray-700 text-lg mb-8">{t.sections.impact.description}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {mediaData.featuredStories.slice(0, 2).map((img, index) => (
+                    <img 
+                      key={index}
+                      src={img}
+                      alt={`Impact story ${index + 1}`}
+                      className="w-full h-48 object-cover rounded-lg shadow-md"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="md:w-1/2">
+                <img 
+                  src={mediaData.carouselImages[3]}
+                  alt="Scouts making an impact"
+                  className="w-full h-96 object-cover rounded-lg shadow-lg"
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Future Section */}
-        <div className="bg-gray-100 py-16">
+        <div className="bg-gray-100 py-20">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">{t.sections.future.title}</h2>
-              <p className="text-gray-700 max-w-3xl mx-auto">{t.sections.future.description}</p>
+              <h2 className="text-4xl font-bold mb-6">{t.sections.future.title}</h2>
+              <p className="text-gray-700 text-lg max-w-3xl mx-auto">{t.sections.future.description}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {mediaData.carouselImages.slice(1, 4).map((img, index) => (
@@ -207,7 +232,7 @@ const ScoutingHistoryPage = () => {
                   key={index}
                   src={img}
                   alt={`Future vision ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-lg shadow-lg"
+                  className="w-full h-64 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
                 />
               ))}
             </div>
