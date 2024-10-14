@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -7,8 +7,7 @@ import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
 
 const ScoutHomepage = () => {
-  const { isTamil, toggleLanguage } = useTranslation();
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const { isTamil } = useTranslation();
 
   const smoothScroll = useCallback((e) => {
     e.preventDefault();
@@ -87,7 +86,6 @@ const ScoutHomepage = () => {
       en: "Description of the scouting story video",
       ta: "சாரண கதை வீடியோவின் விளக்கம்"
     }
-
   };
 
   const FadeInSection = ({ children }) => {
@@ -110,17 +108,6 @@ const ScoutHomepage = () => {
 
   return (
     <div className="pt-20 md:pt-34">
-      {/* Language Toggle */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={toggleLanguage}
-          className="px-4 py-2 bg-white text-blue-600 rounded-full shadow-md hover:bg-blue-50 transition-colors duration-300"
-          aria-label={isTamil ? "Switch to English" : "திருப்பு தமிழ்"}
-        >
-          {isTamil ? "EN" : "தமிழ்"}
-        </button>
-      </div>
-
       {/* Hero Section */}
       <section className="bg-[#feeecf] py-16 md:py-24">
         <div className="container mx-auto px-4">
@@ -187,48 +174,46 @@ const ScoutHomepage = () => {
         </div>
       </section>
 
-      
-{/* Latest News Section */}
-<section className="py-16 bg-gray-100">
-  <div className="container mx-auto px-4">
-    <FadeInSection>
-      <h2 className="text-3xl font-bold mb-12 text-center">
-        {isTamil ? translations.latestNews.ta : translations.latestNews.en}
-      </h2>
-    </FadeInSection>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {mediaData.newsImages.map((image, index) => (
-        <FadeInSection key={index}>
-          <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-            <div className="relative pt-[75%]"> {/* 4:3 aspect ratio */}
-              <img
-                src={image}
-                alt={`Latest news ${index + 1}`}
-                className="absolute top-0 left-0 w-full h-full object-contain"
-              />
-            </div>
-            <div className="p-6 flex-grow">
-              <h3 className="text-lg font-bold mb-3">
-                {translations.newsDescription[isTamil ? 'ta' : 'en']}
-              </h3>
-              <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-              <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
-            </div>
+      {/* Latest News Section */}
+      <section className="py-16 bg-gray-100">
+        <div className="container mx-auto px-4">
+          <FadeInSection>
+            <h2 className="text-3xl font-bold mb-12 text-center">
+              {isTamil ? translations.latestNews.ta : translations.latestNews.en}
+            </h2>
+          </FadeInSection>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {mediaData.newsImages.map((image, index) => (
+              <FadeInSection key={index}>
+                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
+                  <div className="relative pt-[75%]">
+                    <img
+                      src={image}
+                      alt={`Latest news ${index + 1}`}
+                      className="absolute top-0 left-0 w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="p-6 flex-grow">
+                    <h3 className="text-lg font-bold mb-3">
+                      {translations.newsDescription[isTamil ? 'ta' : 'en']}
+                    </h3>
+                    <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
+                  </div>
+                </div>
+              </FadeInSection>
+            ))}
           </div>
-        </FadeInSection>
-      ))}
-    </div>
-    <div className="text-center mt-12">
-      <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
-        {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
-      </button>
-    </div>
-  </div>
-</section>
+          <div className="text-center mt-12">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
+              {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
+            </button>
+          </div>
+        </div>
+      </section>
 
-      
- {/* Scouting Stories Video Section */}
- <section className="py-16 px-4 sm:px-9 bg-white">
+      {/* Scouting Stories Video Section */}
+      <section className="py-16 px-4 sm:px-9 bg-white">
         <div className="container mx-auto">
           <FadeInSection>
             <h2 className="text-3xl font-bold text-center mb-12">
