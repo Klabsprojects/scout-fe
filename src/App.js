@@ -16,7 +16,8 @@ import Products from "./Pages/Products";
 import LoginPage from "./Pages/Login";
 import ScoutingHistoryPage from "./Pages/ScoutingHistory";
 import DonationPage from "./Pages/DonationPage";
-import DonationPayment from "./Pages/DonationPayment";  // Add this import
+import DonationPayment from "./Pages/DonationPayment";
+import Cart from "./Pages/Cart"; // Add this import
 
 function App() {
   return (
@@ -38,7 +39,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
           <Route path="/donation" element={<DonationPage/>}/>
-          <Route path="/donate/:eventId" element={<DonationPayment />} />  {/* Add this new route */}
+          <Route path="/donate/:eventId" element={<DonationPayment />} />
+          <Route path="/cart" element={<Cart />} /> {/* Add this new route */}
         </Routes>
         <Footer />
       </TranslationProvider>

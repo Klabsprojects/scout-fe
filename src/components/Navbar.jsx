@@ -97,10 +97,12 @@ const Navbar = () => {
         {t.donate}
       </span>
     </Link>
-                <button className="flex flex-col items-center">
-                  <img src="/Images/cart.png" alt="Add to Cart" className="h-6 w-6" />
-                  <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>{t.cart}</span>
-                </button>
+    <Link to="/cart" className="flex flex-col items-center">
+      <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
+      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
+        {t.cart}
+      </span>
+    </Link>
                 <Link to="/login" className="flex flex-col items-center">
       <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
       <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
@@ -180,12 +182,12 @@ const Navbar = () => {
       </span>
     </Link>
   </div>
-           <div className="flex flex-col items-center space-y-1">
-                    <button className="flex flex-col items-center">
-                      <img src="/Images/cart.png" alt="Add to Cart" className="h-6 w-6 lg:h-8 lg:w-8" />
-                      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>{t.cart}</span>
-                    </button>
-                  </div>
+  <Link to="/cart" className="flex flex-col items-center">
+      <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
+      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
+        {t.cart}
+      </span>
+    </Link>
                   <div className="flex flex-col items-center space-y-1">
                   <Link to="/login" className="flex flex-col items-center">
       <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
