@@ -143,6 +143,7 @@ const GetInvolved = () => {
   };
   
 
+
   const currentContent = isTamil ? content.tamil : content.english;
 
   const toggleSection = (index) => {
@@ -151,26 +152,34 @@ const GetInvolved = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 font-sans pb-20">
-<header className="py-20 mt-20 text-center relative overflow-hidden pt-77">
-  <motion.h1 
-    className="text-5xl font-bold mb-4 text-green-800"
-    initial={{ y: -50, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 0.5 }}
-  >
-    {currentContent.title}
-  </motion.h1>
-  <motion.p 
-    className="text-xl text-green-600"
-    initial={{ y: 50, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 0.5, delay: 0.2 }}
-  >
-    {currentContent.subtitle}
-  </motion.p>
-</header>
-
-
+      <header className="py-20 mt-20 text-center relative overflow-hidden pt-77">
+        <motion.h1 
+          className="text-5xl font-bold mb-4 text-green-800"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {currentContent.title}
+        </motion.h1>
+        <motion.p 
+          className="text-xl text-green-600"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {currentContent.subtitle}
+        </motion.p>
+        {/* Add a CTA button */}
+        <motion.button
+          className="mt-8 px-6 py-3 text-white font-semibold bg-green-600 rounded-full shadow-md hover:bg-green-700"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          whileHover={{ scale: 1.05 }}
+        >
+          {isTamil ? 'அம்சத்தை பார்க்க' : 'Explore Sections'}
+        </motion.button>
+      </header>
 
       <main className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

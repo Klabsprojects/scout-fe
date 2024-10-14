@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../Context/TranslationContext';
 import NavigationMenu from '../components/NavigationMenu';
 
@@ -78,54 +79,117 @@ const translations = {
 export default function ScoutMethod() {
   const { isTamil } = useTranslation();
   const [activeElement, setActiveElement] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const handleElementClick = (index) => {
     setActiveElement(activeElement === index ? null : index);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
     <div className="relative w-full bg-gradient-to-b from-blue-50 to-gray-50">
       {/* Hero Section */}
-      <div className="relative w-full h-[500px] mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
+      <motion.div 
+        className="relative w-full h-[500px] mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
         <div className="absolute inset-0 bg-black bg-opacity-40" />
         <img
           src={scoutMethodData.heroImage}
           alt="Scout Method Hero"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <motion.div 
+          className="absolute inset-0 flex flex-col items-center justify-center"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
           <h1 className="text-4xl md:text-6xl font-bold text-white text-center mb-4">
             {translations.title[isTamil ? 'ta' : 'en']}
           </h1>
-          <div className="w-24 h-1 bg-yellow-400 rounded-full" />
-        </div>
-      </div>
+          <motion.div 
+            className="w-24 h-1 bg-yellow-400 rounded-full"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 1, duration: 0.5 }}
+          />
+        </motion.div>
+      </motion.div>
 
       <NavigationMenu />
 
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <motion.div 
+        className="max-w-6xl mx-auto px-4 py-16"
+        variants={containerVariants}
+        initial="hidden"
+        animate={isVisible ? "visible" : "hidden"}
+      >
         {/* Introduction Card */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12 transform hover:scale-[1.02] transition-transform">
+        <motion.div 
+          className="bg-white rounded-xl shadow-lg p-8 mb-12 transform hover:scale-[1.02] transition-transform"
+          variants={itemVariants}
+        >
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             {translations.title[isTamil ? 'ta' : 'en']}
           </h2>
           <p className="text-gray-600 leading-relaxed">
             {translations.introduction[isTamil ? 'ta' : 'en']}
           </p>
-        </div>
-
-        {/* Elements Grid */}
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+        </motion.div>
+{/* Elements Grid */}
+<motion.h2 
+          className="text-3xl font-bold text-gray-800 mb-8 text-center"
+          variants={itemVariants}
+        >
           {translations.elements[isTamil ? 'ta' : 'en']}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        </motion.h2>
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
+          variants={containerVariants}
+        >
           {scoutMethodData.elements.map((element, index) => (
-            <div
+            <motion.div
               key={index}
               className={`bg-white rounded-xl shadow-md p-6 cursor-pointer transform transition-all duration-300 ${
                 activeElement === index ? 'scale-[1.02] shadow-lg' : 'hover:scale-[1.01]'
               }`}
               onClick={() => handleElementClick(index)}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <div className="flex items-center mb-4">
                 <span className="text-4xl mr-4">{element.icon}</span>
@@ -133,35 +197,49 @@ export default function ScoutMethod() {
                   {element.title[isTamil ? 'ta' : 'en']}
                 </h3>
               </div>
-              {activeElement === index && (
-                <p className="text-gray-600 mt-2">
-                  {element.description[isTamil ? 'ta' : 'en']}
-                </p>
-              )}
-            </div>
+              <AnimatePresence>
+                {activeElement === index && (
+                  <motion.p
+                    className="text-gray-600 mt-2"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {element.description[isTamil ? 'ta' : 'en']}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Implementation Section */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12">
+        <motion.div 
+          className="bg-white rounded-xl shadow-lg p-8 mb-12"
+          variants={itemVariants}
+        >
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             {translations.implementation[isTamil ? 'ta' : 'en']}
           </h2>
           <p className="text-gray-600 leading-relaxed">
             {translations.implementationContent[isTamil ? 'ta' : 'en']}
           </p>
-        </div>
+        </motion.div>
 
         {/* Impact Section */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <motion.div 
+          className="bg-white rounded-xl shadow-lg p-8"
+          variants={itemVariants}
+        >
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             {translations.impact[isTamil ? 'ta' : 'en']}
           </h2>
           <p className="text-gray-600 leading-relaxed">
             {translations.impactContent[isTamil ? 'ta' : 'en']}
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
