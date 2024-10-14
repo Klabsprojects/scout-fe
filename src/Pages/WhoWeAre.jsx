@@ -136,53 +136,53 @@ export default function WhoWeAre() {
 
 
 
-        {/* Enhanced Organization Cards Section */}
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, staggerChildren: 0.2 }}
-        >
-          {mediaData.organizationImages.map((img, index) => {
-            const cards = [
-              { 
-                title: isTamil ? 'தேசிய ஆராய்ச்சி அமைப்பு' : 'National Scout Organization',  
-                desc: isTamil ? 'உங்கள் நாட்டில் செயல்படும் ஆராய்ச்சி அமைப்பு' : 'A scout organization operates in your country'
-              },
-              { 
-                title: isTamil ? 'உலக ஆராய்ச்சி இயக்கம்' : 'World Scouting', 
-                desc: isTamil ? 'உலகம் முழுவதும் நாங்கள் ஒரு இயக்கமாக இருக்கிறோம்' : 'We have a worldwide movement'
-              },
-              { 
-                title: isTamil ? 'ஆராய்ச்சி இயக்கத்தை ஆதரிக்கவும்' : 'Join Scout Movement', 
-                desc: isTamil ? 'உலகளாவிய அளவில் எங்கள் பணிக்கான ஆதரவு' : 'Support our mission worldwide'
-              }
-            ];
-            return (
-              <motion.div 
-                key={index}
-                whileHover={{ y: -10 }}
-                className="bg-white rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={img}
-                    alt={cards[index].title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-xl mb-2">{cards[index].title}</h3>
-                  <p className="text-gray-600 mb-4">{cards[index].desc}</p>
-                  <button className="flex items-center justify-between w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                    {isTamil ? 'மேலும் அறிக' : 'Learn More'}
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+      {/* Enhanced Organization Cards Section */}
+<motion.div 
+  className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20"
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, staggerChildren: 0.2 }}
+>
+  {mediaData.organizationImages.map((img, index) => {
+    const cards = [
+      { 
+        title: isTamil ? 'தேசிய ஆராய்ச்சி அமைப்பு' : 'National Scout Organization',  
+        desc: isTamil ? 'உங்கள் நாட்டில் செயல்படும் ஆராய்ச்சி அமைப்பு' : 'A scout organization operates in your country'
+      },
+      { 
+        title: isTamil ? 'உலக ஆராய்ச்சி இயக்கம்' : 'World Scouting', 
+        desc: isTamil ? 'உலகம் முழுவதும் நாங்கள் ஒரு இயக்கமாக இருக்கிறோம்' : 'We have a worldwide movement'
+      },
+      { 
+        title: isTamil ? 'ஆராய்ச்சி இயக்கத்தை ஆதரிக்கவும்' : 'Join Scout Movement', 
+        desc: isTamil ? 'உலகளாவிய அளவில் எங்கள் பணிக்கான ஆதரவு' : 'Support our mission worldwide'
+      }
+    ];
+    return (
+      <motion.div 
+        key={index}
+        whileHover={{ y: -10 }}
+        className="bg-white rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl flex flex-col h-full"
+      >
+        <div className="relative h-48 overflow-hidden">
+          <img 
+            src={img}
+            alt={cards[index].title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          />
+        </div>
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className="font-bold text-xl mb-2">{cards[index].title}</h3>
+          <p className="text-gray-600 mb-4 flex-grow">{cards[index].desc}</p>
+          <button className="mt-auto flex items-center justify-between w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            <span>{isTamil ? 'மேலும் அறிக' : 'Learn More'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  })}
+</motion.div>
 
         {/* Enhanced Ban Ki-moon Section */}
         <motion.div 
