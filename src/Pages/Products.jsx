@@ -2,10 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../Context/TranslationContext';
 import mediaData from '../MediaData.json';
-import { ShoppingCart, Eye, Star, Search, ChevronDown, Filter, X } from 'lucide-react';
+import { ShoppingCart, Eye, Star, Search, Filter } from 'lucide-react';
 
-// Define dummyProducts
-const dummyProducts = [
+export const dummyProducts = [
   { id: 1, name: { en: 'Scout Shirt for boys', ta: 'சிறுவர்களுக்கான சாரணர் சட்டை' }, price: 599.99, rating: 4.5, reviews: 120, inStock: true },
   { id: 2, name: { en: 'Cap badge', ta: 'தொப்பி பேட்ஜ்' }, price: 1299.99, rating: 4.8, reviews: 250, inStock: true },
   { id: 3, name: { en: 'Accessories Cap', ta: 'துணைக்கருவிகள் தொப்பி' }, price: 129.99, rating: 4.2, reviews: 180, inStock: true },
@@ -56,6 +55,7 @@ const fetchProducts = async (searchTerm, sortBy, page) => {
   };
 };
 
+
 const Products = () => {
   const { isTamil } = useTranslation();
   const navigate = useNavigate();
@@ -66,14 +66,8 @@ const Products = () => {
   const [hasMore, setHasMore] = useState(true);
   const [sortBy, setSortBy] = useState('popularity');
   const [searchTerm, setSearchTerm] = useState('');
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(0);
 
-  // Define translations
   const translations = {
     en: {
       title: 'Discover Our Scout Treasures',
@@ -108,6 +102,8 @@ const Products = () => {
   };
 
   const t = translations[isTamil ? 'ta' : 'en'];
+
+ 
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -157,32 +153,20 @@ const Products = () => {
     }
 
     localStorage.setItem('cart', JSON.stringify(existingCart));
-
-    setSnackbarMessage(isTamil ? `${product.name.ta} கூடைக்கு சேர்க்கப்பட்டது` : `${product.name.en} added to cart`);
-    setSnackbarOpen(true);
-    setTimeout(() => {
-      setSnackbarOpen(false);
-      navigate('/cart');
-    }, 1500);
+    navigate('/cart');
   };
 
-  const handleViewProduct = (product) => {
-    setSelectedProduct(product);
-    setModalOpen(true);
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`);
   };
 
   const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedProduct(null);
-  };
-
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="container mx-auto px-4 py-8 pt-40">
+      <div className="container mx-auto px-4 py-8 pt-20">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">{t.title}</h1>
         
         {/* Search and Sort */}
@@ -260,7 +244,7 @@ const Products = () => {
                     {t.addToCart}
                   </button>
                   <button 
-                    onClick={() => handleViewProduct(product)}
+                    onClick={() => handleViewProduct(product.id)}
                     className="w-full px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 flex items-center justify-center transition-colors duration-300 shadow-md hover:shadow-lg"
                   >
                     <Eye size={20} className="mr-2" />
@@ -292,83 +276,6 @@ const Products = () => {
           </div>
         )}
       </div>
-
-      {/* Snackbar */}
-      {snackbarOpen && (
-        <div className="fixed bottom-5 right-5 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
-          {snackbarMessage}
-        </div>
-      )}
-
-      {/* Product Modal */}
-      {modalOpen && selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="relative bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-4xl max-h-90vh overflow-y-auto">
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-300"
-            >
-              <X size={24} />
-            </button>
-            <div className="flex flex-col md:flex-row">
-              <div className="md:w-1/2 pr-4">
-                <img
-                  src={mediaData.carouselImages[selectedImage]}
-                  alt={selectedProduct.name[isTamil ? 'ta' : 'en']}
-                  className="w-full h-64 object-cover mb-4 rounded"
-                />
-                <div className="flex space-x-2 mb-4">
-                  {mediaData.carouselImages.slice(0, 4).map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Thumbnail ${index + 1}`}
-                      className={`w-20 h-20 object-cover cursor-pointer rounded ${
-                        selectedImage === index ? 'border-2 border-blue-500' : ''
-                      }`}
-                      onClick={() => setSelectedImage(index)}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="md:w-1/2">
-                <h2 className="text-2xl font-bold mb-4">{selectedProduct.name[isTamil ? 'ta' : 'en']}</h2>
-                <p className="text-3xl font-bold text-blue-600 mb-4">₹{selectedProduct.price.toFixed(2)}</p>
-                <div className="flex items-center mb-4">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < Math.floor(selectedProduct.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-gray-600 ml-2 text-sm">({selectedProduct.reviews} {t.reviews})</span>
-                </div>
-                <p className="text-gray-700 mb-6">
-                  {selectedProduct.description ? 
-                    selectedProduct.description[isTamil ? 'ta' : 'en'] : 
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
-                </p>
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => {
-                      handleAddToCart(selectedProduct);
-                      closeModal();
-                    }}
-                    className="px-6 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white flex items-center transition-colors duration-300"
-                  >
-                    <ShoppingCart className="mr-2" size={20} />
-                    {t.addToCart}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -17,7 +17,8 @@ import LoginPage from "./Pages/Login";
 import ScoutingHistoryPage from "./Pages/ScoutingHistory";
 import DonationPage from "./Pages/DonationPage";
 import DonationPayment from "./Pages/DonationPayment";
-import Cart from "./Pages/Cart"; // Add this import
+import Cart from "./Pages/Cart";
+import ProductDescription from "./Pages/ProductDescription"; // Add this import
 
 function App() {
   return (
@@ -36,11 +37,12 @@ function App() {
           <Route path="/get-involved" element={<GetInvolved />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/product" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDescription />} /> {/* Add this new route */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
           <Route path="/donation" element={<DonationPage/>}/>
           <Route path="/donate/:eventId" element={<DonationPayment />} />
-          <Route path="/cart" element={<Cart />} /> {/* Add this new route */}
+          <Route path="/cart" element={<Cart />} />
         </Routes>
         <Footer />
       </TranslationProvider>
