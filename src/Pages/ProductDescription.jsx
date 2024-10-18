@@ -5,6 +5,7 @@ import { ShoppingCart, Heart, Star, ArrowLeft, Plus, Minus, X, Check, Facebook, 
 import { dummyProducts } from './Products';
 import { useTranslation } from '../Context/TranslationContext';
 import mediaData from '../MediaData.json';
+import useStore from './useStore';  // Import the Zustand store
 
 const ProductDescription = () => {
   const { id } = useParams();
@@ -17,6 +18,9 @@ const ProductDescription = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const reviewsRef = useRef(null);
+
+  // Use Zustand store
+  const addToCart = useStore(state => state.addToCart);
 
   const translations = {
     backToProducts: {
@@ -89,7 +93,7 @@ const ProductDescription = () => {
       { id: 2, user: "சாரா எம்.", rating: 4, comment: "விலைக்கு நல்ல தரம். நிச்சயமாக பரிந்துரைப்பேன்.", date: "2024-03-10" },
       { id: 3, user: "மைக்கேல் ஆர்.", rating: 3, comment: "சரியான தயாரிப்பு, ஆனால் நீடித்த உபயோகத்திற்கு சில மேம்பாடுகள் தேவை.", date: "2024-03-05" },
       { id: 4, user: "எமிலி எல்.", rating: 5, comment: "நான் தேடிக்கொண்டிருந்தது இதுதான். என் தேவைகளுக்கு சரியாகப் பொருந்துகிறது!", date: "2024-02-28" },
-      { id: 5, user: "டேவிட் கே.", rating: 4, comment: "ஒட்டுமொத்தமாக நல்ல தயாரிப்பு. அனுப்புதல் வேகமாக இருந்தது மற்றும் பொதி பாதुகாப்பாக இருந்தது.", date: "2024-02-20" },
+      { id: 5, user: "டேவிட் கே.", rating: 4, comment: "ஒட்டுமொத்தமாக நல்ல தயாரிப்பு. அனுப்புதல் வேகமாக இருந்தது மற்றும் பொதி பாதுகாப்பாக இருந்தது.", date: "2024-02-20" },
       { id: 6, user: "லிசா எச்.", rating: 5, comment: "சிறந்த தரம் மற்றும் வாடிக்கையாளர் சேவை. மீண்டும் வாங்குவேன்!", date: "2024-02-15" },
     ]
   };
@@ -160,16 +164,7 @@ const ProductDescription = () => {
       quantity: quantity
     };
 
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
-
-    if (existingItemIndex !== -1) {
-      existingCart[existingItemIndex].quantity += quantity;
-    } else {
-      existingCart.push(cartItem);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(existingCart));
+    addToCart(cartItem);
     setSnackbarVisible(true);
     setTimeout(() => setSnackbarVisible(false), 3000);
   };

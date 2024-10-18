@@ -4,6 +4,7 @@ import { useTranslation } from '../Context/TranslationContext';
 import mediaData from '../MediaData.json';
 import { ShoppingCart, Eye, Star, Search, Filter, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useStore from './useStore';  // Import the Zustand store
 
 export const dummyProducts = [
   { id: 1, name: { en: 'Scout Shirt for boys', ta: 'சிறுவர்களுக்கான சாரணர் சட்டை' }, price: 599.99, rating: 4.5, reviews: 120, inStock: true },
@@ -117,6 +118,9 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Use Zustand store
+  const addToCart = useStore(state => state.addToCart);
+
   const translations = {
     en: {
       title: 'Discover Our Scout Treasures',
@@ -193,17 +197,7 @@ const Products = () => {
       image: mediaData.carouselImages[product.id % mediaData.carouselImages.length],
       quantity: 1
     };
-
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
-
-    if (existingItemIndex !== -1) {
-      existingCart[existingItemIndex].quantity += 1;
-    } else {
-      existingCart.push(cartItem);
-    }
-
-    localStorage.setItem('cart', JSON.stringify(existingCart));
+    addToCart(cartItem);
     navigate('/cart');
   };
 

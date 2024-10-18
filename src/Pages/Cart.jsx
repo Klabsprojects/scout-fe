@@ -3,32 +3,16 @@ import { useTranslation } from '../Context/TranslationContext';
 import { X, Plus, Minus, ShoppingCart, ArrowLeft, Truck, CreditCard, Gift, Clock, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import useStore from './useStore';  // Import the Zustand store
 
 const Cart = () => {
   const { isTamil } = useTranslation();
-  const [cartItems, setCartItems] = useState([]);
   const [showFAQ, setShowFAQ] = useState(false);
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
-  }, []);
-
-  const updateQuantity = (id, newQuantity) => {
-    const updatedCart = cartItems.map(item =>
-      item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
-    );
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
-
-  const removeItem = (id) => {
-    const updatedCart = cartItems.filter(item => item.id !== id);
-    setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
+  // Use Zustand store
+  const cartItems = useStore(state => state.cart);
+  const updateQuantity = useStore(state => state.updateQuantity);
+  const removeFromCart = useStore(state => state.removeFromCart);
 
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -159,7 +143,7 @@ const Cart = () => {
                         </div>
                         <div className="flex items-center">
                           <div className="flex items-center border rounded-full overflow-hidden">
-                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
                               <Minus size={16} />
                             </button>
                             <span className="px-4 py-2 font-medium">{item.quantity}</span>
@@ -167,7 +151,7 @@ const Cart = () => {
                               <Plus size={16} />
                             </button>
                           </div>
-                          <button onClick={() => removeItem(item.id)} className="ml-4 text-red-500 hover:text-red-700 transition-colors">
+                          <button onClick={() => removeFromCart(item.id)} className="ml-4 text-red-500 hover:text-red-700 transition-colors">
                             <X size={24} />
                           </button>
                         </div>
@@ -226,28 +210,26 @@ const Cart = () => {
                 </div>
                 <div className="flex items-center">
                   <Clock className="text-blue-500 mr-3" size={24} />
-
-
                   <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
+                </div>
               </div>
-            </div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-6 bg-white rounded-lg shadow-lg p-6"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">{t.faq}</h3>
-                <button 
-                  onClick={() => setShowFAQ(!showFAQ)}
-                  className="text-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  <HelpCircle size={24} />
-                </button>
-              </div>
-              <AnimatePresence>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mt-6 bg-white rounded-lg shadow-lg p-6"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">{t.faq}</h3>
+                  <button 
+                    onClick={() => setShowFAQ(!showFAQ)}
+                    className="text-blue-500 hover:text-blue-600 transition-colors"
+                  >
+                    <HelpCircle size={24} />
+                  </button>
+                </div>
+                <AnimatePresence>
                 {showFAQ && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
