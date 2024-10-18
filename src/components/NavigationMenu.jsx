@@ -21,7 +21,7 @@ const NavigationMenu = () => {
 
   return (
     <div className="w-full bg-white p-3 sm:p-5">
-      <div className="flex flex-col sm:flex-row justify-between items-center max-w-3xl mx-auto text-sm sm:text-base md:text-lg font-bold">
+      <div className="flex flex-col sm:flex-row justify-between items-center max-w-4xl mx-auto text-sm sm:text-base md:text-lg font-bold">
         {menuItems.map((item, index) => (
           <React.Fragment key={item.path}>
             <div
@@ -35,7 +35,7 @@ const NavigationMenu = () => {
               </span>
             </div>
             {index < menuItems.length - 1 && (
-              <span className="hidden sm:inline text-gray-300 mx-2">/</span>
+              <span className="hidden sm:inline text-gray-300 mx-4">/</span>
             )}
           </React.Fragment>
         ))}
