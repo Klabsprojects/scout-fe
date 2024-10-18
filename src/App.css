@@ -48,3 +48,21 @@
     font-size: 14px; /* Adjust based on your needs */
   }
 }
+
+/* Font styles */
+.font-open-sans {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Tamil text specific styles */
+.tamil-text {
+  font-family: 'Latha', 'Open Sans', sans-serif; /* Latha is a common Tamil font */
+  hyphens: auto;
+  word-break: break-word;
+}
+
+/* You can add more custom styles here if needed */

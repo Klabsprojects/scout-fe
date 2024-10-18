@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
 
+
 const ScoutHomepage = () => {
   const { isTamil } = useTranslation();
 
@@ -114,7 +115,7 @@ const ScoutHomepage = () => {
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
               <FadeInSection>
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 text-left leading-tight md:leading-snug">
+                <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-left leading-tight ${isTamil ? 'hyphens-auto break-words' : ''}`}>
                   {isTamil ? translations.title.ta : translations.title.en}
                 </h1>
                 <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
@@ -149,7 +150,7 @@ const ScoutHomepage = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="container mx-auto">
           <FadeInSection>
-            <h2 className="text-3xl font-bold text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
               {isTamil ? translations.featuredStories.ta : translations.featuredStories.en}
             </h2>
           </FadeInSection>
@@ -163,7 +164,7 @@ const ScoutHomepage = () => {
                     className="w-full h-48 md:h-64 object-cover"
                   />
                   <div className="p-6">
-                    <p className="text-lg text-white font-bold text-center">
+                    <p className={`text-base md:text-lg text-white font-bold text-center ${isTamil ? 'hyphens-auto break-words' : ''}`}>
                       {isTamil ? translations.featuredStoryTitles[`story${index + 1}`].ta : translations.featuredStoryTitles[`story${index + 1}`].en}
                     </p>
                   </div>
@@ -178,7 +179,7 @@ const ScoutHomepage = () => {
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4">
           <FadeInSection>
-            <h2 className="text-3xl font-bold mb-12 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center">
               {isTamil ? translations.latestNews.ta : translations.latestNews.en}
             </h2>
           </FadeInSection>
@@ -194,10 +195,10 @@ const ScoutHomepage = () => {
                     />
                   </div>
                   <div className="p-6 flex-grow">
-                    <h3 className="text-lg font-bold mb-3">
+                    <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'hyphens-auto break-words' : ''}`}>
                       {translations.newsDescription[isTamil ? 'ta' : 'en']}
                     </h3>
-                    <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <p className="text-sm md:text-base text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                     <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
                   </div>
                 </div>
@@ -216,7 +217,7 @@ const ScoutHomepage = () => {
       <section className="py-16 px-4 sm:px-9 bg-white">
         <div className="container mx-auto">
           <FadeInSection>
-            <h2 className="text-3xl font-bold text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
               {isTamil ? translations.watchScoutingStories.ta : translations.watchScoutingStories.en}
             </h2>
           </FadeInSection>
@@ -235,7 +236,7 @@ const ScoutHomepage = () => {
                     </video>
                   </div>
                   <div className="p-4 bg-gray-100">
-                    <p className="font-semibold text-sm">
+                    <p className={`font-semibold text-sm ${isTamil ? 'hyphens-auto break-words' : ''}`}>
                       {translations.videoDescription[isTamil ? 'ta' : 'en']} {index}
                     </p>
                   </div>

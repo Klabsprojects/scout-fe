@@ -37,7 +37,8 @@ const Navbar = () => {
       cart: "Cart",
       login: "Login",
       product: "Products",
-      headerText: "Bharat Scouts and Guides"
+      headerText: "Bharat Scouts and Guides",
+      officeBearers: "Office Bearers"
     },
     ta: {
       home: "முகப்பு",
@@ -50,7 +51,8 @@ const Navbar = () => {
       cart: "வண்டி",
       login: "உள்நுழைய",
       product: "பொருட்கள்",
-      headerText: "பாரத சாரணர் மற்றும் வழிகாட்டிகள்"
+      headerText: "பாரத சாரணர் மற்றும் வழிகாட்டிகள்",
+      officeBearers: "அலுவலக தாங்கிகள்"
     }
   };
 
@@ -64,6 +66,7 @@ const Navbar = () => {
     { path: "/get-involved", label: t.getInvolved },
     { path: "/gallery", label: t.shop },
     { path: "/product", label: t.product },
+    { path: "/office-bearers", label: t.officeBearers },
   ];
 
   return (
@@ -72,10 +75,10 @@ const Navbar = () => {
         <>
           <div className="bg-blue-900 text-white py-4 px-4 flex items-center justify-between">
             <img src={mediaData.headerImages.scoutLogo} alt="Bharat Scouts and Guides Logo" className="h-12 w-12 object-contain" />
-            <h1 className="text-lg font-semibold">BSG</h1>
+            <h1 className={`text-lg ${isTamil ? 'font-bold' : 'font-semibold'}`}>BSG</h1>
             <div className="flex items-center space-x-4">
               <img src={mediaData.headerImages.tnLogo} alt="TN Logo" className="h-12 w-12 object-contain" />
-              <button onClick={toggleMenu}>
+              <button onClick={toggleMenu} className={isTamil ? 'font-bold' : ''}>
                 {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
             </div>
@@ -85,33 +88,33 @@ const Navbar = () => {
             <div className="bg-white text-black shadow-md py-4 px-4">
               <ul className="flex flex-col space-y-4 mb-4">
                 {navItems.map((item) => (
-                  <li key={item.path} className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-medium' : 'font-medium'} ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
+                  <li key={item.path} className={`hover:text-blue-600 cursor-pointer text-sm ${isTamil ? 'font-bold' : 'font-medium'} ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
                     <Link to={item.path}>{item.label}</Link>
                   </li>
                 ))}
               </ul>
               <div className="flex justify-between items-center mb-4">
-              <Link to="/donation" className="flex flex-col items-center">
-      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>
-        {t.donate}
-      </span>
-    </Link>
-    <Link to="/cart" className="flex flex-col items-center">
-      <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
-        {t.cart}
-      </span>
-    </Link>
+                <Link to="/donation" className="flex flex-col items-center">
+                  <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+                  <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} hover:underline whitespace-nowrap`}>
+                    {t.donate}
+                  </span>
+                </Link>
+                <Link to="/cart" className="flex flex-col items-center">
+                  <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
+                  <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} mt-1`}>
+                    {t.cart}
+                  </span>
+                </Link>
                 <Link to="/login" className="flex flex-col items-center">
-      <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
-        {t.login}
-      </span>
-    </Link>
+                  <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
+                  <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} mt-1`}>
+                    {t.login}
+                  </span>
+                </Link>
               </div>
               <div className="flex items-center justify-center mb-4">
-                <span className="mr-2 text-sm">{isTamil ? 'த' : 'En'}</span>
+                <span className={`mr-2 text-sm ${isTamil ? 'font-bold' : ''}`}>{isTamil ? 'த' : 'En'}</span>
                 <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                   <input
                     type="checkbox"
@@ -126,7 +129,7 @@ const Navbar = () => {
                     className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
                   ></label>
                 </div>
-                <span className="text-sm">{isTamil ? 'En' : 'த'}</span>
+                <span className={`text-sm ${isTamil ? 'font-bold' : ''}`}>{isTamil ? 'En' : 'த'}</span>
               </div>
             </div>
           )}
@@ -136,7 +139,7 @@ const Navbar = () => {
           <div className="bg-blue-900 text-white py-4 md:py-4 lg:py-4 ">
             <div className="container mx-auto flex items-center justify-between px-4 lg:px-16">
               <div className="w-16 lg:w-24"></div>
-              <h1 className="text-xs lg:text-base font-semibold ml-4 lg:ml-2 flex-grow">
+              <h1 className={`text-xs lg:text-base ${isTamil ? 'font-bold' : 'font-semibold'} ml-4 lg:ml-2 flex-grow`}>
                 Bharat Scouts and Guides - பாரத சாரணியர் & வழிகாட்டுநர் மாநில தலைமையகம்
               </h1>
               <div className="flex items-center space-x-2 lg:space-x-4 mr-4 lg:mr-16">
@@ -152,7 +155,7 @@ const Navbar = () => {
                     <div className={`relative w-10 lg:w-12 h-5 lg:h-6 rounded-full bg-white border-2 border-gray-400 transition duration-300`}>
                       <div className={`absolute w-4 lg:w-5 h-4 lg:h-5 rounded-full bg-red-500 shadow-md transition duration-300 transform ${isTamil ? 'translate-x-5 lg:translate-x-6' : 'translate-x-0.5 lg:translate-x-1'}`}></div>
                     </div>
-                    <span className="ml-2 text-white text-xs lg:text-sm">{isTamil ? 'En' : 'த'}</span>
+                    <span className={`ml-2 text-white text-xs lg:text-sm ${isTamil ? 'font-bold' : ''}`}>{isTamil ? 'En' : 'த'}</span>
                   </label>
                 </div>
               </div>
@@ -162,10 +165,10 @@ const Navbar = () => {
           <div className="bg-white text-black shadow-md py-4">
             <div className="container mx-auto px-4">
               <div className="flex flex-col lg:flex-row lg:justify-between items-center">
-                <ul className="flex flex-wrap lg:justify-start items-center space-x-2 lg:space-x-4 mb-4 lg:mb-0 lg:ml-32">
+                <ul className={`flex flex-wrap lg:justify-start items-center space-x-1 lg:space-x-2 mb-4 lg:mb-0 ${isTamil ? 'lg:ml-28' : 'lg:ml-32'}`}>
                   {navItems.map((item, index) => (
                     <React.Fragment key={item.path}>
-                      <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-medium' : 'font-medium'} whitespace-nowrap ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
+                      <li className={`hover:underline cursor-pointer text-sm lg:text-base ${isTamil ? 'font-bold' : 'font-medium'} whitespace-nowrap ${location.pathname === item.path ? 'text-blue-600 font-bold' : ''}`}>
                         <Link to={item.path}>{item.label}</Link>
                       </li>
                       {index < navItems.length - 1 && <li className="text-gray-400 hidden lg:block">/</li>}
@@ -173,28 +176,28 @@ const Navbar = () => {
                   ))}
                 </ul>
 
-                <div className="flex items-center space-x-4 lg:space-x-8 lg:mr-32">
-  <div className="flex flex-col items-center space-y-1">
-    <Link to="/donation" className="flex flex-col items-center">
-      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} hover:underline whitespace-nowrap`}>
-        {t.donate}
-      </span>
-    </Link>
-  </div>
-  <Link to="/cart" className="flex flex-col items-center">
-      <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
-        {t.cart}
-      </span>
-    </Link>
+                <div className={`flex items-center space-x-4 lg:space-x-6 ${isTamil ? 'lg:mr-16' : 'lg:mr-32'}`}>
                   <div className="flex flex-col items-center space-y-1">
-                  <Link to="/login" className="flex flex-col items-center">
-      <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
-      <span className={`text-xs ${isTamil ? 'font-medium' : 'font-bold'} mt-1`}>
-        {t.login}
-      </span>
-    </Link>
+                    <Link to="/donation" className="flex flex-col items-center">
+                      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+                      <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} hover:underline whitespace-nowrap`}>
+                        {t.donate}
+                      </span>
+                    </Link>
+                  </div>
+                  <Link to="/cart" className="flex flex-col items-center">
+                    <img src="/Images/cart.png" alt="Cart" className="h-6 w-6" />
+                    <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} mt-1`}>
+                      {t.cart}
+                    </span>
+                  </Link>
+                  <div className="flex flex-col items-center space-y-1">
+                    <Link to="/login" className="flex flex-col items-center">
+                      <img src="/Images/login.png" alt="Login Page" className="h-6 w-6" />
+                      <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} mt-1`}>
+                        {t.login}
+                      </span>
+                    </Link>
                   </div>
                 </div>
               </div>
