@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Star, ArrowLeft, Plus, Minus, X, Check, Facebook, Twitter, Instagram } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ArrowLeft, Plus, Minus, X, Check, Facebook, Twitter, Instagram, Eye } from 'lucide-react';
 import { dummyProducts } from './Products';
 import { useTranslation } from '../Context/TranslationContext';
 import mediaData from '../MediaData.json';
@@ -17,7 +17,6 @@ const ProductDescription = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const reviewsRef = useRef(null);
-  const [cartItems, setCartItems] = useState([]);
 
   const translations = {
     backToProducts: {
@@ -53,8 +52,8 @@ const ProductDescription = () => {
       ta: "தொடர்புடைய தயாரிப்புகள்"
     },
     viewProduct: {
-      en: "View Product",
-      ta: "தயாரிப்பைக் காண்க"
+      en: "Quick View",
+      ta: "விரைவில் காண்க"
     },
     noDescription: {
       en: "No description available",
@@ -75,6 +74,25 @@ const ProductDescription = () => {
   };
 
   const t = (key) => translations[key][isTamil ? 'ta' : 'en'];
+
+  const reviewTranslations = {
+    en: [
+      { id: 1, user: "John D.", rating: 5, comment: "Absolutely love this product! It exceeded my expectations in every way.", date: "2024-03-15" },
+      { id: 2, user: "Sarah M.", rating: 4, comment: "Great quality for the price. Would definitely recommend.", date: "2024-03-10" },
+      { id: 3, user: "Michael R.", rating: 3, comment: "Decent product, but could use some improvements in durability.", date: "2024-03-05" },
+      { id: 4, user: "Emily L.", rating: 5, comment: "This is exactly what I was looking for. Perfect fit for my needs!", date: "2024-02-28" },
+      { id: 5, user: "David K.", rating: 4, comment: "Good product overall. Shipping was fast and packaging was secure.", date: "2024-02-20" },
+      { id: 6, user: "Lisa H.", rating: 5, comment: "Outstanding quality and customer service. Will buy again!", date: "2024-02-15" },
+    ],
+    ta: [
+      { id: 1, user: "ஜான் டி.", rating: 5, comment: "இந்தப் பொருளை முற்றிலும் விரும்புகிறேன்! இது என் எதிர்பார்ப்புகளை எல்லா வகையிலும் மிஞ்சியது.", date: "2024-03-15" },
+      { id: 2, user: "சாரா எம்.", rating: 4, comment: "விலைக்கு நல்ல தரம். நிச்சயமாக பரிந்துரைப்பேன்.", date: "2024-03-10" },
+      { id: 3, user: "மைக்கேல் ஆர்.", rating: 3, comment: "சரியான தயாரிப்பு, ஆனால் நீடித்த உபயோகத்திற்கு சில மேம்பாடுகள் தேவை.", date: "2024-03-05" },
+      { id: 4, user: "எமிலி எல்.", rating: 5, comment: "நான் தேடிக்கொண்டிருந்தது இதுதான். என் தேவைகளுக்கு சரியாகப் பொருந்துகிறது!", date: "2024-02-28" },
+      { id: 5, user: "டேவிட் கே.", rating: 4, comment: "ஒட்டுமொத்தமாக நல்ல தயாரிப்பு. அனுப்புதல் வேகமாக இருந்தது மற்றும் பொதி பாதुகாப்பாக இருந்தது.", date: "2024-02-20" },
+      { id: 6, user: "லிசா எச்.", rating: 5, comment: "சிறந்த தரம் மற்றும் வாடிக்கையாளர் சேவை. மீண்டும் வாங்குவேன்!", date: "2024-02-15" },
+    ]
+  };
 
   useEffect(() => {
     let fetchedProduct;
@@ -99,18 +117,7 @@ const ProductDescription = () => {
         .slice(0, 3);
       setRelatedProducts(related);
 
-      const mockReviews = [
-        { id: 1, user: "John D.", rating: 5, comment: "Absolutely love this product! It exceeded my expectations in every way.", date: "2024-03-15" },
-        { id: 2, user: "Sarah M.", rating: 4, comment: "Great quality for the price. Would definitely recommend.", date: "2024-03-10" },
-        { id: 3, user: "Michael R.", rating: 3, comment: "Decent product, but could use some improvements in durability.", date: "2024-03-05" },
-        { id: 4, user: "Emily L.", rating: 5, comment: "This is exactly what I was looking for. Perfect fit for my needs!", date: "2024-02-28" },
-        { id: 5, user: "David K.", rating: 4, comment: "Good product overall. Shipping was fast and packaging was secure.", date: "2024-02-20" },
-        { id: 6, user: "Lisa H.", rating: 5, comment: "Outstanding quality and customer service. Will buy again!", date: "2024-02-15" },
-      ];
-      setReviews(mockReviews);
-
-      const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-      setCartItems(storedCartItems);
+      setReviews(reviewTranslations[isTamil ? 'ta' : 'en']);
     }
   }, [id, isTamil, location]);
 
@@ -145,17 +152,24 @@ const ProductDescription = () => {
   }
 
   const handleAddToCart = () => {
-    const updatedCartItems = [...cartItems];
-    const existingItem = updatedCartItems.find(item => item.id === product.id);
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: quantity
+    };
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
+
+    if (existingItemIndex !== -1) {
+      existingCart[existingItemIndex].quantity += quantity;
     } else {
-      updatedCartItems.push({ ...product, quantity });
+      existingCart.push(cartItem);
     }
 
-    setCartItems(updatedCartItems);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    localStorage.setItem('cart', JSON.stringify(existingCart));
     setSnackbarVisible(true);
     setTimeout(() => setSnackbarVisible(false), 3000);
   };
@@ -255,7 +269,7 @@ const ProductDescription = () => {
                   className="bg-gray-200 text-[#1A2E44] py-3 px-6 rounded-full text-lg font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
                   onClick={handleToggleWishlist}
                 >
-                  <Heart className={`h-5 w-5 ${product.isWishlisted ? 'text-red-500 fill-red-500' : 'text-[#1A2E44]'}`} />
+                 <Heart className={`h-5 w-5 ${product.isWishlisted ? 'text-red-500 fill-red-500' : 'text-[#1A2E44]'}`} />
                 </button>
               </div>
               {product.features && product.features.length > 0 && (
@@ -349,8 +363,9 @@ const ProductDescription = () => {
                       <span className="font-bold text-[#1A2E44]">₹{relatedProduct.price.toFixed(2)}</span>
                       <button
                         onClick={() => navigate(`/product/${relatedProduct.id}`)}
-                        className="text-[#E07A5F] hover:text-[#C86D54] font-semibold"
+                        className="text-[#E07A5F] hover:text-[#C86D54] font-semibold flex items-center"
                       >
+                        <Eye size={20} className="mr-2" />
                         {t('viewProduct')}
                       </button>
                     </div>
