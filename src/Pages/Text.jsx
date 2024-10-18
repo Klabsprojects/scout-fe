@@ -1,253 +1,354 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../Context/TranslationContext';
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { useInView } from 'react-intersection-observer';
-import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
+import { ShoppingCart, Eye, Star, Search, Filter, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import useStore from './useStore';  // Import the Zustand store
 
+export const dummyProducts = [
+  { id: 1, name: { en: 'Scout Shirt for boys', ta: 'சிறுவர்களுக்கான சாரணர் சட்டை' }, price: 599.99, rating: 4.5, reviews: 120, inStock: true },
+  { id: 2, name: { en: 'Cap badge', ta: 'தொப்பி பேட்ஜ்' }, price: 1299.99, rating: 4.8, reviews: 250, inStock: true },
+  { id: 3, name: { en: 'Accessories Cap', ta: 'துணைக்கருவிகள் தொப்பி' }, price: 129.99, rating: 4.2, reviews: 180, inStock: true },
+  { id: 4, name: { en: 'Guide Uniform Accessories', ta: 'வழிகாட்டி சீருடை பாகங்கள்' }, price: 199.99, rating: 4.0, reviews: 150, inStock: true },
+  { id: 5, name: { en: 'Scarf and Woggle set', ta: 'தாவணி மற்றும் தள்ளாடும் தொகுப்பு' }, price: 449.99, rating: 4.6, reviews: 200, inStock: true },
+  { id: 6, name: { en: 'Girls Guide Uniform', ta: 'பெண்கள் வழிகாட்டி சீருடை' }, price: 399.99, rating: 4.7, reviews: 300, inStock: true },
+  { id: 7, name: { en: 'Scout Trousers', ta: 'சாரணர் கால்சட்டை' }, price: 79.99, rating: 4.1, reviews: 90, inStock: true },
+  { id: 8, name: { en: 'Scout and Guide belt', ta: 'சாரணர் மற்றும் வழிகாட்டி பெல்ட்' }, price: 89.99, rating: 4.3, reviews: 110, inStock: true },
+  { id: 9, name: { en: 'Scout Uniform', ta: 'சாரணர் சீருடை' }, price: 349.99, rating: 4.4, reviews: 160, inStock: true },
+  { id: 10, name: { en: 'Guide Batch', ta: 'வழிகாட்டி தொகுதி' }, price: 199.99, rating: 4.2, reviews: 140, inStock: true },
+];
 
-const ScoutHomepage = () => {
+const fetchProducts = async (searchTerm, sortBy, page) => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  let filteredProducts = [...dummyProducts];
+  
+  if (searchTerm) {
+    filteredProducts = filteredProducts.filter(product => 
+      product.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.name.ta.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+  
+  switch (sortBy) {
+    case 'priceLowToHigh':
+      filteredProducts.sort((a, b) => a.price - b.price);
+      break;
+    case 'priceHighToLow':
+      filteredProducts.sort((a, b) => b.price - a.price);
+      break;
+    case 'topRated':
+      filteredProducts.sort((a, b) => b.rating - a.rating);
+      break;
+    case 'popularity':
+    default:
+      filteredProducts.sort((a, b) => b.reviews - a.reviews);
+      break;
+  }
+
+  const startIndex = (page - 1) * 12;
+  const endIndex = startIndex + 12;
+  return {
+    products: filteredProducts.slice(startIndex, endIndex),
+    hasMore: endIndex < filteredProducts.length
+  };
+};
+
+const ProductCard = ({ product, onAddToCart, onToggleWishlist, onViewProduct, isTamil }) => {
+  return (
+    <motion.div 
+      className="bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col transition-all duration-300 hover:shadow-xl"
+      whileHover={{ y: -5 }}
+    >
+      <div className="relative w-full h-64">
+        <img src={mediaData.carouselImages[product.id % mediaData.carouselImages.length]} alt={product.name[isTamil ? 'ta' : 'en']} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 opacity-0 hover:opacity-100 flex items-center justify-center">
+          <button
+            className="bg-white text-gray-800 rounded-full p-2 m-2 hover:bg-gray-100 transition-colors duration-300"
+            onClick={() => onToggleWishlist(product.id)}
+          >
+            <Heart className={`h-5 w-5 ${product.isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'}`} />
+          </button>
+        </div>
+      </div>
+      <div className="p-4 flex flex-col justify-between flex-1">
+        <div>
+          <h3 className="text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-1">{product.name[isTamil ? 'ta' : 'en']}</h3>
+          <div className="flex items-center mb-1">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+              ))}
+            </div>
+            <span className="ml-2 text-sm text-[#4A6FA5]">({product.reviews})</span>
+          </div>
+        </div>
+        <div className="flex flex-col space-y-2">
+          <span className="text-xl font-bold text-[#1A2E44]">₹{product.price.toFixed(2)}</span>
+          <button
+            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
+            onClick={() => onAddToCart(product)}
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Add to Cart
+          </button>
+          <button
+            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
+            onClick={() => onViewProduct(product.id)}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            View Product
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const Products = () => {
   const { isTamil } = useTranslation();
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [sortBy, setSortBy] = useState('popularity');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
-  const smoothScroll = useCallback((e) => {
-    e.preventDefault();
-    const href = e.currentTarget.getAttribute('href');
-    document.querySelector(href).scrollIntoView({
-      behavior: 'smooth'
-    });
-  }, []);
-
-  useEffect(() => {
-    const links = document.querySelectorAll('a[href^="#"]');
-    links.forEach(link => link.addEventListener('click', smoothScroll));
-    return () => links.forEach(link => link.removeEventListener('click', smoothScroll));
-  }, [smoothScroll]);
+  // Use Zustand store
+  const addToCart = useStore(state => state.addToCart);
 
   const translations = {
-    title: {
-      en: (
-        <>
-          Creating transformative learning <br />
-          experiences for young people,<br />
-          everywhere.
-        </>
-      ),
-      ta: "எங்கும் இளைஞர்களுக்கான மாற்றமளிக்கும் கற்றல் அனுபவங்களை உருவாக்குகிறோம்."
+    en: {
+      title: 'Discover Our Scout Treasures',
+      search: 'Search for scout items...',
+      sort: 'Sort by',
+      popularity: 'Most Popular',
+      priceLowToHigh: 'Price: Low to High',
+      priceHighToLow: 'Price: High to Low',
+      topRated: 'Top Rated',
+      addToCart: 'Add to Cart',
+      seeMore: 'Explore More',
+      reviews: 'reviews',
+      viewProduct: 'Quick View',
+      filters: 'Filters',
+      close: 'Close',
     },
-    learnMore: {
-      en: "Scout Movement",
-      ta: "சாரணர் இயக்கம்"
-    },
-    featuredStories: {
-      en: "Featured Stories",
-      ta: "சிறப்பு கதைகள்"
-    },
-    latestNews: {
-      en: "Latest News",
-      ta: "சமீபத்திய செய்திகள்"
-    },
-    watchScoutingStories: {
-      en: "Watch Scouting Stories",
-      ta: "சாரண கதைகளைப் பாருங்கள்"
-    },
-    newOrganization: {
-      title: {
-        en: "New Organization",
-        ta: "புதிய அமைப்பு"
-      },
-      description: {
-        en: "Scouting is the world's leading educational youth Movement empowering 57 million young people and volunteers to be active global citizens and agents of change in their communities.",
-        ta: "சாரணம் உலகின் முன்னணி கல்வி இளைஞர் இயக்கமாகும், 57 மில்லியன் இளைஞர்கள் மற்றும் தொண்டர்களை செயல்பாட்டிற்காக உலகளாவிய குடிமக்களாகவும், தங்கள் சமூகங்களில் மாற்றங்களை செய்யும் ஏஜெண்ட்களாகவும் உருக்கொடுக்கிறது."
-      }
-    },
-    featuredStoryTitles: {
-      story1: {
-        en: "World Scout Conference elects 12 voting members to the World Scout",
-        ta: "உலகா சாரண மாநாடு உலக சாரணத்திற்கு 12 வாக்காளர் உறுப்பினர்களை தெரிவு செய்கிறது"
-      },
-      story2: {
-        en: "2000 Scouts gather for the opening of the 43rd World Scout Conference",
-        ta: "2000 சாரணர்கள் 43வது உலக சாரண மாநாட்டின் தொடக்கத்திற்கு கூடுகிறார்கள்"
-      },
-      story3: {
-        en: "Ready for Life: Scouting's new brand welcomes in a new era",
-        ta: "செயலுக்கு தயாராக: சாரணத்தின் புதிய பிராண்டு புதிய காலத்தைக் வரவேற்கிறது"
-      }
-    },
-    newsDescription: {
-      en: "Short description of news article",
-      ta: "செய்தி கட்டுரையின் சுருக்கமான விளக்கம்"
-    },
-    seeAllNews: {
-      en: "See All News",
-      ta: "அனைத்து செய்திகளையும் காண்க"
-    },
-    videoDescription: {
-      en: "Description of the scouting story video",
-      ta: "சாரண கதை வீடியோவின் விளக்கம்"
+    ta: {
+      title: 'எங்கள் சாரணர் பொக்கிஷங்களைக் கண்டறியுங்கள்',
+      search: 'சாரணர் பொருட்களைத் தேடுங்கள்...',
+      sort: 'வகைப்படுத்து',
+      popularity: 'மிக பிரபலமானவை',
+      priceLowToHigh: 'விலை: குறைவிலிருந்து அதிகம்',
+      priceHighToLow: 'விலை: அதிகத்திலிருந்து குறைவு',
+      topRated: 'உயர்ந்த மதிப்பீடு',
+      addToCart: 'கூடையில் சேர்',
+      seeMore: 'மேலும் கண்டறிய',
+      reviews: 'விமர்சனங்கள்',
+      viewProduct: 'விரைவில் காண்க',
+      filters: 'வடிகட்டிகள்',
+      close: 'மூடு',
     }
   };
 
-  const FadeInSection = ({ children }) => {
-    const [ref, inView] = useInView({
-      triggerOnce: true,
-      threshold: 0.1,
-    });
+  const t = translations[isTamil ? 'ta' : 'en'];
 
-    return (
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 50 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5 }}
-      >
-        {children}
-      </motion.div>
-    );
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await fetchProducts(searchTerm, sortBy, page);
+      setProducts(prevProducts => page === 1 ? result.products : [...prevProducts, ...result.products]);
+      setHasMore(result.hasMore);
+    } catch (err) {
+      setError('Failed to load products. Please try again.');
+    }
+    setLoading(false);
+  }, [searchTerm, sortBy, page]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setPage(1);
+  };
+
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+    setPage(1);
+  };
+
+  useEffect(() => {
+    // Reset products and load new ones when search or sort changes
+    setProducts([]);
+    loadProducts();
+  }, [searchTerm, sortBy]);
+
+  const handleAddToCart = (product) => {
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: mediaData.carouselImages[product.id % mediaData.carouselImages.length],
+      quantity: 1
+    };
+    addToCart(cartItem);
+    navigate('/cart');
+  };
+
+  const handleToggleWishlist = (productId) => {
+    setProducts(prevProducts => prevProducts.map(product => 
+      product.id === productId ? { ...product, isWishlisted: !product.isWishlisted } : product
+    ));
+  };
+
+  const handleViewProduct = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
   return (
-    <div className="pt-20 md:pt-34">
-      {/* Hero Section */}
-      <section className="bg-[#feeecf] py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-              <FadeInSection>
-                <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-left leading-tight ${isTamil ? 'hyphens-auto break-words' : ''}`}>
-                  {isTamil ? translations.title.ta : translations.title.en}
-                </h1>
-                <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
-                  {translations.learnMore[isTamil ? 'ta' : 'en']}
-                </button>
-              </FadeInSection>
+    <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <motion.h2 
+          className="text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-36"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {t.title}
+        </motion.h2>
+        
+        <motion.div 
+          className="bg-white p-4 rounded-xl shadow-md mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {t.filters}
+              </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={t.search}
+                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-64"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                <Search className="h-5 w-5 text-[#4A6FA5] absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
             </div>
-            <div className="md:w-1/2">
-              <FadeInSection>
-                <Carousel 
-                  autoPlay 
-                  infiniteLoop 
-                  interval={5000} 
-                  showThumbs={false} 
-                  showStatus={false} 
-                  transitionTime={1000}
-                  className="rounded-lg shadow-2xl overflow-hidden"
+            <div className="flex items-center gap-4">
+              <select 
+                className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F]"
+                value={sortBy}
+                onChange={handleSortChange}
+              >
+                <option value="popularity">{t.popularity}</option>
+                <option value="priceLowToHigh">{t.priceLowToHigh}</option>
+                <option value="priceHighToLow">{t.priceHighToLow}</option>
+                <option value="topRated">{t.topRated}</option>
+              </select>
+            </div>
+          </div>
+
+          {showFilters && (
+            <motion.div 
+              className="mt-4 flex flex-wrap gap-4"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Add filter options here if needed */}
+            </motion.div>
+          )}
+        </motion.div>
+
+        <AnimatePresence>
+          {loading && products.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-xl text-[#4A6FA5] mt-12"
+            >
+              Loading...
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {products.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  {mediaData.carouselImages.map((image, index) => (
-                    <div key={index}>
-                      <img src={image} alt={`Scouts marching ${index + 1}`} className="w-full h-auto object-cover" />
-                    </div>
-                  ))}
-                </Carousel>
-              </FadeInSection>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Stories Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
-        <div className="container mx-auto">
-          <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
-              {isTamil ? translations.featuredStories.ta : translations.featuredStories.en}
-            </h2>
-          </FadeInSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mediaData.featuredStories.map((image, index) => (
-              <FadeInSection key={index}>
-                <div className={`rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 ${index === 0 ? 'bg-green-300' : index === 1 ? 'bg-blue-300' : 'bg-orange-300'}`}>
-                  <img
-                    src={image}
-                    alt={`Featured story ${index + 1}`}
-                    className="w-full h-48 md:h-64 object-cover"
+                  <ProductCard 
+                    product={product} 
+                    onAddToCart={handleAddToCart} 
+                    onToggleWishlist={handleToggleWishlist}
+                    onViewProduct={handleViewProduct}
+                    isTamil={isTamil}
                   />
-                  <div className="p-6">
-                    <p className={`text-base md:text-lg text-white font-bold text-center ${isTamil ? 'hyphens-auto break-words' : ''}`}>
-                      {isTamil ? translations.featuredStoryTitles[`story${index + 1}`].ta : translations.featuredStoryTitles[`story${index + 1}`].en}
-                    </p>
-                  </div>
-                </div>
-              </FadeInSection>
-            ))}
-          </div>
-        </div>
-      </section>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Latest News Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center">
-              {isTamil ? translations.latestNews.ta : translations.latestNews.en}
-            </h2>
-          </FadeInSection>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mediaData.newsImages.map((image, index) => (
-              <FadeInSection key={index}>
-                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                  <div className="relative pt-[75%]">
-                    <img
-                      src={image}
-                      alt={`Latest news ${index + 1}`}
-                      className="absolute top-0 left-0 w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="p-6 flex-grow">
-                    <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'hyphens-auto break-words' : ''}`}>
-                      {translations.newsDescription[isTamil ? 'ta' : 'en']}
-                    </h3>
-                    <p className="text-sm md:text-base text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
-                  </div>
-                </div>
-              </FadeInSection>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
-              {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
+        {products.length === 0 && !loading && (
+          <motion.p
+            className="text-center text-xl text-[#4A6FA5] mt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            No products found. Try adjusting your search or filters.
+          </motion.p>
+        )}
+
+        {hasMore && products.length > 0 && (
+          <div className="flex justify-center mt-12">
+            <button
+              onClick={handleLoadMore}
+              className="px-8 py-3 rounded-full bg-[#E07A5F] text-white text-lg font-semibold hover:bg-[#C86D54] transition-colors duration-300"
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : t.seeMore}
             </button>
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* Scouting Stories Video Section */}
-      <section className="py-16 px-4 sm:px-9 bg-white">
-        <div className="container mx-auto">
-          <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
-              {isTamil ? translations.watchScoutingStories.ta : translations.watchScoutingStories.en}
-            </h2>
-          </FadeInSection>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((index) => (
-              <FadeInSection key={index}>
-                <div className="bg-white rounded-lg overflow-hidden shadow-md">
-                  <div className="aspect-w-16 aspect-h-9">
-                    <video
-                      controls
-                      className="w-full h-full object-cover"
-                      poster={`/api/placeholder/640/360?text=Video ${index}`}
-                    >
-                      <source src={mediaData.whoWeAre.video} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <div className="p-4 bg-gray-100">
-                    <p className={`font-semibold text-sm ${isTamil ? 'hyphens-auto break-words' : ''}`}>
-                      {translations.videoDescription[isTamil ? 'ta' : 'en']} {index}
-                    </p>
-                  </div>
-                </div>
-              </FadeInSection>
-            ))}
+        {error && (
+          <div className="text-red-500 text-center mt-4">
+            {error}
           </div>
-        </div>
-      </section>
+        )}
+      </div>
     </div>
   );
 };
 
-export default ScoutHomepage;
+export default Products;

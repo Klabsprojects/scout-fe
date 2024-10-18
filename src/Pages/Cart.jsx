@@ -84,9 +84,9 @@ const Cart = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-28">
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
+    <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
+      <div className="container mx-auto px-4 py-8 md:py-16">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
         {cartItems.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -95,7 +95,7 @@ const Cart = () => {
             className="text-center"
           >
             <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
-            <p className="text-2xl text-gray-600 mb-8">{t.empty}</p>
+            <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
             <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
               <ArrowLeft size={24} className="mr-2" />
               {t.continueShopping}
@@ -107,11 +107,11 @@ const Cart = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="lg:w-2/3"
+              className="w-full lg:w-2/3"
             >
               <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold mb-4">{t.orderSummary}</h2>
+                <div className="p-4 md:p-6">
+                  <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
                   <div className="flex justify-between mb-2">
                     <span>{t.items}</span>
                     <span>{cartItems.length}</span>
@@ -123,7 +123,7 @@ const Cart = () => {
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="p-6">
+                <div className="p-4 md:p-6">
                   <AnimatePresence>
                     {cartItems.map((item) => (
                       <motion.div
@@ -132,22 +132,22 @@ const Cart = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="flex items-center justify-between border-b border-gray-200 py-4 last:border-b-0"
+                        className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 py-4 last:border-b-0"
                       >
-                        <div className="flex items-center">
-                          <img src={item.image} alt={item.name[isTamil ? 'ta' : 'en']} className="w-24 h-24 object-cover rounded-md mr-6" />
+                        <div className="flex items-center mb-4 md:mb-0">
+                          <img src={item.image} alt={item.name[isTamil ? 'ta' : 'en']} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-md mr-4 md:mr-6" />
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-800">{item.name[isTamil ? 'ta' : 'en']}</h3>
+                            <h3 className="text-base md:text-lg font-semibold text-gray-800">{item.name[isTamil ? 'ta' : 'en']}</h3>
                             <p className="text-gray-600">₹{item.price.toFixed(2)}</p>
                           </div>
                         </div>
                         <div className="flex items-center">
                           <div className="flex items-center border rounded-full overflow-hidden">
-                            <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-1 md:p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
                               <Minus size={16} />
                             </button>
-                            <span className="px-4 py-2 font-medium">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <span className="px-3 md:px-4 py-1 md:py-2 font-medium">{item.quantity}</span>
+                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 md:p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
                               <Plus size={16} />
                             </button>
                           </div>
@@ -165,10 +165,10 @@ const Cart = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="lg:w-1/3"
+              className="w-full lg:w-1/3"
             >
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-semibold mb-4">{t.subtotal}</h2>
+              <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.subtotal}</h2>
                 <div className="flex justify-between mb-2">
                   <span>{t.subtotal}</span>
                   <span>₹{calculateSubtotal().toFixed(2)}</span>
@@ -183,34 +183,34 @@ const Cart = () => {
                 </div>
                 <div className="border-t pt-4 mb-6">
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-semibold">{t.total}</span>
-                    <span className="text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
+                    <span className="text-lg md:text-xl font-semibold">{t.total}</span>
+                    <span className="text-xl md:text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
                   </div>
                 </div>
-                <button className="w-full bg-blue-500 text-white py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-lg font-semibold mb-4">
+                <button className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4">
                   {t.checkout}
                 </button>
                 <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
                   {t.continueShopping}
                 </Link>
               </div>
-              <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
+              <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
                 <div className="flex items-center mb-3">
                   <Truck className="text-blue-500 mr-3" size={24} />
-                  <span>{t.fastShipping}</span>
+                  <span className="text-sm md:text-base">{t.fastShipping}</span>
                 </div>
                 <div className="flex items-center mb-3">
                   <CreditCard className="text-blue-500 mr-3" size={24} />
-                  <span>{t.securePayment}</span>
+                  <span className="text-sm md:text-base">{t.securePayment}</span>
                 </div>
                 <div className="flex items-center mb-3">
                   <Gift className="text-blue-500 mr-3" size={24} />
-                  <span>{t.exclusiveDeals}</span>
+                  <span className="text-sm md:text-base">{t.exclusiveDeals}</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="text-blue-500 mr-3" size={24} />
-                  <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
+                  <span className="text-sm md:text-base">{t.estimatedDelivery}: 3-5 {t.days}</span>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ const Cart = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-6 bg-white rounded-lg shadow-lg p-6"
+                className="bg-white rounded-lg shadow-lg p-4 md:p-6"
               >
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold">{t.faq}</h3>
@@ -240,19 +240,19 @@ const Cart = () => {
                     {FAQ.map((item, index) => (
                       <div key={index} className="mb-4 last:mb-0">
                         <h4 className="font-medium mb-2">{item.question}</h4>
-                        <p className="text-gray-600">{item.answer}</p>
+                        <p className="text-sm md:text-base text-gray-600">{item.answer}</p>
                       </div>
                     ))}
                   </motion.div>
                 )}
-              </AnimatePresence>
+                </AnimatePresence>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Cart;

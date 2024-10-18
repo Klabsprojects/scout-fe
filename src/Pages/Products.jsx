@@ -55,13 +55,14 @@ const fetchProducts = async (searchTerm, sortBy, page) => {
   };
 };
 
+
 const ProductCard = ({ product, onAddToCart, onToggleWishlist, onViewProduct, isTamil }) => {
   return (
     <motion.div 
       className="bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col transition-all duration-300 hover:shadow-xl"
       whileHover={{ y: -5 }}
     >
-      <div className="relative w-full h-64">
+      <div className="relative w-full h-48 sm:h-64">
         <img src={mediaData.carouselImages[product.id % mediaData.carouselImages.length]} alt={product.name[isTamil ? 'ta' : 'en']} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 opacity-0 hover:opacity-100 flex items-center justify-center">
           <button
@@ -74,30 +75,30 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, onViewProduct, is
       </div>
       <div className="p-4 flex flex-col justify-between flex-1">
         <div>
-          <h3 className="text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-1">{product.name[isTamil ? 'ta' : 'en']}</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-2">{product.name[isTamil ? 'ta' : 'en']}</h3>
           <div className="flex items-center mb-1">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                <Star key={i} className={`h-3 w-3 sm:h-4 sm:w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
               ))}
             </div>
-            <span className="ml-2 text-sm text-[#4A6FA5]">({product.reviews})</span>
+            <span className="ml-2 text-xs sm:text-sm text-[#4A6FA5]">({product.reviews})</span>
           </div>
         </div>
         <div className="flex flex-col space-y-2">
-          <span className="text-xl font-bold text-[#1A2E44]">₹{product.price.toFixed(2)}</span>
+          <span className="text-lg sm:text-xl font-bold text-[#1A2E44]">₹{product.price.toFixed(2)}</span>
           <button
-            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
+            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
             onClick={() => onAddToCart(product)}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
+            <ShoppingCart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             Add to Cart
           </button>
           <button
-            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
+            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
             onClick={() => onViewProduct(product.id)}
           >
-            <Eye className="mr-2 h-4 w-4" />
+            <Eye className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             View Product
           </button>
         </div>
@@ -215,11 +216,12 @@ const Products = () => {
     setPage(prevPage => prevPage + 1);
   };
 
+
   return (
     <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-36"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-24 sm:pt-36"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -233,29 +235,29 @@ const Products = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <button
-                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center"
+                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center w-full sm:w-auto justify-center sm:justify-start"
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="mr-2 h-4 w-4" />
                 {t.filters}
               </button>
-              <div className="relative">
+              <div className="relative w-full sm:w-64">
                 <input
                   type="text"
                   placeholder={t.search}
-                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-64"
+                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-full"
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
                 <Search className="h-5 w-5 text-[#4A6FA5] absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center w-full sm:w-auto">
               <select 
-                className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F]"
+                className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-full"
                 value={sortBy}
                 onChange={handleSortChange}
               >
@@ -292,7 +294,7 @@ const Products = () => {
             </motion.div>
           ) : (
             <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -320,7 +322,7 @@ const Products = () => {
 
         {products.length === 0 && !loading && (
           <motion.p
-            className="text-center text-xl text-[#4A6FA5] mt-12"
+            className="text-center text-lg sm:text-xl text-[#4A6FA5] mt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -333,7 +335,7 @@ const Products = () => {
           <div className="flex justify-center mt-12">
             <button
               onClick={handleLoadMore}
-              className="px-8 py-3 rounded-full bg-[#E07A5F] text-white text-lg font-semibold hover:bg-[#C86D54] transition-colors duration-300"
+              className="px-6 sm:px-8 py-2 sm:py-3 rounded-full bg-[#E07A5F] text-white text-base sm:text-lg font-semibold hover:bg-[#C86D54] transition-colors duration-300"
               disabled={loading}
             >
               {loading ? 'Loading...' : t.seeMore}
