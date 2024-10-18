@@ -31,7 +31,6 @@ const Navbar = () => {
       whoWeAre: "Who we are",
       whatWeDo: "What we do",
       whereWeWork: "Where we work",
-      getInvolved: "Get involved",
       shop: "Gallery",
       donate: "Donate",
       cart: "Cart",
@@ -45,7 +44,6 @@ const Navbar = () => {
       whoWeAre: "நாங்கள்",
       whatWeDo: "என்ன செய்கிறோம்",
       whereWeWork: " இடம்",
-      getInvolved: "பங்கேற்க",
       shop: "தொகுப்பு",
       donate: "நன்கொடை",
       cart: "வண்டி",
@@ -63,10 +61,9 @@ const Navbar = () => {
     { path: "/whoweare", label: t.whoWeAre },
     { path: "/what-we-do", label: t.whatWeDo },
     { path: "/where-we-work", label: t.whereWeWork },
-    { path: "/get-involved", label: t.getInvolved },
+    { path: "/office-bearers", label: t.officeBearers },
     { path: "/gallery", label: t.shop },
     { path: "/product", label: t.product },
-    { path: "/office-bearers", label: t.officeBearers },
   ];
 
   return (
@@ -152,8 +149,8 @@ const Navbar = () => {
                     onChange={toggleLanguage}
                   />
                   <label htmlFor="languageToggle" className="flex items-center cursor-pointer">
-                    <div className={`relative w-10 lg:w-12 h-5 lg:h-6 rounded-full bg-white border-2 border-gray-400 transition duration-300`}>
-                      <div className={`absolute w-4 lg:w-5 h-4 lg:h-5 rounded-full bg-red-500 shadow-md transition duration-300 transform ${isTamil ? 'translate-x-5 lg:translate-x-6' : 'translate-x-0.5 lg:translate-x-1'}`}></div>
+                    <div className="relative w-10 lg:w-12 h-5 lg:h-6 rounded-full bg-white border-2 border-gray-400 transition duration-300">
+                      <div className={`absolute top-0 left-0 w-4 lg:w-5 h-4 lg:h-5 rounded-full bg-red-500 shadow-md transition-transform duration-300 transform ${isTamil ? 'translate-x-5 lg:translate-x-6' : 'translate-x-0'}`}></div>
                     </div>
                     <span className={`ml-2 text-white text-xs lg:text-sm ${isTamil ? 'font-bold' : ''}`}>{isTamil ? 'En' : 'த'}</span>
                   </label>
