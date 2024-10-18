@@ -6,6 +6,8 @@ import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
 
+// Add this import at the top of your file
+import './TamilFont.css';
 
 const ScoutHomepage = () => {
   const { isTamil } = useTranslation();
@@ -108,14 +110,14 @@ const ScoutHomepage = () => {
   };
 
   return (
-    <div className="pt-20 md:pt-34">
+    <div className={`pt-20 md:pt-34 ${isTamil ? 'tamil-font' : ''}`}>
       {/* Hero Section */}
       <section className="bg-[#feeecf] py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
               <FadeInSection>
-                <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-left leading-tight ${isTamil ? 'hyphens-auto break-words' : ''}`}>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-left leading-tight">
                   {isTamil ? translations.title.ta : translations.title.en}
                 </h1>
                 <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
@@ -164,7 +166,7 @@ const ScoutHomepage = () => {
                     className="w-full h-48 md:h-64 object-cover"
                   />
                   <div className="p-6">
-                    <p className={`text-base md:text-lg text-white font-bold text-center ${isTamil ? 'hyphens-auto break-words' : ''}`}>
+                    <p className="text-base md:text-lg text-white font-bold text-center">
                       {isTamil ? translations.featuredStoryTitles[`story${index + 1}`].ta : translations.featuredStoryTitles[`story${index + 1}`].en}
                     </p>
                   </div>
@@ -195,7 +197,7 @@ const ScoutHomepage = () => {
                     />
                   </div>
                   <div className="p-6 flex-grow">
-                    <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'hyphens-auto break-words' : ''}`}>
+                    <h3 className="text-base md:text-lg font-bold mb-3">
                       {translations.newsDescription[isTamil ? 'ta' : 'en']}
                     </h3>
                     <p className="text-sm md:text-base text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -236,7 +238,7 @@ const ScoutHomepage = () => {
                     </video>
                   </div>
                   <div className="p-4 bg-gray-100">
-                    <p className={`font-semibold text-sm ${isTamil ? 'hyphens-auto break-words' : ''}`}>
+                    <p className="font-semibold text-sm">
                       {translations.videoDescription[isTamil ? 'ta' : 'en']} {index}
                     </p>
                   </div>

@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@100..700&family=Meera+Inimai&display=swap');
+
+.tamil-font {
+  font-family: 'Meera Inimai', 'Arima', sans-serif;
+}
+
+.tamil-font h1, .tamil-font h2 {
+  font-family: 'Arima', 'Meera Inimai', sans-serif;
+}
+
+.tamil-font h1 {
+  font-weight: 700;
+}
+
+.tamil-font h2 {
+  font-weight: 600;
+}
+
+.tamil-font p, .tamil-font a, .tamil-font button {
+  font-weight: 400;
+}
+
+/* You can add more specific styles here if needed */
