@@ -24,7 +24,7 @@ const OfficeBearersPage = () => {
     { id: 5, name: "MR.N.MUTHU KRISHNAN", nameTa: "எம்.ஆர்.என்.முத்து கிருஷ்ணன்", position: "STATE COMMISSIONER (AR-S)", positionTa: "மாநில ஆணையர் (AR-S)", image: "/Images/Bearers/MuthuKrishnan.png" },
     { id: 6, name: "Shri Raj Kumar Kaushik", nameTa: "திரு. ராஜ் குமார் கௌசிக்", position: "Director", positionTa: "இயக்குனர்", image: "/images/raj-kumar.jpg" },
     { id: 7, name: "MRS.A.GNANA GOWRI", nameTa: "திருமதி.அ.ஞான கவுரி", position: "STATE COMMISSIONER (BULBUL)", positionTa: "மாநில ஆணையர் (புல்புல்)", image: "/Images/Bearers/GnanaGowri.png" },
-    { id: 8, name: "MRS.C.AMUTHAVALLI", nameTa: "திருமதி.சி.அமுதவல்லி", position: "STATE COMMISSIONER (RA)", positionTa: "மாநில ஆணையர் (RA)", image: "/Images/Bearers/Amuthavalli.png" },
+    { id: 8, name: "MRS.C.AMUTHAVALLI", nameTa: "திருமதி.சி.அமுதவல்லி", position: "STATE COMMISSIONER (RA)", positionTa: "மாநில ஆணையர் ", image: "/Images/Bearers/Amuthavalli.png" },
     { id: 9, name: "DR.K.ALAMELU", nameTa: "டி.ஆர்.கே.அலமேலு", position: "STATE COMMISSIONER (AR-G)", positionTa: "மாநில ஆணையர் (AR-G)", image: "/Images/Bearers/Alamelu.png" },
     { id: 10, name: "DR.P.A.NARESH", nameTa: "டி.ஆர்.பி.ஏ.நரேஷ்", position: "STATE SECRETARY", positionTa: "மாநிலச் செயலர்", image: "/Images/Bearers/Naresh.png" },
     { id: 11, name: "DR.N.VIJAYAN", nameTa: "டாக்டர்.என்.விஜயன்", position: "STATE TREASURER", positionTa: "மாநில பொருளாளர்", image: "/Images/Bearers/Vijayan.png" },
