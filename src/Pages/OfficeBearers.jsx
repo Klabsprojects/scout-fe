@@ -32,7 +32,7 @@ const OfficeBearersPage = () => {
     { id: 13, name: "MR.J.SAKTHIVEL", nameTa: "திரு.சக்திவேல்", position: "STATE ORGANISING COMMISSIONER(S)", positionTa: "மாநில அமைப்பு ஆணையர்", image: "/Images/Bearers/Sakthivel.png" },
     { id: 14, name: "MISS.K.GOMATHI", nameTa: "செல்வி.கே.கோமதி", position: "STATE ORGANISING COMMISSIONER (G)", positionTa: "மாநில அமைப்பு ஆணையர்", image: "/Images/Bearers/Gomathi.png" },
     { id: 15, name: "MR.S.NAGARAJAN", nameTa: "எம்.ஆர்.எஸ்.நாகராஜன்", position: "STATE TRAINING COMMISSIONER(S)", positionTa: "மாநில பயிற்சி ஆணையர்(கள்)", image: "/Images/Bearers/Nagarajan.png" },
-    { id: 16, name: "MRS.M.TENEMOJY", nameTa: "திருமதி.எம்.டெனிமோஜி", position: "STATE TRAINING COMMISSIONER (G)", positionTa: "மாநில பயிற்சி ஆணையர் (ஜி)", image: "/Images/Bearers/Tenemojy.png" },
+    { id: 16, name: "MRS.M.TENEMOJY", nameTa: "திருமதி.எம்.டெனிமோஜி", position: "STATE TRAINING COMMISSIONER (G)", positionTa: "மாநில பயிற்சி ஆணையர் ", image: "/Images/Bearers/Tenemojy.png" },
     // Add the remaining office bearers here
   ];
 
