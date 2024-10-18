@@ -20,4 +20,36 @@
   font-weight: 400;
 }
 
-/* You can add more specific styles here if needed */
+/* New styles for Tamil hero title */
+.tamil-hero-title {
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+/* Responsive font sizes for Tamil text */
+@media (max-width: 768px) {
+  .tamil-font {
+    font-size: 0.9em;
+  }
+  .tamil-hero-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tamil-font {
+    font-size: 0.95em;
+  }
+  .tamil-hero-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .tamil-font {
+    font-size: 1em;
+  }
+  .tamil-hero-title {
+    font-size: 2.6rem;
+  }
+}

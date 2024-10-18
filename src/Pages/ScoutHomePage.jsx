@@ -1,16 +1,19 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
+import { Link } from 'react-router-dom';
 
 // Add this import at the top of your file
 import './TamilFont.css';
 
 const ScoutHomepage = () => {
   const { isTamil } = useTranslation();
+  const [expandedCards, setExpandedCards] = useState({});
+  const [showAllNews, setShowAllNews] = useState(false);
 
   const smoothScroll = useCallback((e) => {
     e.preventDefault();
@@ -88,6 +91,14 @@ const ScoutHomepage = () => {
     videoDescription: {
       en: "Description of the scouting story video",
       ta: "சாரண கதை வீடியோவின் விளக்கம்"
+    },
+    readMore: {
+      en: "Read more",
+      ta: "மேலும் படிக்க"
+    },
+    readLess: {
+      en: "Read less",
+      ta: "குறைவாக படிக்க"
     }
   };
 
@@ -109,6 +120,52 @@ const ScoutHomepage = () => {
     );
   };
 
+  const toggleCardExpansion = (index) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const newsCards = [
+    ...mediaData.newsImages,
+    ...mediaData.newsImages.slice(0, 3) // Add 3 more cards for "See All News"
+  ].map((image, index) => (
+    <FadeInSection key={index}>
+      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
+        <div className="relative pt-[75%]">
+          <img
+            src={image}
+            alt={`Latest news ${index + 1}`}
+            className="absolute top-0 left-0 w-full h-full object-contain"
+          />
+        </div>
+        <div className="p-6 flex-grow">
+          <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'tamil-font' : ''}`}>
+            {translations.newsDescription[isTamil ? 'ta' : 'en']}
+          </h3>
+          <p className={`text-sm md:text-base text-gray-600 mb-4 ${isTamil ? 'tamil-font' : ''}`}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {expandedCards[index] && (
+              <>
+                <br /><br />
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              </>
+            )}
+          </p>
+          <button 
+            onClick={() => toggleCardExpansion(index)} 
+            className={`text-blue-600 hover:underline font-semibold ${isTamil ? 'tamil-font' : ''}`}
+          >
+            {expandedCards[index] 
+              ? translations.readLess[isTamil ? 'ta' : 'en']
+              : translations.readMore[isTamil ? 'ta' : 'en']}
+          </button>
+        </div>
+      </div>
+    </FadeInSection>
+  ));
+
   return (
     <div className={`pt-20 md:pt-34 ${isTamil ? 'tamil-font' : ''}`}>
       {/* Hero Section */}
@@ -117,12 +174,20 @@ const ScoutHomepage = () => {
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
               <FadeInSection>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-left leading-tight">
+                <h1 className={`font-bold mb-6 text-left leading-tight ${
+                  isTamil 
+                    ? 'text-2xl md:text-3xl lg:text-4xl tamil-hero-title' 
+                    : 'text-3xl md:text-4xl lg:text-5xl'
+                }`}>
                   {isTamil ? translations.title.ta : translations.title.en}
                 </h1>
-                <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
-                  {translations.learnMore[isTamil ? 'ta' : 'en']}
-                </button>
+                <Link to="/whoweare">
+                  <button className={`bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-300 ${
+                    isTamil ? 'text-base' : 'text-lg'
+                  }`}>
+                    {translations.learnMore[isTamil ? 'ta' : 'en']}
+                  </button>
+                </Link>
               </FadeInSection>
             </div>
             <div className="md:w-1/2">
@@ -186,30 +251,16 @@ const ScoutHomepage = () => {
             </h2>
           </FadeInSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mediaData.newsImages.map((image, index) => (
-              <FadeInSection key={index}>
-                <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                  <div className="relative pt-[75%]">
-                    <img
-                      src={image}
-                      alt={`Latest news ${index + 1}`}
-                      className="absolute top-0 left-0 w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="p-6 flex-grow">
-                    <h3 className="text-base md:text-lg font-bold mb-3">
-                      {translations.newsDescription[isTamil ? 'ta' : 'en']}
-                    </h3>
-                    <p className="text-sm md:text-base text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" className="text-blue-600 hover:underline font-semibold">Read more</a>
-                  </div>
-                </div>
-              </FadeInSection>
-            ))}
+            {newsCards.slice(0, showAllNews ? 6 : 3)}
           </div>
           <div className="text-center mt-12">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300">
-              {isTamil ? translations.seeAllNews.ta : translations.seeAllNews.en}
+            <button 
+              onClick={() => setShowAllNews(!showAllNews)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300"
+            >
+              {showAllNews 
+                ? (isTamil ? "Show Less" : "Show Less") 
+                : translations.seeAllNews[isTamil ? 'ta' : 'en']}
             </button>
           </div>
         </div>
@@ -233,7 +284,7 @@ const ScoutHomepage = () => {
                       className="w-full h-full object-cover"
                       poster={`/api/placeholder/640/360?text=Video ${index}`}
                     >
-                      <source src={mediaData.whoWeAre.video} type="video/mp4" />
+                     <source src={mediaData.whoWeAre.video} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
