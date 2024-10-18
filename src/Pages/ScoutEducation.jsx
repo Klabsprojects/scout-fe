@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Book } from 'lucide-react';
+import { Book, Target, Users, BarChart2, Wallet, MessageCircle, TrendingUp } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import NavigationMenu from '../components/NavigationMenu';
 import mediaData from '../MediaData.json';
@@ -18,39 +18,93 @@ export default function ScoutEducation() {
 
   const translations = {
     title: {
-      en: 'Scout Education',
-      ta: 'ஆராய்ச்சி கல்வி',
+      en: 'Our Mission',
+      ta: 'எங்கள் நோக்கம்',
+    },
+    vision: {
+      en: 'Vision 2024',
+      ta: 'தொலைநோக்கு 2024',
     },
     description: {
-      en: "Scout education nurtures youth into global citizens, equipping them with life skills and inspiring positive change in society. Scouting's non-formal educational approach aims to equip young people with the skills and competencies that enable these ideals. Through the Youth Programme, Scouting supports young people to become active citizens who are committed to being of service by being solutions-oriented and focused on creating positive change. Scouting promotes the growth and development of young people both as individuals and citizens through its programmes and initiatives. It is an educational movement committed to ensuring that each new generation of young people has the opportunity to realise their full potential as leaders in their community and the world.",
-      ta: "ஆராய்ச்சி கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்க்கிறது, அவர்களுக்கு வாழ்க்கைத் திறன்களை வழங்குகிறது மற்றும் சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது. சாரணர் கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்த்து, அவர்களுக்கு வாழ்க்கைத் திறன்களை அளித்து, சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது. சாரணர்களின் முறைசாரா கல்வி அணுகுமுறை இளைஞர்களை இந்த இலட்சியங்களை செயல்படுத்தும் திறன்கள் மற்றும் திறன்களுடன் சித்தப்படுத்துவதை நோக்கமாகக் கொண்டுள்ளது. இளைஞர்கள் திட்டத்தின் மூலம், சாரணர், தீர்வுகள் சார்ந்த மற்றும் நேர்மறையான மாற்றத்தை உருவாக்குவதில் கவனம் செலுத்துவதன் மூலம் சேவையில் ஈடுபடும் இளைஞர்களை சுறுசுறுப்பான குடிமக்களாக மாற்ற உதவுகிறது. முயற்சிகள். ஒவ்வொரு புதிய தலைமுறை இளைஞர்களும் தங்கள் சமூகத்திலும் உலகிலும் தலைவர்களாகத் தங்களின் முழுத் திறனையும் உணர்ந்துகொள்ளும் வாய்ப்பைப் பெற்றிருப்பதை உறுதிசெய்யும் ஒரு கல்வி இயக்கம் இது.",
+      en: "Scout education nurtures youth into global citizens, equipping them with life skills and inspiring positive change in society. Scouting's non-formal educational approach aims to equip young people with the skills and competencies that enable these ideals.",
+      ta: "சாரணர் கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்க்கிறது, அவர்களுக்கு வாழ்க்கைத் திறன்களை வழங்குகிறது மற்றும் சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது.",
     },
-    programs: {
-      en: 'Our Programs',
-      ta: 'நமது திட்டங்கள்',
+    visionStatement: {
+      en: "By 2024, The Bharat Scouts and Guides will be a globally visible, consistently growing, self-reliant premium youth movement that is gender balanced, vibrant and responsive to trends.",
+      ta: "2024 ஆம் ஆண்டளவில், பாரத சாரணர்கள் மற்றும் வழிகாட்டிகள் பாலின சமநிலை, துடிப்பான மற்றும் போக்குகளுக்கு பதிலளிக்கும் வகையில் உலகளவில் தெரியக்கூடிய, தொடர்ந்து வளரும், சுய-சார்பு கொண்ட முன்னணி இளைஞர் இயக்கமாக இருக்கும்.",
     },
-    programsDescription: {
-      en: "We offer various programs for different age groups, each designed to foster personal growth and development of the participants. As a non-formal educational Movement, Scouting continues to explore new ways that contribute to the development of young people. Scouting's unique educational approach includes learning through fun activities, outdoor engagements, and meaningful experiences that challenge and encourage young people to gain confidence, courage, and enjoy their journey of growth within a structured system. Scouting's learner-centred approach appreciates that each youth member is a unique individual who has the potential to develop in many and different ways. By taking into account various age groups, Scouting is specifically designed to stimulate the discovery and development of individuals at their own pace.",
-      ta: "வெவ்வேறு வயதினருக்கான பல்வேறு திட்டங்களை நாங்கள் வழங்குகிறோம், ஒவ்வொன்றும் பங்கேற்பாளர்களின் தனிப்பட்ட வளர்ச்சி மற்றும் மேம்பாட்டை வளர்ப்பதற்காக வடிவமைக்கப்பட்டுள்ளது. முறைசாரா கல்வி இயக்கமாக, இளைஞர்களின் வளர்ச்சிக்கு பங்களிக்கும் புதிய வழிகளை சாரணர் தொடர்ந்து ஆராய்ந்து வருகிறது. சாரணர்களின் தனித்துவமான கல்வி அணுகுமுறையானது, வேடிக்கையான செயல்பாடுகள், வெளிப்புற ஈடுபாடுகள் மற்றும் அர்த்தமுள்ள அனுபவங்கள் மூலம் கற்றலை உள்ளடக்கியது, இது இளைஞர்களுக்கு சவால் மற்றும் ஊக்கமளிக்கும் நம்பிக்கை, தைரியம் மற்றும் ஒரு கட்டமைக்கப்பட்ட அமைப்பிற்குள் அவர்களின் வளர்ச்சிப் பயணத்தை அனுபவிக்கிறது. சாரணர் கற்றலை மையமாகக் கொண்ட அணுகுமுறை, ஒவ்வொரு இளைஞர் உறுப்பினரும் பல மற்றும் பல்வேறு வழிகளில் வளர்ச்சியடையும் திறனைக் கொண்ட ஒரு தனித்துவமான தனிநபர் என்பதை பாராட்டுகிறது. பல்வேறு வயதினரைக் கணக்கில் எடுத்துக்கொள்வதன் மூலம், சாரணர் குறிப்பாக தனிப்பட்ட நபர்களின் கண்டுபிடிப்பு மற்றும் வளர்ச்சியைத் தூண்டுவதற்காக வடிவமைக்கப்பட்டுள்ளது.",
+    strategicPriorities: {
+      en: 'Strategic Priorities',
+      ta: 'மூலோபாய முன்னுரிமைகள்',
     },
-    quote: {
-      en: "Scout education is not just about reading books. It's a practice for living life.",
-      ta: "ஆராய்ச்சி கல்வி என்பது வெறும் புத்தகங்களைப் படிப்பது அல்ல. இது வாழ்க்கையை வாழ்வதற்கான ஒரு பயிற்சி.",
-    },
-    skills: {
-      en: '50+ Skills Taught to Scouts',
-      ta: '50+ திறன்கள் கற்றுக்கொடுக்கப்படுகின்றன',
+    priorities: {
+      youthProgramme: {
+        en: 'Youth Programme',
+        ta: 'இளைஞர் திட்டம்',
+        description: {
+          en: 'Delivering a high-quality, engaging youth program focused on personal development, leadership skills, and community service. Our program incorporates outdoor activities, skill-building workshops, and hands-on learning experiences.',
+          ta: 'உயர்தர, ஈடுபாடான இளைஞர் திட்டத்தை வழங்குதல்'
+        }
+      },
+      adultResources: {
+        en: 'Adult Resources',
+        ta: 'பெரியவர்கள் வளங்கள்',
+        description: {
+          en: 'Building a strong network of skilled adult volunteers through comprehensive training programs, mentorship opportunities, and continuous professional development. We focus on creating a supportive environment for our adult leaders.',
+          ta: 'பெரியவர்கள் தன்னார்வலர்களை சேர்த்தல், பயிற்சி மற்றும் ஆதரவு'
+        }
+      },
+      management: {
+        en: 'Management',
+        ta: 'மேலாண்மை',
+        description: {
+          en: 'Implementing modern governance practices and efficient organizational systems. This includes digital transformation initiatives, streamlined processes, and data-driven decision-making approaches.',
+          ta: 'பயனுள்ள ஆளுமை மற்றும் அமைப்பு மேலாண்மையை செயல்படுத்துதல்'
+        }
+      },
+      finance: {
+        en: 'Finance',
+        ta: 'நிதி',
+        description: {
+          en: 'Developing diverse funding streams and maintaining transparent financial management. We focus on creating sustainable revenue models, efficient resource allocation, and building emergency reserves.',
+          ta: 'நிதி நிலைத்தன்மை மற்றும் நிலையான நிதியுதவியை உறுதி செய்தல்'
+        }
+      },
+      communication: {
+        en: 'Communication & Public Relations',
+        ta: 'தகவல் தொடர்பு & பொதுமக்கள் தொடர்பு',
+        description: {
+          en: 'Enhancing our digital presence and community engagement through strategic communications, social media outreach, and impactful storytelling. We aim to showcase the transformative power of scouting.',
+          ta: 'விழிப்புணர்வை ஏற்படுத்துதல் மற்றும் வலுவான பிராண்டை உருவாக்குதல்'
+        }
+      },
+      growth: {
+        en: 'Growth',
+        ta: 'வளர்ச்சி',
+        description: {
+          en: 'Expanding our reach through innovative recruitment strategies, partnerships with educational institutions, and development of new scout groups. We focus on inclusive growth that reaches diverse communities.',
+          ta: 'உறுப்பினர் எண்ணிக்கை மற்றும் தாக்கத்தை விரிவுபடுத்துதல்'
+        }
+      }
     },
     videoError: {
       en: 'Your browser does not support the video tag.',
-      ta: 'உங்கள் உலாவியில் வீடியோ தொகுப்பு ஆதரவு இல்லை.',
-    },
-
+      ta: 'உங்கள் உலாவி வீடியோ டேக்கை ஆதரிக்கவில்லை.'
+    }
   };
+
+  const strategicPriorities = [
+    { icon: Target, key: 'youthProgramme', color: 'bg-emerald-500' },
+    { icon: Users, key: 'adultResources', color: 'bg-blue-500' },
+    { icon: BarChart2, key: 'management', color: 'bg-purple-500' },
+    { icon: Wallet, key: 'finance', color: 'bg-yellow-500' },
+    { icon: MessageCircle, key: 'communication', color: 'bg-red-500' },
+    { icon: TrendingUp, key: 'growth', color: 'bg-green-500' }
+  ];
 
   return (
     <div className="relative w-full bg-gray-50">
-      {/* Hero Image Section */}
+      {/* Hero Section */}
       <div className="relative w-full mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
         <img
           src={mediaData.scoutEducation.heroImage}
@@ -58,17 +112,64 @@ export default function ScoutEducation() {
           className="w-full h-auto max-h-[600px] object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white text-center" data-aos="fade-up">
+          <h1 
+            className="text-4xl md:text-6xl font-bold text-center mb-4"
+            style={{
+              background: 'linear-gradient(to right, #FFD700, #FFA500)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+            data-aos="fade-up"
+          >
             {translations.title[isTamil ? 'ta' : 'en']}
           </h1>
         </div>
       </div>
 
-      {/* Navigation Menu Below the Image */}
       <NavigationMenu />
 
       <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* First Section: Image Left, Text Right */}
+        {/* Vision 2024 Section */}
+        <div className="mb-24" data-aos="fade-up">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-8">
+            {translations.vision[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="bg-white rounded-lg shadow-xl p-8">
+            <p className="text-xl text-gray-700 text-center leading-relaxed mb-8">
+              {translations.visionStatement[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
+
+        {/* Strategic Priorities */}
+        <div className="mb-24">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">
+            {translations.strategicPriorities[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {strategicPriorities.map((priority, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <div className={`${priority.color} w-16 h-16 rounded-full flex items-center justify-center mb-6 transform transition-transform hover:rotate-12`}>
+                  <priority.icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                  {translations.priorities[priority.key][isTamil ? 'ta' : 'en']}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {translations.priorities[priority.key].description[isTamil ? 'ta' : 'en']}
+                </p>
+                <div className="mt-4 w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Image Sections */}
         <div className="flex flex-col md:flex-row items-center mb-24">
           <div className="md:w-3/5 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
             <img
@@ -78,64 +179,30 @@ export default function ScoutEducation() {
             />
           </div>
           <div className="md:w-2/5" data-aos="fade-left">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">
-              {translations.title[isTamil ? 'ta' : 'en']}
-            </h2>
             <p className="text-gray-600 leading-relaxed">
               {translations.description[isTamil ? 'ta' : 'en']}
             </p>
           </div>
         </div>
 
-        {/* Second Section: Text Left, Image Right */}
-        <div className="flex flex-col md:flex-row-reverse items-center mb-24">
-          <div className="md:w-3/5 mb-8 md:mb-0 md:ml-8" data-aos="fade-left">
-            <img
-              src={mediaData.scoutEducation.educationImage2}
-              alt="Scout Activities"
-              className="w-full h-auto object-cover rounded-lg shadow-2xl"
-            />
-          </div>
-          <div className="md:w-2/5" data-aos="fade-right">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">
-              {translations.programs[isTamil ? 'ta' : 'en']}
-            </h2>
-            <p className="text-gray-600 leading-relaxed">
-              {translations.programsDescription[isTamil ? 'ta' : 'en']}
-            </p>
-          </div>
-        </div>
-
-        {/* Quote Section */}
-        <div className="bg-white shadow-2xl rounded-lg p-10 mb-24" data-aos="zoom-in">
-          <p className="text-2xl text-gray-700 italic mb-6 leading-relaxed">
-            "{translations.quote[isTamil ? 'ta' : 'en']}"
-          </p>
-          <div className="flex items-center">
-            <Book className="w-12 h-12 text-blue-600 mr-4" />
-            <p className="text-xl text-gray-800 font-semibold">
-              {translations.skills[isTamil ? 'ta' : 'en']}
-            </p>
-          </div>
-        </div>
-
-        {/* Video Players Section */}
-        <h2 className="text-3xl font-bold mb-10 text-center text-gray-800" data-aos="fade-up">
-          Educational Videos
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-          {mediaData.scoutEducation.videos.map((video, index) => (
-            <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
-              <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
-                <video controls className="w-full h-auto" poster={mediaData.scoutEducation.videoPoster}>
-                  <source src={video.src} type="video/mp4" />
-                  {translations.videoError[isTamil ? 'ta' : 'en']}
-                </video>
+        {/* Video Section */}
+        {mediaData.scoutEducation.videos && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+            {mediaData.scoutEducation.videos.map((video, index) => (
+              <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
+                <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
+                  <video controls className="w-full h-auto" poster={mediaData.scoutEducation.videoPoster}>
+                    <source src={video.src} type="video/mp4" />
+                    {translations.videoError[isTamil ? 'ta' : 'en']}
+                  </video>
+                </div>
+                <p className="text-xl text-violet-700 font-semibold">
+                  {isTamil ? video.title.ta : video.title.en}
+                </p>
               </div>
-              <p className="text-xl text-violet-700 font-semibold">{isTamil ? video.title.ta : video.title.en}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

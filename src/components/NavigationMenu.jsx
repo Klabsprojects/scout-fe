@@ -9,7 +9,7 @@ const NavigationMenu = () => {
 
   const menuItems = [
     { path: '/whoweare', label: isTamil ? 'முகப்பு' : 'Home' },
-    { path: '/scout-education', label: isTamil ? 'ஆராய்ச்சி கல்வி' : 'Scout Education' },
+    { path: '/scout-education', label: isTamil ? 'எங்கள் பார்வை' : 'Our Vision' },
     { path: '/scout-method', label: isTamil ? 'ஆராய்ச்சி முறை' : 'Scout Method' },
     { path: '/scout-promising-law', label: isTamil ? 'ஆராய்ச்சி உத்திகள்' : 'Scout Promising and Law' },
     { path: '/scouting-history', label: isTamil ? 'ஆராய்ச்சியின் வரலாறு' : 'Scouting History' },
@@ -20,12 +20,12 @@ const NavigationMenu = () => {
   };
 
   return (
-    <div className="w-full bg-white p-3 sm:p-5">
-      <div className="flex flex-col sm:flex-row justify-between items-center max-w-4xl mx-auto text-sm sm:text-base md:text-lg font-bold">
+    <div className="w-full bg-white p-2 sm:p-3">
+      <div className="flex flex-wrap justify-center sm:justify-between items-center max-w-6xl mx-auto text-xs sm:text-sm md:text-base font-bold">
         {menuItems.map((item, index) => (
           <React.Fragment key={item.path}>
             <div
-              className="text-gray-500 text-center mb-2 sm:mb-0 cursor-pointer"
+              className="text-gray-500 text-center px-1 py-1 m-0.5 cursor-pointer whitespace-nowrap"
               onClick={() => handleNavigation(item.path)}
             >
               <span
@@ -35,7 +35,7 @@ const NavigationMenu = () => {
               </span>
             </div>
             {index < menuItems.length - 1 && (
-              <span className="hidden sm:inline text-gray-300 mx-4">/</span>
+              <span className="hidden sm:inline text-gray-300 mx-0.5">/</span>
             )}
           </React.Fragment>
         ))}

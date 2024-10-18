@@ -1,347 +1,207 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Star, ArrowLeft, Plus, Minus, X, Check, Facebook, Twitter, Instagram } from 'lucide-react';
-import { dummyProducts } from './Products';
-import { useTranslation } from '../Context/TranslationContext'; // Import the translation context
+import React, { useEffect } from 'react';
+import { Book, Target, Users, BarChart2, Wallet, MessageCircle, TrendingUp } from 'lucide-react';
+import { useTranslation } from '../Context/TranslationContext';
+import NavigationMenu from '../components/NavigationMenu';
+import mediaData from '../MediaData.json';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-const ProductDescription = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { isTamil } = useTranslation(); // Use the translation context
-  const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const reviewsRef = useRef(null);
-  const [cartItems, setCartItems] = useState([]);
+export default function ScoutEducation() {
+  const { isTamil } = useTranslation();
 
   useEffect(() => {
-    const fetchedProduct = dummyProducts.find(p => p.id === parseInt(id));
-    if (fetchedProduct) {
-      setProduct({
-        ...fetchedProduct,
-        description: fetchedProduct.description?.[isTamil ? 'ta' : 'en'] || "No description available",
-        features: fetchedProduct.features?.[isTamil ? 'ta' : 'en'] || []
-      });
-
-      const related = dummyProducts
-        .filter(p => p.category === fetchedProduct.category && p.id !== fetchedProduct.id)
-        .slice(0, 3);
-      setRelatedProducts(related);
-
-      // Generate mock reviews
-      const mockReviews = [
-        { id: 1, user: "John D.", rating: 5, comment: "Absolutely love this product! It exceeded my expectations in every way.", date: "2024-03-15" },
-        { id: 2, user: "Sarah M.", rating: 4, comment: "Great quality for the price. Would definitely recommend.", date: "2024-03-10" },
-        { id: 3, user: "Michael R.", rating: 3, comment: "Decent product, but could use some improvements in durability.", date: "2024-03-05" },
-        { id: 4, user: "Emily L.", rating: 5, comment: "This is exactly what I was looking for. Perfect fit for my needs!", date: "2024-02-28" },
-        { id: 5, user: "David K.", rating: 4, comment: "Good product overall. Shipping was fast and packaging was secure.", date: "2024-02-20" },
-        { id: 6, user: "Lisa H.", rating: 5, comment: "Outstanding quality and customer service. Will buy again!", date: "2024-02-15" },
-      ];
-      setReviews(mockReviews);
-
-      // Retrieve cart items from localStorage
-      const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-      setCartItems(storedCartItems);
-    }
-  }, [id, isTamil]);
-
-  useEffect(() => {
-    const scrollReviews = () => {
-      if (reviewsRef.current) {
-        if (reviewsRef.current.scrollLeft >= reviewsRef.current.scrollWidth / 2) {
-          reviewsRef.current.scrollLeft = 0;
-        } else {
-          reviewsRef.current.scrollLeft += 1;
-        }
-      }
-    };
-
-    const intervalId = setInterval(scrollReviews, 50);
-
-    return () => clearInterval(intervalId);
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
   }, []);
 
-  if (!product) {
-    return (
-      <div className="text-center mt-20">
-        <p className="text-xl text-[#4A6FA5]">Product not found.</p>
-        <button
-          onClick={() => navigate('/products')}
-          className="mt-4 text-[#E07A5F] hover:text-[#C86D54] font-semibold"
-        >
-          Return to Products
-        </button>
-      </div>
-    );
-  }
-
-  const handleAddToCart = () => {
-    const updatedCartItems = [...cartItems];
-    const existingItem = updatedCartItems.find(item => item.id === product.id);
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      updatedCartItems.push({ ...product, quantity });
+  const translations = {
+    title: {
+      en: 'Our Mission',
+      ta: 'எங்கள் நோக்கம்',
+    },
+    vision: {
+      en: 'Vision 2024',
+      ta: 'தொலைநோக்கு 2024',
+    },
+    description: {
+      en: "Scout education nurtures youth into global citizens, equipping them with life skills and inspiring positive change in society. Scouting's non-formal educational approach aims to equip young people with the skills and competencies that enable these ideals.",
+      ta: "சாரணர் கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்க்கிறது, அவர்களுக்கு வாழ்க்கைத் திறன்களை வழங்குகிறது மற்றும் சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது.",
+    },
+    visionStatement: {
+      en: "By 2024, The Bharat Scouts and Guides will be a globally visible, consistently growing, self-reliant premium youth movement that is gender balanced, vibrant and responsive to trends.",
+      ta: "2024 ஆம் ஆண்டளவில், பாரத சாரணர்கள் மற்றும் வழிகாட்டிகள் பாலின சமநிலை, துடிப்பான மற்றும் போக்குகளுக்கு பதிலளிக்கும் வகையில் உலகளவில் தெரியக்கூடிய, தொடர்ந்து வளரும், சுய-சார்பு கொண்ட முன்னணி இளைஞர் இயக்கமாக இருக்கும்.",
+    },
+    missionStatement: {
+      en: "Providing young people with value-based, attractive and challenging youth programme, through competent leaders, effective communication, optimum use of technology and efficient management.",
+      ta: "திறமையான தலைவர்கள், பயனுள்ள தகவல் தொடர்பு, தொழில்நுட்பத்தின் உகந்த பயன்பாடு மற்றும் திறமையான மேலாண்மை மூலம் இளைஞர்களுக்கு மதிப்பு சார்ந்த, கவர்ச்சிகரமான மற்றும் சவாலான இளைஞர் திட்டத்தை வழங்குதல்.",
+    },
+    strategicPriorities: {
+      en: 'Strategic Priorities',
+      ta: 'மூலோபாய முன்னுரிமைகள்',
+    },
+    videoError: {
+      en: 'Your browser does not support the video tag.',
+      ta: 'உங்கள் உலாவி வீடியோ டேக்கை ஆதரிக்கவில்லை.',
+    },
+    priorities: {
+      youthProgramme: {
+        en: 'Youth Programme',
+        ta: 'இளைஞர் திட்டம்',
+        description: {
+          en: 'Delivering a high-quality, engaging youth program',
+          ta: 'உயர்தர, ஈடுபாடான இளைஞர் திட்டத்தை வழங்குதல்'
+        }
+      },
+      adultResources: {
+        en: 'Adult Resources',
+        ta: 'பெரியவர்கள் வளங்கள்',
+        description: {
+          en: 'Recruiting, training and supporting adult volunteers',
+          ta: 'பெரியவர்கள் தன்னார்வலர்களை சேர்த்தல், பயிற்சி மற்றும் ஆதரவு'
+        }
+      },
+      management: {
+        en: 'Management',
+        ta: 'மேலாண்மை',
+        description: {
+          en: 'Implementing effective governance and organizational management',
+          ta: 'பயனுள்ள ஆளுமை மற்றும் அமைப்பு மேலாண்மையை செயல்படுத்துதல்'
+        }
+      },
+      finance: {
+        en: 'Finance',
+        ta: 'நிதி',
+        description: {
+          en: 'Ensuring financial stability and sustainable funding',
+          ta: 'நிதி நிலைத்தன்மை மற்றும் நிலையான நிதியுதவியை உறுதி செய்தல்'
+        }
+      },
+      communication: {
+        en: 'Communication & Public Relations',
+        ta: 'தகவல் தொடர்பு & பொதுமக்கள் தொடர்பு',
+        description: {
+          en: 'Raising awareness and building a strong brand',
+          ta: 'விழிப்புணர்வை ஏற்படுத்துதல் மற்றும் வலுவான பிராண்டை உருவாக்குதல்'
+        }
+      },
+      growth: {
+        en: 'Growth',
+        ta: 'வளர்ச்சி',
+        description: {
+          en: 'Expanding membership and impact',
+          ta: 'உறுப்பினர் எண்ணிக்கை மற்றும் தாக்கத்தை விரிவுபடுத்துதல்'
+        }
+      }
     }
-
-    setCartItems(updatedCartItems);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-    setSnackbarVisible(true);
-    setTimeout(() => setSnackbarVisible(false), 3000);
   };
 
-  const handleToggleWishlist = () => {
-    setProduct(prevProduct => ({
-      ...prevProduct,
-      isWishlisted: !prevProduct.isWishlisted
-    }));
-  };
-
-  const handleSocialMediaClick = (platform) => {
-    let url;
-    switch (platform) {
-      case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
-        break;
-      case 'twitter':
-        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this awesome product: ${product.name[isTamil ? 'ta' : 'en']}`)}`;
-        break;
-      case 'instagram':
-        // Instagram doesn't have a direct sharing URL, so we'll just open the profile
-        url = 'https://www.instagram.com/your_instagram_profile';
-        break;
-      default:
-        return;
-    }
-    window.open(url, '_blank');
-  };
+  const strategicPriorities = [
+    { icon: Target, key: 'youthProgramme', color: 'bg-emerald-500' },
+    { icon: Users, key: 'adultResources', color: 'bg-blue-500' },
+    { icon: BarChart2, key: 'management', color: 'bg-purple-500' },
+    { icon: Wallet, key: 'finance', color: 'bg-yellow-500' },
+    { icon: MessageCircle, key: 'communication', color: 'bg-red-500' },
+    { icon: TrendingUp, key: 'growth', color: 'bg-green-500' }
+  ];
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-28 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <motion.button
-          onClick={() => navigate(-1)}
-          className="mb-8 flex items-center text-[#E07A5F] hover:text-[#C86D54] font-semibold"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <ArrowLeft className="mr-2" /> Back to Products
-        </motion.button>
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="md:flex">
-            <motion.div 
-              className="md:flex-shrink-0 md:w-1/2 p-4"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <img className="w-full h-96 object-contain rounded-lg" src={product.image} alt={product.name[isTamil ? 'ta' : 'en']} />
-            </motion.div>
-            <motion.div 
-              className="p-8 md:w-1/2"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold text-[#1A2E44] mb-4">{product.name[isTamil ? 'ta' : 'en']}</h2>
-              <div className="flex items-center mb-4">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`h-5 w-5 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                  ))}
-                </div>
-                <span className="ml-2 text-[#4A6FA5]">({product.reviews} reviews)</span>
-              </div>
-              <p className="text-[#4A6FA5] mb-6">{product.description}</p>
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-3xl font-bold text-[#1A2E44]">₹{product.price.toFixed(2)}</span>
-                <span className="text-lg text-[#4A6FA5]">Category: {product.category}</span>
-              </div>
-              <div className="flex items-center mb-6">
-                <span className="mr-4 text-[#1A2E44]">Quantity:</span>
-                <button 
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="bg-gray-200 text-[#1A2E44] rounded-full p-2"
-                >
-                  <Minus size={16} />
-                </button>
-                <span className="mx-4 text-xl font-semibold text-[#1A2E44]">{quantity}</span>
-                <button 
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="bg-gray-200 text-[#1A2E44] rounded-full p-2"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-              <div className="flex space-x-4 mb-6">
-                <button
-                  className="flex-1 bg-[#E07A5F] text-white py-3 px-6 rounded-full text-lg font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart
-                </button>
-                <button
-                  className="bg-gray-200 text-[#1A2E44] py-3 px-6 rounded-full text-lg font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
-                  onClick={handleToggleWishlist}
-                >
-                  <Heart className={`h-5 w-5 ${product.isWishlisted ? 'text-red-500 fill-red-500' : 'text-[#1A2E44]'}`} />
-                </button>
-              </div>
-              {product.features && product.features.length > 0 && (
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold mb-2 text-[#1A2E44]">Product Features:</h3>
-                  <ul className="list-disc list-inside text-[#4A6FA5]">
-                    {product.features.map((feature, index) => (
-                      <li key={index} className="flex items-center mb-2">
-                        <Check size={16} className="mr-2 text-green-500" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </motion.div>
+    <div className="relative w-full bg-gray-50">
+      {/* Hero Section */}
+      <div className="relative w-full mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
+        <img
+          src={mediaData.scoutEducation.heroImage}
+          alt="Scout Education Hero"
+          className="w-full h-auto max-h-[600px] object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-white text-center mb-4" data-aos="fade-up">
+            {translations.title[isTamil ? 'ta' : 'en']}
+          </h1>
+          <p className="text-xl text-white text-center max-w-3xl px-4" data-aos="fade-up" data-aos-delay="200">
+            {translations.missionStatement[isTamil ? 'ta' : 'en']}
+          </p>
+        </div>
+      </div>
+
+      <NavigationMenu />
+
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        {/* Vision 2024 Section */}
+        <div className="mb-24" data-aos="fade-up">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-8">
+            {translations.vision[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="bg-white rounded-lg shadow-xl p-8">
+            <p className="text-xl text-gray-700 text-center leading-relaxed mb-8">
+              {translations.visionStatement[isTamil ? 'ta' : 'en']}
+            </p>
           </div>
         </div>
 
-        <motion.div 
-          className="mt-12"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <h3 className="text-2xl font-bold text-[#1A2E44] mb-6">Customer Reviews</h3>
-          <div 
-            ref={reviewsRef}
-            className="overflow-hidden whitespace-nowrap"
-            style={{ scrollBehavior: 'smooth' }}
-          >
-            <div className="inline-flex space-x-6">
-              {reviews.concat(reviews).map((review, index) => (
-                <motion.div
-                  key={`${review.id}-${index}`}
-                  className="bg-white rounded-lg p-6 w-80 inline-block"
-                  style={{
-                    boxShadow: '0 4px 6px -1px rgba(251, 207, 232, 0.1), 0 2px 4px -1px rgba(251, 207, 232, 0.06)',
-                    transition: 'box-shadow 0.3s ease-in-out'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{
-                    boxShadow: '0 10px 15px -3px rgba(251, 207, 232, 0.3), 0 4px 6px -2px rgba(251, 207, 232, 0.2)'
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="text-lg font-semibold text-[#1A2E44]">{review.user}</h4>
-                      <p className="text-sm text-[#4A6FA5]">{review.date}</p>
-                    </div>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-5 w-5 ${
-                            i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-[#4A6FA5] whitespace-normal">{review.comment}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {relatedProducts.length > 0 && (
-          <motion.div 
-            className="mt-12"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-
-<h3 className="text-2xl font-bold text-[#1A2E44] mb-6">Related Products</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedProducts.map(relatedProduct => (
-                <div key={relatedProduct.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <img className="w-full h-48 object-cover" src={relatedProduct.image} alt={relatedProduct.name[isTamil ? 'ta' : 'en']} />
-                  <div className="p-4">
-                    <h4 className="text-lg font-semibold text-[#1A2E44] mb-2">{relatedProduct.name[isTamil ? 'ta' : 'en']}</h4>
-                    <p className="text-[#4A6FA5] mb-2">
-                      {relatedProduct.description?.[isTamil ? 'ta' : 'en']
-                        ? `${relatedProduct.description[isTamil ? 'ta' : 'en'].slice(0, 50)}...`
-                        : "No description available"}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-[#1A2E44]">₹{relatedProduct.price.toFixed(2)}</span>
-                      <button
-                        onClick={() => navigate(`/product/${relatedProduct.id}`)}
-                        className="text-[#E07A5F] hover:text-[#C86D54] font-semibold"
-                      >
-                        View Product
-                      </button>
-                    </div>
-                  </div>
+        {/* Strategic Priorities */}
+        <div className="mb-24">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">
+            {translations.strategicPriorities[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {strategicPriorities.map((priority, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-lg p-6 transition-transform hover:scale-105"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <div className={`${priority.color} w-12 h-12 rounded-full flex items-center justify-center mb-4`}>
+                  <priority.icon className="w-6 h-6 text-white" />
                 </div>
-              ))}
-            </div>
-          </motion.div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                  {translations.priorities[priority.key][isTamil ? 'ta' : 'en']}
+                </h3>
+                <p className="text-gray-600">
+                  {translations.priorities[priority.key].description[isTamil ? 'ta' : 'en']}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Image Sections */}
+        <div className="flex flex-col md:flex-row items-center mb-24">
+          <div className="md:w-3/5 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
+            <img
+              src={mediaData.scoutEducation.educationImage1}
+              alt="Scout Education"
+              className="w-full h-auto object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+          <div className="md:w-2/5" data-aos="fade-left">
+            <p className="text-gray-600 leading-relaxed">
+              {translations.description[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
+
+        {/* Video Section */}
+        {mediaData.scoutEducation.videos && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+            {mediaData.scoutEducation.videos.map((video, index) => (
+              <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
+                <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
+                  <video controls className="w-full h-auto" poster={mediaData.scoutEducation.videoPoster}>
+                    <source src={video.src} type="video/mp4" />
+                    {translations.videoError[isTamil ? 'ta' : 'en']}
+                  </video>
+                </div>
+                <p className="text-xl text-violet-700 font-semibold">
+                  {isTamil ? video.title.ta : video.title.en}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
-
-        <motion.div 
-          className="mt-12 flex justify-center space-x-4"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <button 
-            onClick={() => handleSocialMediaClick('facebook')}
-            className="bg-[#E07A5F] text-white p-3 rounded-full hover:bg-[#C86D54] transition-colors duration-300"
-          >
-            <Facebook size={24} />
-          </button>
-          <button 
-            onClick={() => handleSocialMediaClick('twitter')}
-            className="bg-[#E07A5F] text-white p-3 rounded-full hover:bg-[#C86D54] transition-colors duration-300"
-          >
-            <Twitter size={24} />
-          </button>
-          <button 
-            onClick={() => handleSocialMediaClick('instagram')}
-            className="bg-[#E07A5F] text-white p-3 rounded-full hover:bg-[#C86D54] transition-colors duration-300"
-          >
-            <Instagram size={24} />
-          </button>
-        </motion.div>
-
-        <AnimatePresence>
-          {snackbarVisible && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center"
-            >
-              <span>{`${product.name[isTamil ? 'ta' : 'en']} added to cart`}</span>
-              <button onClick={() => setSnackbarVisible(false)} className="ml-2">
-                <X size={18} />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
-};
-
-export default ProductDescription;
-
+}
