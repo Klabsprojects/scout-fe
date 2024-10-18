@@ -225,7 +225,7 @@ const Products = () => {
     <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.h2 
-          className="text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-16"
+          className="text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-36"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
