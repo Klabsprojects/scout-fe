@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import mediaData from '../MediaData.json';
 import { Link } from 'react-router-dom';
 
-// Add this import at the top of your file
 import './TamilFont.css';
 
 const ScoutHomepage = () => {
@@ -68,21 +67,17 @@ const ScoutHomepage = () => {
     },
     featuredStoryTitles: {
       story1: {
-        en: "World Scout Conference elects 12 voting members to the World Scout",
-        ta: "உலகா சாரண மாநாடு உலக சாரணத்திற்கு 12 வாக்காளர் உறுப்பினர்களை தெரிவு செய்கிறது"
+        en: "South Zone Gathering",
+        ta: "தென் மண்டல திரளணி"
       },
       story2: {
-        en: "2000 Scouts gather for the opening of the 43rd World Scout Conference",
-        ta: "2000 சாரணர்கள் 43வது உலக சாரண மாநாட்டின் தொடக்கத்திற்கு கூடுகிறார்கள்"
+        en: "East Zone Gathering",
+        ta: "கிழக்கு மண்டல திரளணி  "
       },
       story3: {
-        en: "Ready for Life: Scouting's new brand welcomes in a new era",
-        ta: "செயலுக்கு தயாராக: சாரணத்தின் புதிய பிராண்டு புதிய காலத்தைக் வரவேற்கிறது"
+        en: "State Special Rally North Zone",
+        ta: "மாநில சிறப்பு திரளணி வடக்கு மண்டலம்  "
       }
-    },
-    newsDescription: {
-      en: "Short description of news article",
-      ta: "செய்தி கட்டுரையின் சுருக்கமான விளக்கம்"
     },
     seeAllNews: {
       en: "See All News",
@@ -126,32 +121,56 @@ const ScoutHomepage = () => {
       [index]: !prev[index]
     }));
   };
+  const newsContent = [
+    {
+      title: "World Thought Day 2023",
+      titleTa: "உலக சிந்தனை தினம் 2023",
+      description: "Scouts celebrated World Thought Day, reflecting on this year's theme of environmental sustainability. World Thought Day 2023 saw scouts from over 170 countries come together to address the pressing issue of climate change. Through various activities and projects, scouts demonstrated their commitment to creating a more sustainable future.",
+      descriptionTa: "உலகெங்கிலும் உள்ள சாரணர்கள் உலக சிந்தனை தினத்தைக் கொண்டாடினர், இந்த ஆண்டின் சுற்றுச்சூழல் நிலைத்தன்மை குறித்த கருப்பொருளைப் பிரதிபலித்தனர். உலக சிந்தனை தினம் 2023 இல் 170 க்கும் மேற்பட்ட நாடுகளைச் சேர்ந்த சாரணர்கள் காலநிலை மாற்றம் என்ற அவசரமான பிரச்சினையை எதிர்கொள்ள ஒன்றிணைந்தனர். பல்வேறு செயல்பாடுகள் மற்றும் திட்டங்கள் மூலம், நிலையான எதிர்காலத்தை உருவாக்குவதற்கான தங்கள் அர்ப்பணிப்பை சாரணர்கள் வெளிப்படுத்தினர்."
+    },
+    {
+      title: "Team Leaders Training Camp 2023",
+      titleTa: "அணித் தலைவர்கள் பயிற்சி முகாம் 2023",
+      description: "The Team Leaders Training Camp 2023, organized by Tamil Nadu Scouts, is a pivotal event designed to nurture and empower the next generation of scout leaders. This intensive camp brings together aspiring and current team leaders from across the state for a comprehensive leadership development program. Participants engage in workshops, team-building exercises, and practical outdoor activities that enhance their leadership skills.",
+      descriptionTa: "தமிழ்நாடு சாரணர்களால் ஏற்பாடு செய்யப்பட்ட அணித் தலைவர்கள் பயிற்சி முகாம் 2023, அடுத்த தலைமுறை சாரணர் தலைவர்களை வளர்த்தெடுக்கவும் அதிகாரம் அளிக்கவும் வடிவமைக்கப்பட்ட ஒரு முக்கியமான நிகழ்வாகும். இந்த தீவிர முகாம் மாநிலம் முழுவதிலுமிருந்து ஆர்வமுள்ள மற்றும் தற்போதைய அணித் தலைவர்களை ஒரு விரிவான தலைமைத்துவ மேம்பாட்டுத் திட்டத்திற்காக ஒன்றிணைக்கிறது. பங்கேற்பாளர்கள் தங்கள் தலைமைத்துவ திறன்களை மேம்படுத்தும் பயிலரங்குகள், அணி உருவாக்கும் பயிற்சிகள் மற்றும் நடைமுறை வெளிப்புற செயல்பாடுகளில் ஈடுபடுகிறார்கள்."
+    },
+    {
+      title: "President Award Certificate Test Camp 2023",
+      titleTa: "குடியரசுத் தலைவர் விருதுச் சான்றிதழ் சோதனை முகாம் 2023",
+      description: "The President Award Certificate Test Camp 2023 in Tamil Nadu is a prestigious event for senior scouts and guides aiming to achieve the highest honor in Indian Scouting. This rigorous camp, typically held annually, evaluates candidates on their leadership skills, outdoor expertise, and commitment to scouting values. Participants face various challenges designed to test their physical endurance, mental acuity, and practical scouting knowledge.",
+      descriptionTa: "தமிழ்நாட்டின் குடியரசுத் தலைவர் விருது சான்றிதழ் தேர்வு முகாம் 2023 என்பது இந்திய சாரணர் துறையில் உயரிய பெருமையை அடையும் நோக்கத்தில் மூத்த சாரணர்கள் மற்றும் வழிகாட்டிகளுக்கான மதிப்புமிக்க நிகழ்வாகும். இந்த கடுமையான முகாம், பொதுவாக ஆண்டுதோறும் நடத்தப்படுகிறது, வேட்பாளர்களின் தலைமைத்துவ திறன்கள், வெளிப்புற நிபுணத்துவம் மற்றும் சாரணர் மதிப்புகளுக்கான அர்ப்பணிப்பு ஆகியவற்றை மதிப்பீடு செய்கிறது. பங்கேற்பாளர்கள் தங்கள் உடல் தாங்கும் திறன், மன கூர்மை மற்றும் நடைமுறை சாரணர் அறிவைச் சோதிக்க வடிவமைக்கப்பட்ட பல்வேறு சவால்களை எதிர்கொள்கின்றனர்."
+    },
+    {
+      title: "Chaturtha Charan / Heerak Bunk Exam Camps",
+      titleTa: "சதுர்த்த சரண் / ஹீரக் பங்க் தேர்வு முகாம்கள்",
+      description: "Chaturtha Charan / Heerak Bunk Selection Camps are important events of Scouting in India. These camps are considered high-level exams for senior scouts.Participants are rigorously tested on their scouting skills, leadership qualities, community service and knowledge of environmental protection.",
+      descriptionTa: "சதுர்த்த சரண் / ஹீரக் பங்க் தேர்வு முகாம்கள் என்பது இந்திய சாரணர் இயக்கத்தின் முக்கியமான நிகழ்வுகளாகும். இந்த முகாம்கள் மூத்த சாரணர்களுக்கான உயர்நிலை தேர்வுகளாக கருதப்படுகின்றன.பங்கேற்பாளர்கள் தங்கள் சாரணர் திறன்கள், தலைமைத்துவ பண்புகள், சமூக சேவை மற்றும் சுற்றுச்சூழல் பாதுகாப்பு பற்றிய அறிவு ஆகியவற்றில் கடுமையாக சோதிக்கப்படுகிறார்கள்."
+    },
+    {
+      title: "World Thought Day -2024",
+      titleTa: "உலக சிந்தனை நாள் -2024",
+      description: "World Thought Day-2024 is an important event for India Scouts and Scout Movement. Celebrated every year on 22nd February, the day emphasizes the global brotherhood of scouts. On this day, scouts and scouts across India engage in activities promoting environmental protection and peace.",
+      descriptionTa: "உலக சிந்தனை நாள் -2024 ஆனது பாரத சாரணர் மற்றும் சாரணியர் இயக்கத்தின் முக்கிய நிகழ்வாகும். ஒவ்வொரு ஆண்டும் பிப்ரவரி 22 அன்று கொண்டாடப்படும் இந்த நாள், உலகளாவிய சாரணர் சகோதரத்துவத்தை வலியுறுத்துகிறது.இந்த நாளில், இந்தியா முழுவதும் உள்ள சாரணர்கள் மற்றும் சாரணியர்கள் சுற்றுச்சூழல் பாதுகாப்பு மற்றும் அமைதியை ஊக்குவிக்கும் செயல்பாடுகளில் ஈடுபடுவார்கள்."
+    }
+  ];
 
-  const newsCards = [
-    ...mediaData.newsImages,
-    ...mediaData.newsImages.slice(0, 3) // Add 3 more cards for "See All News"
-  ].map((image, index) => (
+  const newsCards = newsContent.map((news, index) => (
     <FadeInSection key={index}>
       <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
         <div className="relative pt-[75%]">
           <img
-            src={image}
+            src={mediaData.newsImages[index % mediaData.newsImages.length]}
             alt={`Latest news ${index + 1}`}
             className="absolute top-0 left-0 w-full h-full object-contain"
           />
         </div>
         <div className="p-6 flex-grow">
           <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'tamil-font' : ''}`}>
-            {translations.newsDescription[isTamil ? 'ta' : 'en']}
+            {isTamil ? news.titleTa : news.title}
           </h3>
           <p className={`text-sm md:text-base text-gray-600 mb-4 ${isTamil ? 'tamil-font' : ''}`}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            {expandedCards[index] && (
-              <>
-                <br /><br />
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-              </>
-            )}
+            {expandedCards[index] ? (isTamil ? news.descriptionTa : news.description) : 
+              (isTamil ? news.descriptionTa.slice(0, 100) + "..." : news.description.slice(0, 100) + "...")}
           </p>
           <button 
             onClick={() => toggleCardExpansion(index)} 
@@ -212,9 +231,8 @@ const ScoutHomepage = () => {
           </div>
         </div>
       </section>
-
-      {/* Featured Stories Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
+{/* Featured Stories Section */}
+<section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="container mx-auto">
           <FadeInSection>
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
@@ -259,7 +277,7 @@ const ScoutHomepage = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300"
             >
               {showAllNews 
-                ? (isTamil ? "Show Less" : "Show Less") 
+                ? (isTamil ? "குறைவாகக் காட்டு" : "Show Less") 
                 : translations.seeAllNews[isTamil ? 'ta' : 'en']}
             </button>
           </div>

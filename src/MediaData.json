@@ -18,7 +18,10 @@
     "newsImages": [
       "/Images/news1.png",
       "/Images/news2.png",
-      "/Images/news3.png"
+      "/Images/news3.png",
+      "/Images/news4.png",
+      "/Images/news5.png"
+
     ],
     "videos": [
       "/videos/testvideo.mp4",
