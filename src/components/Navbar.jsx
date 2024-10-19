@@ -92,7 +92,7 @@ const Navbar = () => {
               </ul>
               <div className="flex justify-between items-center mb-4">
                 <Link to="/donation" className="flex flex-col items-center">
-                  <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+                  <img src="/Images/cash.png" alt="Donate" className="h-6 w-6" />
                   <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} hover:underline whitespace-nowrap`}>
                     {t.donate}
                   </span>
@@ -176,7 +176,7 @@ const Navbar = () => {
                 <div className={`flex items-center space-x-4 lg:space-x-6 ${isTamil ? 'lg:mr-16' : 'lg:mr-32'}`}>
                   <div className="flex flex-col items-center space-y-1">
                     <Link to="/donation" className="flex flex-col items-center">
-                      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6 lg:h-8 lg:w-8" />
+                      <img src="/Images/cash.png" alt="Donate" className="h-6 w-6" />
                       <span className={`text-xs ${isTamil ? 'font-bold' : 'font-medium'} hover:underline whitespace-nowrap`}>
                         {t.donate}
                       </span>
