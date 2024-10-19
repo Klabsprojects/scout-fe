@@ -150,7 +150,7 @@ const ScoutHomepage = () => {
       title: "World Thought Day -2024",
       titleTa: "உலக சிந்தனை நாள் -2024",
       description: "World Thought Day-2024 is an important event for India Scouts and Scout Movement. Celebrated every year on 22nd February, the day emphasizes the global brotherhood of scouts. On this day, scouts and scouts across India engage in activities promoting environmental protection and peace.",
-      descriptionTa: "உலக சிந்தனை நாள் -2024 ஆனது பாரத சாரணர் மற்றும் சாரணியர் இயக்கத்தின் முக்கிய நிகழ்வாகும். ஒவ்வொரு ஆண்டும் பிப்ரவரி 22 அன்று கொண்டாடப்படும் இந்த நாள், உலகளாவிய சாரணர் சகோதரத்துவத்தை வலியுறுத்துகிறது.இந்த நாளில், இந்தியா முழுவதும் உள்ள சாரணர்கள் மற்றும் சாரணியர்கள் சுற்றுச்சூழல் பாதுகாப்பு மற்றும் அமைதியை ஊக்குவிக்கும் செயல்பாடுகளில் ஈடுபடுவார்கள்."
+      descriptionTa: "உலக சிந்தனை நாள் -2024 ஆனது பாரத சாரணர் மற்றும் சாரணியர் இயக்கத்தின் முக்கிய நிகழ்வாகும். ஒவ்வொரு ஆண்டும் பிப்ரவரி 22 அன்று கொண்டாடப்படும் இந்த நாள், உலகளாவிய சாரணர் சகோதரத்துவத்தை வலியுறுத்துகிறது.இந்த நாளில், இந்தியா முழுவதும் உள்ள சாரணர்கள் மற்றும் சாரணியர்கள் சுற்றுச்சூழல் பாதுகாப்பு மற்றும் அமைதியை ஊக்குவிக்கும் செயல்பாடுகளில் ஈடுபடுவார்கள்.=."
     }
   ];
 

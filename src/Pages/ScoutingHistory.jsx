@@ -170,12 +170,12 @@ const ScoutingHistoryPage = () => {
                 <p className="text-gray-700 text-lg mb-8">{t.sections.growth.description}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <img 
-                    src={mediaData.organizationImages[0]}
+                    src={mediaData.scoutingHistory[0]}
                     alt="Organization growth"
                     className="w-full h-48 object-cover rounded-lg shadow-md"
                   />
                   <img 
-                    src={mediaData.organizationImages[1]}
+                    src={mediaData.scoutingHistory[1]}
                     alt="Organization development"
                     className="w-full h-48 object-cover rounded-lg shadow-md"
                   />
@@ -183,7 +183,7 @@ const ScoutingHistoryPage = () => {
               </div>
               <div className="md:w-1/2">
                 <img 
-                  src={mediaData.carouselImages[2]}
+                  src={mediaData.scoutingHistory[2]}
                   alt="Scouts in action"
                   className="w-full h-96 object-cover rounded-lg shadow-lg"
                 />
@@ -198,19 +198,21 @@ const ScoutingHistoryPage = () => {
               <div className="md:w-1/2">
                 <p className="text-gray-700 text-lg mb-8">{t.sections.impact.description}</p>
                 <div className="grid grid-cols-2 gap-4">
-                  {mediaData.featuredStories.slice(0, 2).map((img, index) => (
-                    <img 
-                      key={index}
-                      src={img}
-                      alt={`Impact story ${index + 1}`}
-                      className="w-full h-48 object-cover rounded-lg shadow-md"
-                    />
-                  ))}
+                  <img 
+                    src={mediaData.scoutingHistory[3]}
+                    alt="Impact story 1"
+                    className="w-full h-48 object-cover rounded-lg shadow-md"
+                  />
+                  <img 
+                    src={mediaData.scoutingHistory[4]}
+                    alt="Impact story 2"
+                    className="w-full h-48 object-cover rounded-lg shadow-md"
+                  />
                 </div>
               </div>
               <div className="md:w-1/2">
                 <img 
-                  src={mediaData.carouselImages[3]}
+                  src={mediaData.scoutingHistory[5]}
                   alt="Scouts making an impact"
                   className="w-full h-96 object-cover rounded-lg shadow-lg"
                 />
@@ -227,14 +229,21 @@ const ScoutingHistoryPage = () => {
               <p className="text-gray-700 text-lg max-w-3xl mx-auto">{t.sections.future.description}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {mediaData.carouselImages.slice(1, 4).map((img, index) => (
-                <img 
-                  key={index}
-                  src={img}
-                  alt={`Future vision ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
-                />
-              ))}
+              <img 
+                src={mediaData.scoutingHistory[6]}
+                alt="Future vision 1"
+                className="w-full h-64 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              />
+              <img 
+                src={mediaData.scoutingHistory[7]}
+                alt="Future vision 2"
+                className="w-full h-64 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              />
+              <img 
+                src={mediaData.scoutingHistory[8]}
+                alt="Future vision 3"
+                className="w-full h-64 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              />
             </div>
           </div>
         </div>

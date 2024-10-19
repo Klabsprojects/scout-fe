@@ -13,6 +13,13 @@ const WhatWeDoPage = () => {
     threshold: 0.1,
   });
 
+  const carouselImages = [
+    "/Images/Whatwedo1.png",
+    "/Images/Whatwedo2.png",
+    "/Images/Whatwedo3.png",
+    "/Images/Whatwedo4.png"
+  ];
+
   useEffect(() => {
     if (inView) {
       controls.start('visible');
@@ -22,7 +29,7 @@ const WhatWeDoPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
-        (prevIndex + 1) % mediaData.carouselImages.length
+        (prevIndex + 1) % carouselImages.length
       );
     }, 5000);
     return () => clearInterval(interval);
@@ -131,9 +138,9 @@ const WhatWeDoPage = () => {
             animate={controls}
             variants={imageVariants}
             className="relative overflow-hidden rounded-lg shadow-xl mb-8"
-            style={{ paddingBottom: '56.25%' }} // 16:9 aspect ratio
+            style={{ paddingBottom: '56.25%' }}
           >
-            {mediaData.carouselImages.map((image, index) => (
+            {carouselImages.map((image, index) => (
               <motion.div
                 key={index}
                 className={`absolute top-0 left-0 w-full h-full ${
@@ -175,9 +182,9 @@ const WhatWeDoPage = () => {
                 variants={imageVariants}
                 className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
               >
-                <div className="relative" style={{ paddingBottom: '75%' }}> {/* 4:3 aspect ratio */}
+                <div className="relative" style={{ paddingBottom: '75%' }}>
                   <img
-                    src={mediaData.organizationImages[index]}
+                    src={mediaData.whatWeDo.images[index]}
                     alt={activity.title[isTamil ? 'ta' : 'en']}
                     className="absolute top-0 left-0 w-full h-full object-contain"
                   />
@@ -223,7 +230,7 @@ const WhatWeDoPage = () => {
             ))}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mediaData.featuredStories.map((image, index) => (
+            {mediaData.whatWeDo.images.slice(4, 7).map((image, index) => (
               <motion.div
                 key={index}
                 initial="hidden"
@@ -231,7 +238,7 @@ const WhatWeDoPage = () => {
                 variants={imageVariants}
                 className="bg-white rounded-lg shadow-md overflow-hidden"
               >
-                <div className="relative" style={{ paddingBottom: '75%' }}> {/* 4:3 aspect ratio */}
+                <div className="relative" style={{ paddingBottom: '75%' }}>
                   <img 
                     src={image} 
                     alt={`Featured Story ${index + 1}`} 

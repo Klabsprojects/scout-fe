@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Users, Trophy, ChevronDown, ArrowRight } from 'lucide-react';
+import { Globe, Users, Trophy, ChevronDown, ArrowRight, ChevronUp } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
 import NavigationMenu from '../components/NavigationMenu';
 import mediaData from '../MediaData.json';
@@ -16,9 +16,23 @@ export default function WhoWeAre() {
     transition: { duration: 0.6 }
   };
 
-  return (
-<div className="relative w-full bg-gradient-to-b from-blue-100 to-white">
+  const cards = [
+    { 
+      title: isTamil ? 'சிந்தனை நாள் பேநீலப்பறவையர்ரணி குருளையர் போட்டிகள் ' : 'Day of Thought Bluebird Kurulayar competitions',  
+      desc: isTamil ? 'சிந்தனை நாள் என்பது ஒரு தமிழ் மரபு விழா ஆகும், இது ஊக்கமோ அல்லது கலாச்சார குருளையர் போட்டிகளை கொண்டுள்ளது. இந்த விழாவில், தமிழ் மொழியின் சிந்தனை, பாரம்பரியம் மற்றும் மரபுகள் ஆகியவற்றை பேணுவதற்கான பல்வேறு போட்டிகள் நடைபெறுகின்றன' : 'Chintanai Naal (Thinking Day) is a Tamil cultural festival that includes various competitions and events. This festival celebrates the thought, tradition, and customs of the Tamil language',
+    },
+    { 
+      title: isTamil ? 'தமிழ்நாடு முழுவதும் வான்வழி மற்றும் இணையவழி திரளணி' : 'Aerial and online mobilization across Tamil Nadu', 
+      desc: isTamil ? 'தமிழ்நாடு முழுவதும் சிந்தனை நாள் விழா வான்வழி மற்றும் இணையவழி மூலம் தொடர்ச்சியாக நடத்தப்படுகிறது. பல்வேறு தமிழ் மொழி மற்றும் கலாச்சார அமைப்புகள், பல்கலைக்கழகங்கள், பள்ளிகள் மற்றும் கல்வி நிறுவனங்கள் இணைந்து இந்த விழாவை ஏற்பாடு செய்கின்றன' : 'All over Tamilnadu, Contemplation Day celebrations are being conducted continuously through air and internet. Various Tamil language and cultural organizations, universities, schools and educational institutes jointly organize this festival',
+    },
+    { 
+      title: isTamil ? '74வது நிறுவனர் நாள் கொண்டாட்டம்' : '74th Founders Day Celebration', 
+      desc: isTamil ? 'இந்த நிறுவனர் நாளில், பல்வேறு விழிப்புணர்வு நிகழ்ச்சிகள், போட்டிகள், பயிற்சி முகாம்கள் மற்றும் சமூக சேவை நடவடிக்கைகள் ஏற்பாடு செய்யப்பட்டிருந்தன. இந்த நிகழ்வு இளைஞர்களின் தலைமை திறன்கள், சுய-நம்பிக்கை மற்றும் பிற முக்கிய திறன்களை வளர்ப்பதில் முக்கிய பங்காற்றுகிறது.' : ' On this Founders Day, several awareness programs, competitions, training camps, and community service activities were organized. This event plays a crucial role in developing the leadership skills, self-confidence, and other important abilities of the',
+    }
+  ];
 
+  return (
+    <div className="relative w-full bg-gradient-to-b from-blue-100 to-white">
       {/* Hero Section with Parallax Effect */}
       <div className="relative w-full h-[70vh] mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
         <motion.div
@@ -114,75 +128,53 @@ export default function WhoWeAre() {
           ))}
         </div>
 
-{/* Enhanced Video Section */}
-<motion.div
-  initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
-  transition={{ duration: 0.8 }}
-  className="relative w-full mx-auto mb-20"
->
-  <div className="aspect-w-16 aspect-h-9 w-full sm:w-3/5 mx-auto"> {/* Full width on mobile and 60% on larger screens */}
-    <video 
-      controls 
-      className="w-full rounded-xl shadow-2xl"
-      poster={mediaData.whoWeAre.videoPoster}
-      onPlay={() => setIsVideoPlaying(true)}
-      onPause={() => setIsVideoPlaying(false)}
-    >
-      <source src={mediaData.whoWeAre.video} type="video/mp4" />
-    </video>
-  </div>
-</motion.div>
+        {/* Enhanced Video Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="relative w-full mx-auto mb-20"
+        >
+          <div className="aspect-w-16 aspect-h-9 w-full sm:w-3/5 mx-auto">
+            <video 
+              controls 
+              className="w-full rounded-xl shadow-2xl"
+              poster={mediaData.whoWeAre.videoPoster}
+              onPlay={() => setIsVideoPlaying(true)}
+              onPause={() => setIsVideoPlaying(false)}
+            >
+              <source src={mediaData.whoWeAre.video} type="video/mp4" />
+            </video>
+          </div>
+        </motion.div>
 
-
-
-      {/* Enhanced Organization Cards Section */}
-<motion.div 
-  className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20"
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, staggerChildren: 0.2 }}
->
-  {mediaData.organizationImages.map((img, index) => {
-    const cards = [
-      { 
-        title: isTamil ? 'தேசிய ஆராய்ச்சி அமைப்பு' : 'National Scout Organization',  
-        desc: isTamil ? 'உங்கள் நாட்டில் செயல்படும் ஆராய்ச்சி அமைப்பு' : 'A scout organization operates in your country'
-      },
-      { 
-        title: isTamil ? 'உலக ஆராய்ச்சி இயக்கம்' : 'World Scouting', 
-        desc: isTamil ? 'உலகம் முழுவதும் நாங்கள் ஒரு இயக்கமாக இருக்கிறோம்' : 'We have a worldwide movement'
-      },
-      { 
-        title: isTamil ? 'ஆராய்ச்சி இயக்கத்தை ஆதரிக்கவும்' : 'Join Scout Movement', 
-        desc: isTamil ? 'உலகளாவிய அளவில் எங்கள் பணிக்கான ஆதரவு' : 'Support our mission worldwide'
-      }
-    ];
-    return (
-      <motion.div 
-        key={index}
-        whileHover={{ y: -10 }}
-        className="bg-white rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl flex flex-col h-full"
-      >
-        <div className="relative h-48 overflow-hidden">
-          <img 
-            src={img}
-            alt={cards[index].title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-        </div>
-        <div className="p-6 flex flex-col flex-grow">
-          <h3 className="font-bold text-xl mb-2">{cards[index].title}</h3>
-          <p className="text-gray-600 mb-4 flex-grow">{cards[index].desc}</p>
-          <button className="mt-auto flex items-center justify-between w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-            <span>{isTamil ? 'மேலும் அறிக' : 'Learn More'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </motion.div>
-    );
-  })}
-</motion.div>
+        {/* Updated Organization Cards Section */}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, staggerChildren: 0.2 }}
+        >
+          {mediaData.whoWeAre.organizationImages.map((img, index) => (
+            <motion.div 
+              key={index}
+              whileHover={{ y: -10 }}
+              className="bg-white rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl flex flex-col h-full"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={img}
+                  alt={cards[index].title}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 className="font-bold text-xl mb-2">{cards[index].title}</h3>
+                <p className="text-gray-600">{cards[index].desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Enhanced Ban Ki-moon Section */}
         <motion.div 
@@ -207,15 +199,15 @@ export default function WhoWeAre() {
             </div>
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-3xl font-bold mb-4">
-                {isTamil ? 'பான் கி-மூன்' : 'Ban Ki-moon'}
+                {isTamil ? 'ஸ்ரீ.அன்பில் மகேஷ் பொய்யாமொழி' : 'SHRI.ANBIL MAGESH POIYAMOZHI'}
               </h2>
               <p className="text-gray-600 text-lg leading-relaxed">
                 {isTamil
-                  ? 'பான் கி-மூன், ஐக்கிய நாடுகள் தலைமைக்கு முன்னாள் தலைவர், ஆராய்ச்சியாளர்கள் ஆகியவர்.'
-                  : '"Scouting teaches young people to be active citizens and contribute to society. It gives them the opportunity to dream big and to achieve those dreams."'}
+                  ? 'மாநில தலைவர்'
+                  : 'STATE PRESEIDENT'}
               </p>
               <p className="text-gray-500 mt-2">
-                {isTamil ? 'முன்னாள் ஐக்கிய நாடுகள் பொதுச் செயலாளர்' : 'Former UN Secretary-General'}
+                {isTamil ? 'மாண்புமிகு கல்வி அமைச்சர்' : 'HONOURABLE EDUCATION MINISTER'}
               </p>
             </div>
           </div>

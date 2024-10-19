@@ -1,71 +1,99 @@
 {
-    "carouselImages": [
-      "/Images/ScoutMarch.png",
-      "/Images/ScoutMarch2.png",
-      "/Images/ScoutMarch3.png",
-      "/Images/ScoutMarch4.png"
-    ],
-    "featuredStories": [
-      "/Images/stories1.png",
-      "/Images/stories2.png",
-      "/Images/stories3.png"
-    ],
+  "carouselImages": [
+    "/Images/ScoutMarch.png",
+    "/Images/ScoutMarch2.png",
+    "/Images/ScoutMarch3.png",
+    "/Images/ScoutMarch4.png"
+  ],
+  "featuredStories": [
+    "/Images/stories1.png",
+    "/Images/stories2.png",
+    "/Images/stories3.png"
+  ],
+  "organizationImages": [
+    "/Images/worldscout.png",
+    "/Images/worldscout2.png",
+    "/Images/worldscout3.png"
+  ],
+  "newsImages": [
+    "/Images/news1.png",
+    "/Images/news2.png",
+    "/Images/news3.png",
+    "/Images/news4.png",
+    "/Images/news5.png"
+  ],
+  "videos": [
+    "/videos/testvideo.mp4",
+    "/videos/testvideo.mp4",
+    "/videos/testvideo.mp4"
+  ],
+  "whoWeAre": {
+    "heroImage": "/Images/whoweare.png",
+    "videoPoster": "/Images/cover.png",
+    "video": "/videos/testvideo.mp4",
+    "banKiMoonImage": "/Images/Bearers/AnbilMahesh.png",
     "organizationImages": [
-      "/Images/worldscout.png",
-      "/Images/worldscout2.png",
-      "/Images/worldscout3.png"
-    ],
-    "newsImages": [
-      "/Images/news1.png",
-      "/Images/news2.png",
-      "/Images/news3.png",
-      "/Images/news4.png",
-      "/Images/news5.png"
-
-    ],
+      "/Images/Organization1.png",
+      "/Images/Organization2.png",
+      "/Images/Organization3.png"
+    ]
+  },
+  "scoutEducation": {
+    "heroImage": "/Images/ScoutMarch2.png",
+    "educationImage1": "/Images/Vision1.png",
+    "educationImage2": "/Images/Vision2.png",
+    "videoPoster": "/Images/scouted-cover.png",
     "videos": [
-      "/videos/testvideo.mp4",
-      "/videos/testvideo.mp4",
-      "/videos/testvideo.mp4"
-    ],
-    "whoWeAre": {
-      "heroImage": "/Images/whoweare.png",
-      "videoPoster": "/Images/cover.png",
-      "video": "/videos/testvideo.mp4",
-      "banKiMoonImage": "/Images/bankimoon.png"
-    },
-    "scoutEducation": {
-      "heroImage": "/Images/ScoutMarch2.png",
-      "educationImage1": "/Images/education1.png",
-      "educationImage2": "/Images/education2.png",
-      "videoPoster": "/Images/scouted-cover.png",
-      "videos": [
-        {
-          "src": "/videos/testvideo.mp4",
-          "title": {
-            "en": "Outdoor Skills",
-            "ta": "வெளிப்புற திறன்கள்"
-          }
-        },
-        {
-          "src": "/videos/testvideo.mp4",
-          "title": {
-            "en": "Leadership",
-            "ta": "தலைமைத்துவம்"
-          }
-        },
-        {
-          "src": "/videos/testvideo.mp4",
-          "title": {
-            "en": "Community Service",
-            "ta": "சமூக சேவை"
-          }
+      {
+        "src": "/videos/testvideo.mp4",
+        "title": {
+          "en": "Outdoor Skills",
+          "ta": "வெளிப்புற திறன்கள்"
         }
-      ]
-    },
-    "headerImages": {
-      "scoutLogo": "/Images/ScoutLogo.png",
-      "tnLogo": "/Images/tn-logo.png"
-    }
+      },
+      {
+        "src": "/videos/testvideo.mp4",
+        "title": {
+          "en": "Leadership",
+          "ta": "தலைமைத்துவம்"
+        }
+      },
+      {
+        "src": "/videos/testvideo.mp4",
+        "title": {
+          "en": "Community Service",
+          "ta": "சமூக சேவை"
+        }
+      }
+    ]
+  },
+  "headerImages": {
+    "scoutLogo": "/Images/ScoutLogo.png",
+    "tnLogo": "/Images/tn-logo.png"
+  },
+  "scoutingHistory": [
+    "/Images/History1.png",
+    "/Images/History2.png",
+    "/Images/History3.png",
+    "/Images/History4.png",
+    "/Images/History5.png",
+    "/Images/History6.png",
+    "/Images/History7.png",
+    "/Images/History8.png",
+    "/Images/History9.png"
+  ],
+  "whatWeDo": {
+    "images": [
+      "/Images/Whatwedo1.png",
+      "/Images/Whatwedo2.png",
+      "/Images/Whatwedo3.png",
+      "/Images/Whatwedo4.png",
+      "/Images/Whatwedo5.png",
+      "/Images/Whatwedo6.png",
+      "/Images/Whatwedo7.png",
+      "/Images/Whatwedo8.png",
+      "/Images/Whatwedo9.png",
+      "/Images/Whatwedo10.png"
+    ]
   }
-  
+}
