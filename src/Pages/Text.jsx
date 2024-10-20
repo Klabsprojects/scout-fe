@@ -1,354 +1,234 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Book, Target, Users, BarChart2, Wallet, MessageCircle, TrendingUp } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
+import NavigationMenu from '../components/NavigationMenu';
 import mediaData from '../MediaData.json';
-import { ShoppingCart, Eye, Star, Search, Filter, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import useStore from './useStore';  // Import the Zustand store
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
-export const dummyProducts = [
-  { id: 1, name: { en: 'Scout Shirt for boys', ta: 'சிறுவர்களுக்கான சாரணர் சட்டை' }, price: 599.99, rating: 4.5, reviews: 120, inStock: true },
-  { id: 2, name: { en: 'Cap badge', ta: 'தொப்பி பேட்ஜ்' }, price: 1299.99, rating: 4.8, reviews: 250, inStock: true },
-  { id: 3, name: { en: 'Accessories Cap', ta: 'துணைக்கருவிகள் தொப்பி' }, price: 129.99, rating: 4.2, reviews: 180, inStock: true },
-  { id: 4, name: { en: 'Guide Uniform Accessories', ta: 'வழிகாட்டி சீருடை பாகங்கள்' }, price: 199.99, rating: 4.0, reviews: 150, inStock: true },
-  { id: 5, name: { en: 'Scarf and Woggle set', ta: 'தாவணி மற்றும் தள்ளாடும் தொகுப்பு' }, price: 449.99, rating: 4.6, reviews: 200, inStock: true },
-  { id: 6, name: { en: 'Girls Guide Uniform', ta: 'பெண்கள் வழிகாட்டி சீருடை' }, price: 399.99, rating: 4.7, reviews: 300, inStock: true },
-  { id: 7, name: { en: 'Scout Trousers', ta: 'சாரணர் கால்சட்டை' }, price: 79.99, rating: 4.1, reviews: 90, inStock: true },
-  { id: 8, name: { en: 'Scout and Guide belt', ta: 'சாரணர் மற்றும் வழிகாட்டி பெல்ட்' }, price: 89.99, rating: 4.3, reviews: 110, inStock: true },
-  { id: 9, name: { en: 'Scout Uniform', ta: 'சாரணர் சீருடை' }, price: 349.99, rating: 4.4, reviews: 160, inStock: true },
-  { id: 10, name: { en: 'Guide Batch', ta: 'வழிகாட்டி தொகுதி' }, price: 199.99, rating: 4.2, reviews: 140, inStock: true },
-];
-
-const fetchProducts = async (searchTerm, sortBy, page) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  let filteredProducts = [...dummyProducts];
-  
-  if (searchTerm) {
-    filteredProducts = filteredProducts.filter(product => 
-      product.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.name.ta.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
-  
-  switch (sortBy) {
-    case 'priceLowToHigh':
-      filteredProducts.sort((a, b) => a.price - b.price);
-      break;
-    case 'priceHighToLow':
-      filteredProducts.sort((a, b) => b.price - a.price);
-      break;
-    case 'topRated':
-      filteredProducts.sort((a, b) => b.rating - a.rating);
-      break;
-    case 'popularity':
-    default:
-      filteredProducts.sort((a, b) => b.reviews - a.reviews);
-      break;
-  }
-
-  const startIndex = (page - 1) * 12;
-  const endIndex = startIndex + 12;
-  return {
-    products: filteredProducts.slice(startIndex, endIndex),
-    hasMore: endIndex < filteredProducts.length
-  };
-};
-
-const ProductCard = ({ product, onAddToCart, onToggleWishlist, onViewProduct, isTamil }) => {
-  return (
-    <motion.div 
-      className="bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col transition-all duration-300 hover:shadow-xl"
-      whileHover={{ y: -5 }}
-    >
-      <div className="relative w-full h-64">
-        <img src={mediaData.carouselImages[product.id % mediaData.carouselImages.length]} alt={product.name[isTamil ? 'ta' : 'en']} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 opacity-0 hover:opacity-100 flex items-center justify-center">
-          <button
-            className="bg-white text-gray-800 rounded-full p-2 m-2 hover:bg-gray-100 transition-colors duration-300"
-            onClick={() => onToggleWishlist(product.id)}
-          >
-            <Heart className={`h-5 w-5 ${product.isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'}`} />
-          </button>
-        </div>
-      </div>
-      <div className="p-4 flex flex-col justify-between flex-1">
-        <div>
-          <h3 className="text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-1">{product.name[isTamil ? 'ta' : 'en']}</h3>
-          <div className="flex items-center mb-1">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-              ))}
-            </div>
-            <span className="ml-2 text-sm text-[#4A6FA5]">({product.reviews})</span>
-          </div>
-        </div>
-        <div className="flex flex-col space-y-2">
-          <span className="text-xl font-bold text-[#1A2E44]">₹{product.price.toFixed(2)}</span>
-          <button
-            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
-            onClick={() => onAddToCart(product)}
-          >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Add to Cart
-          </button>
-          <button
-            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
-            onClick={() => onViewProduct(product.id)}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            View Product
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const Products = () => {
+export default function ScoutEducation() {
   const { isTamil } = useTranslation();
-  const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [sortBy, setSortBy] = useState('popularity');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
 
-  // Use Zustand store
-  const addToCart = useStore(state => state.addToCart);
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
 
   const translations = {
-    en: {
-      title: 'Discover Our Scout Treasures',
-      search: 'Search for scout items...',
-      sort: 'Sort by',
-      popularity: 'Most Popular',
-      priceLowToHigh: 'Price: Low to High',
-      priceHighToLow: 'Price: High to Low',
-      topRated: 'Top Rated',
-      addToCart: 'Add to Cart',
-      seeMore: 'Explore More',
-      reviews: 'reviews',
-      viewProduct: 'Quick View',
-      filters: 'Filters',
-      close: 'Close',
+    title: {
+      en: 'Our Mission',
+      ta: 'எங்கள் நோக்கம்',
     },
-    ta: {
-      title: 'எங்கள் சாரணர் பொக்கிஷங்களைக் கண்டறியுங்கள்',
-      search: 'சாரணர் பொருட்களைத் தேடுங்கள்...',
-      sort: 'வகைப்படுத்து',
-      popularity: 'மிக பிரபலமானவை',
-      priceLowToHigh: 'விலை: குறைவிலிருந்து அதிகம்',
-      priceHighToLow: 'விலை: அதிகத்திலிருந்து குறைவு',
-      topRated: 'உயர்ந்த மதிப்பீடு',
-      addToCart: 'கூடையில் சேர்',
-      seeMore: 'மேலும் கண்டறிய',
-      reviews: 'விமர்சனங்கள்',
-      viewProduct: 'விரைவில் காண்க',
-      filters: 'வடிகட்டிகள்',
-      close: 'மூடு',
+    vision: {
+      en: 'Vision 2024',
+      ta: 'தொலைநோக்கு 2024',
+    },
+    description: {
+      en: "Scout education nurtures youth into global citizens, equipping them with life skills and inspiring positive change in society. Scouting's non-formal educational approach aims to equip young people with the skills and competencies that enable these ideals. Through a variety of engaging activities and challenges, scouts learn important values such as teamwork, leadership, and environmental stewardship. This holistic approach to education helps young people develop not just practical skills, but also a strong sense of social responsibility and a global perspective.",
+      ta: "சாரணர் கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்க்கிறது, அவர்களுக்கு வாழ்க்கைத் திறன்களை வழங்குகிறது மற்றும் சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது.",
+    },
+    additionalContent: {
+      en: "Our educational programs are designed to be adaptable and inclusive, catering to diverse needs and backgrounds. We emphasize experiential learning, allowing scouts to apply their knowledge in real-world situations. This practical approach not only reinforces learning but also builds confidence and problem-solving skills. Furthermore, our international networks provide opportunities for cultural exchange, fostering global understanding and cooperation from a young age.",
+      ta: "எங்கள் கல்வித் திட்டங்கள் பல்வேறு தேவைகள் மற்றும் பின்னணிகளுக்கு ஏற்ப தகவமைக்கக்கூடியதாகவும், உள்ளடக்கியதாகவும் வடிவமைக்கப்பட்டுள்ளன. நாங்கள் அனுபவ கற்றலை வலியுறுத்துகிறோம், இது சாரணர்கள் தங்கள் அறிவை உண்மையான உலக சூழ்நிலைகளில் பயன்படுத்த அனுமதிக்கிறது. "
+    },
+    visionStatement: {
+      en: "By 2024, The Bharat Scouts and Guides will be a globally visible, consistently growing, self-reliant premium youth movement that is gender balanced, vibrant and responsive to trends.",
+      ta: "2024 ஆம் ஆண்டளவில், பாரத சாரணர்கள் மற்றும் வழிகாட்டிகள் பாலின சமநிலை, துடிப்பான மற்றும் போக்குகளுக்கு பதிலளிக்கும் வகையில் உலகளவில் தெரியக்கூடிய, தொடர்ந்து வளரும், சுய-சார்பு கொண்ட முன்னணி இளைஞர் இயக்கமாக இருக்கும்.",
+    },
+    strategicPriorities: {
+      en: 'Strategic Priorities',
+      ta: 'மூலோபாய முன்னுரிமைகள்',
+    },
+    priorities: {
+      youthProgramme: {
+        en: 'Youth Programme',
+        ta: 'இளைஞர் திட்டம்',
+        description: {
+          en: 'Delivering a high-quality, engaging youth program focused on personal development, leadership skills, and community service. Our program incorporates outdoor activities, skill-building workshops, and hands-on learning experiences.',
+          ta: 'தனிப்பட்ட வளர்ச்சி, தலைமைத்துவ திறன்கள் மற்றும் சமூக சேவை ஆகியவற்றில் கவனம் செலுத்தும் உயர்தரமான, ஈடுபாடான இளைஞர் திட்டத்தை வழங்குதல். எங்கள் திட்டம் வெளிப்புற செயல்பாடுகள், திறன் மேம்பாட்டு பட்டறைகள் மற்றும் நடைமுறை கற்றல் அனுபவங்களை உள்ளடக்கியது.'
+        }
+      },
+      adultResources: {
+        en: 'Adult Resources',
+        ta: 'பெரியவர்கள் வளங்கள்',
+        description: {
+          en: 'Building a strong network of skilled adult volunteers through comprehensive training programs, mentorship opportunities, and continuous professional development. We focus on creating a supportive environment for our adult leaders.',
+          ta: 'விரிவான பயிற்சித் திட்டங்கள், வழிகாட்டுதல் வாய்ப்புகள் மற்றும் தொடர்ச்சியான தொழில்முறை வளர்ச்சி மூலம் திறமையான பெரியவர் தன்னார்வலர்களின் வலுவான வலையமைப்பை உருவாக்குதல். எங்கள் பெரியவர் தலைவர்களுக்கு ஆதரவான சூழலை உருவாக்குவதில் நாங்கள் கவனம் செலுத்துகிறோம்.'
+        }
+      },
+      management: {
+        en: 'Management',
+        ta: 'மேலாண்மை',
+        description: {
+          en: 'Implementing modern governance practices and efficient organizational systems. This includes digital transformation initiatives, streamlined processes, and data-driven decision-making approaches.',
+          ta: 'நவீன ஆளுமை நடைமுறைகள் மற்றும் திறமையான அமைப்பு முறைமைகளை செயல்படுத்துதல். இது டிஜிட்டல் மாற்ற முயற்சிகள், எளிமைப்படுத்தப்பட்ட செயல்முறைகள் மற்றும் தரவு அடிப்படையிலான முடிவெடுக்கும் அணுகுமுறைகளை உள்ளடக்கியது.'
+        }
+      },
+      finance: {
+        en: 'Finance',
+        ta: 'நிதி',
+        description: {
+          en: 'Developing diverse funding streams and maintaining transparent financial management. We focus on creating sustainable revenue models, efficient resource allocation, and building emergency reserves.',
+          ta: 'பல்வேறு நிதி ஆதாரங்களை உருவாக்குதல் மற்றும் வெளிப்படையான நிதி நிர்வாகத்தை பராமரித்தல். நிலையான வருவாய் மாதிரிகளை உருவாக்குதல், திறமையான வள ஒதுக்கீடு மற்றும் அவசரகால சேமிப்புகளை உருவாக்குவதில் நாங்கள் கவனம் செலுத்துகிறோம்.'
+        }
+      },
+      communication: {
+        en: 'Communication & Public Relations',
+        ta: 'தகவல் தொடர்பு & பொதுமக்கள் தொடர்பு',
+        description: {
+          en: 'Enhancing our digital presence and community engagement through strategic communications, social media outreach, and impactful storytelling. We aim to showcase the transformative power of scouting.',
+          ta: 'மூலோபாய தகவல் தொடர்புகள், சமூக ஊடக அணுகல் மற்றும் தாக்கம் மிக்க கதை சொல்லல் மூலம் எங்கள் டிஜிட்டல் இருப்பு மற்றும் சமூக ஈடுபாட்டை மேம்படுத்துதல். சாரணர் இயக்கத்தின் மாற்றும் சக்தியை வெளிப்படுத்துவதே எங்கள் நோக்கம்.'
+        }
+      },
+      growth: {
+        en: 'Growth',
+        ta: 'வளர்ச்சி',
+        description: {
+          en: 'Expanding our reach through innovative recruitment strategies, partnerships with educational institutions, and development of new scout groups. We focus on inclusive growth that reaches diverse communities.',
+          ta: 'புதுமையான ஆட்சேர்ப்பு உத்திகள், கல்வி நிறுவனங்களுடனான கூட்டாண்மைகள் மற்றும் புதிய சாரணர் குழுக்களின் வளர்ச்சி மூலம் எங்கள் அணுகலை விரிவுபடுத்துதல். பல்வேறு சமூகங்களை அடையும் உள்ளடக்கிய வளர்ச்சியில் நாங்கள் கவனம் செலுத்துகிறோம்.'
+        }
+      }
+    },
+    videoError: {
+      en: 'Your browser does not support the video tag.',
+      ta: 'உங்கள் உலாவி வீடியோ டேக்கை ஆதரிக்கவில்லை.'
     }
   };
 
-  const t = translations[isTamil ? 'ta' : 'en'];
-
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await fetchProducts(searchTerm, sortBy, page);
-      setProducts(prevProducts => page === 1 ? result.products : [...prevProducts, ...result.products]);
-      setHasMore(result.hasMore);
-    } catch (err) {
-      setError('Failed to load products. Please try again.');
-    }
-    setLoading(false);
-  }, [searchTerm, sortBy, page]);
-
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setPage(1);
-  };
-
-  const handleSortChange = (event) => {
-    setSortBy(event.target.value);
-    setPage(1);
-  };
-
-  useEffect(() => {
-    // Reset products and load new ones when search or sort changes
-    setProducts([]);
-    loadProducts();
-  }, [searchTerm, sortBy]);
-
-  const handleAddToCart = (product) => {
-    const cartItem = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: mediaData.carouselImages[product.id % mediaData.carouselImages.length],
-      quantity: 1
-    };
-    addToCart(cartItem);
-    navigate('/cart');
-  };
-
-  const handleToggleWishlist = (productId) => {
-    setProducts(prevProducts => prevProducts.map(product => 
-      product.id === productId ? { ...product, isWishlisted: !product.isWishlisted } : product
-    ));
-  };
-
-  const handleViewProduct = (productId) => {
-    navigate(`/product/${productId}`);
-  };
-
-  const handleLoadMore = () => {
-    setPage(prevPage => prevPage + 1);
-  };
+  const strategicPriorities = [
+    { icon: Target, key: 'youthProgramme', color: 'bg-emerald-500' },
+    { icon: Users, key: 'adultResources', color: 'bg-blue-500' },
+    { icon: BarChart2, key: 'management', color: 'bg-purple-500' },
+    { icon: Wallet, key: 'finance', color: 'bg-yellow-500' },
+    { icon: MessageCircle, key: 'communication', color: 'bg-red-500' },
+    { icon: TrendingUp, key: 'growth', color: 'bg-green-500' }
+  ];
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <motion.h2 
-          className="text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-36"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {t.title}
-        </motion.h2>
-        
-        <motion.div 
-          className="bg-white p-4 rounded-xl shadow-md mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <button
-                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                {t.filters}
-              </button>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={t.search}
-                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-64"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                />
-                <Search className="h-5 w-5 text-[#4A6FA5] absolute left-3 top-1/2 transform -translate-y-1/2" />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <select 
-                className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F]"
-                value={sortBy}
-                onChange={handleSortChange}
-              >
-                <option value="popularity">{t.popularity}</option>
-                <option value="priceLowToHigh">{t.priceLowToHigh}</option>
-                <option value="priceHighToLow">{t.priceHighToLow}</option>
-                <option value="topRated">{t.topRated}</option>
-              </select>
-            </div>
-          </div>
-
-          {showFilters && (
-            <motion.div 
-              className="mt-4 flex flex-wrap gap-4"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Add filter options here if needed */}
-            </motion.div>
-          )}
-        </motion.div>
-
-        <AnimatePresence>
-          {loading && products.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center text-xl text-[#4A6FA5] mt-12"
-            >
-              Loading...
-            </motion.div>
-          ) : (
-            <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {products.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  <ProductCard 
-                    product={product} 
-                    onAddToCart={handleAddToCart} 
-                    onToggleWishlist={handleToggleWishlist}
-                    onViewProduct={handleViewProduct}
-                    isTamil={isTamil}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {products.length === 0 && !loading && (
-          <motion.p
-            className="text-center text-xl text-[#4A6FA5] mt-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+    <div className="relative w-full bg-gray-50">
+      {/* Hero Section */}
+      <div className="relative w-full mt-16 sm:mt-24 md:mt-32 lg:mt-38 overflow-hidden">
+        <img
+          src={mediaData.scoutEducation.heroImage}
+          alt="Scout Education Hero"
+          className="w-full h-auto max-h-[500px] object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h1 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4 px-4"
+            style={{
+              background: 'linear-gradient(to right, #FFD700, #FFA500)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+            data-aos="fade-up"
           >
-            No products found. Try adjusting your search or filters.
-          </motion.p>
-        )}
+            {translations.title[isTamil ? 'ta' : 'en']}
+          </h1>
+        </div>
+      </div>
 
-        {hasMore && products.length > 0 && (
-          <div className="flex justify-center mt-12">
-            <button
-              onClick={handleLoadMore}
-              className="px-8 py-3 rounded-full bg-[#E07A5F] text-white text-lg font-semibold hover:bg-[#C86D54] transition-colors duration-300"
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : t.seeMore}
-            </button>
+      <NavigationMenu />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Vision 2024 Section */}
+        <div className="mb-24" data-aos="fade-up">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-8">
+            {translations.vision[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="bg-white rounded-lg shadow-xl p-4 sm:p-8">
+            <p className="text-lg sm:text-xl text-gray-700 text-center leading-relaxed mb-8">
+              {translations.visionStatement[isTamil ? 'ta' : 'en']}
+            </p>
           </div>
-        )}
+        </div>
 
-        {error && (
-          <div className="text-red-500 text-center mt-4">
-            {error}
+        {/* Strategic Priorities */}
+        <div className="mb-24">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">
+            {translations.strategicPriorities[isTamil ? 'ta' : 'en']}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {strategicPriorities.map((priority, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <div className={`${priority.color} w-16 h-16 rounded-full flex items-center justify-center mb-6 transform transition-transform hover:rotate-12`}>
+                  <priority.icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+                  {translations.priorities[priority.key][isTamil ? 'ta' : 'en']}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {translations.priorities[priority.key].description[isTamil ? 'ta' : 'en']}
+                </p>
+                <div className="mt-4 w-16 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Image Sections */}
+        <div className="flex flex-col md:flex-row items-center mb-24">
+          <div className="w-full md:w-1/2 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
+            <img
+              src={mediaData.scoutEducation.educationImage1}
+              alt="Scout Education"
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+          <div className="w-full md:w-1/2" data-aos="fade-left">
+            <p className="text-gray-600 leading-relaxed mb-4">
+              {translations.description[isTamil ? 'ta' : 'en']}
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              {translations.additionalContent[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row-reverse items-center mb-24">
+          <div className="w-full md:w-1/2 mb-8 md:mb-0 md:ml-8" data-aos="fade-left">
+            <img
+              src={mediaData.scoutEducation.educationImage2}
+              alt="Scout Education"
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+          <div className="w-full md:w-1/2" data-aos="fade-right">
+            <p className="text-gray-600 leading-relaxed mb-4">
+              {translations.description[isTamil ? 'ta' : 'en']}
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              {translations.additionalContent[isTamil ? 'ta' : 'en']}
+            </p>
+          </div>
+        </div>
+
+        {/* Video Section */}
+        {mediaData.scoutEducation.videos && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {mediaData.scoutEducation.videos.map((video, index) => (
+              <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
+                <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
+                  <video controls className="w-full h-auto" poster={mediaData.scoutEducation.videoPoster}>
+                    <source src={video.src} type="video/mp4" />
+                    {translations.videoError[isTamil ? 'ta' : 'en']}
+                  </video>
+                </div>
+                <p className="text-lg sm:text-xl text-violet-700 font-semibold text-center">
+                  {isTamil ? video.title.ta : video.title.en}
+                </p>
+              </div>
+            ))}
           </div>
         )}
       </div>
     </div>
   );
-};
-
-export default Products;
+}

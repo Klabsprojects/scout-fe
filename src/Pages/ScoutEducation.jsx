@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Book, Target, Users, BarChart2, Wallet, MessageCircle, TrendingUp } from 'lucide-react';
 import { useTranslation } from '../Context/TranslationContext';
@@ -132,7 +133,7 @@ export default function ScoutEducation() {
 
       <NavigationMenu />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
         {/* Vision 2024 Section */}
         <div className="mb-24" data-aos="fade-up">
           <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-8">
