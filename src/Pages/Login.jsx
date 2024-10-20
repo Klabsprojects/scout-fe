@@ -69,7 +69,15 @@ export default function LoginSignupPage() {
       // TODO: Handle successful login (e.g., store token, redirect)
     } catch (error) {
       console.error('Request error:', error);
-      setError(error.response?.data?.message || `An error occurred during ${isSignup ? 'signup' : 'login'}`);
+      if (error.response && error.response.data) {
+        if (error.response.data.message === 'Email already in use') {
+          setError('This email is already registered. Please use a different email or try logging in.');
+        } else {
+          setError(error.response.data.message || `An error occurred during ${isSignup ? 'signup' : 'login'}`);
+        }
+      } else {
+        setError(`An unexpected error occurred. Please try again later.`);
+      }
     } finally {
       setIsLoading(false);
     }

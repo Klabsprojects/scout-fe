@@ -30,7 +30,7 @@ export default function ScoutEducation() {
       ta: "சாரணர் கல்வி இளைஞர்களை உலகளாவிய குடிமக்களாக வளர்க்கிறது, அவர்களுக்கு வாழ்க்கைத் திறன்களை வழங்குகிறது மற்றும் சமூகத்தில் நேர்மறையான மாற்றத்தை ஊக்குவிக்கிறது.",
     },
     additionalContent: {
-      // en: "Our educational programs are designed to be adaptable and inclusive, catering to diverse needs and backgrounds. We emphasize experiential learning, allowing scouts to apply their knowledge in real-world situations. This practical approach not only reinforces learning but also builds confidence and problem-solving skills. Furthermore, our international networks provide opportunities for cultural exchange, fostering global understanding and cooperation from a young age.",
+      en: "Our educational programs are designed to be adaptable and inclusive, catering to diverse needs and backgrounds. We emphasize experiential learning, allowing scouts to apply their knowledge in real-world situations. This practical approach not only reinforces learning but also builds confidence and problem-solving skills. Furthermore, our international networks provide opportunities for cultural exchange, fostering global understanding and cooperation from a young age.",
       ta: "எங்கள் கல்வித் திட்டங்கள் பல்வேறு தேவைகள் மற்றும் பின்னணிகளுக்கு ஏற்ப தகவமைக்கக்கூடியதாகவும், உள்ளடக்கியதாகவும் வடிவமைக்கப்பட்டுள்ளன. நாங்கள் அனுபவ கற்றலை வலியுறுத்துகிறோம், இது சாரணர்கள் தங்கள் அறிவை உண்மையான உலக சூழ்நிலைகளில் பயன்படுத்த அனுமதிக்கிறது. "
     },
     visionStatement: {
@@ -113,11 +113,11 @@ export default function ScoutEducation() {
         <img
           src={mediaData.scoutEducation.heroImage}
           alt="Scout Education Hero"
-          className="w-full h-auto max-h-[500px] object-cover" // Reduced max height
+          className="w-full h-auto max-h-[500px] object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <h1 
-            className="text-4xl md:text-6xl font-bold text-center mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4 px-4"
             style={{
               background: 'linear-gradient(to right, #FFD700, #FFA500)',
               WebkitBackgroundClip: 'text',
@@ -132,14 +132,14 @@ export default function ScoutEducation() {
 
       <NavigationMenu />
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Vision 2024 Section */}
         <div className="mb-24" data-aos="fade-up">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-8">
             {translations.vision[isTamil ? 'ta' : 'en']}
           </h2>
-          <div className="bg-white rounded-lg shadow-xl p-8">
-            <p className="text-xl text-gray-700 text-center leading-relaxed mb-8">
+          <div className="bg-white rounded-lg shadow-xl p-4 sm:p-8">
+            <p className="text-lg sm:text-xl text-gray-700 text-center leading-relaxed mb-8">
               {translations.visionStatement[isTamil ? 'ta' : 'en']}
             </p>
           </div>
@@ -147,10 +147,10 @@ export default function ScoutEducation() {
 
         {/* Strategic Priorities */}
         <div className="mb-24">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-12" data-aos="fade-up">
             {translations.strategicPriorities[isTamil ? 'ta' : 'en']}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {strategicPriorities.map((priority, index) => (
               <div
                 key={index}
@@ -161,7 +161,7 @@ export default function ScoutEducation() {
                 <div className={`${priority.color} w-16 h-16 rounded-full flex items-center justify-center mb-6 transform transition-transform hover:rotate-12`}>
                   <priority.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
                   {translations.priorities[priority.key][isTamil ? 'ta' : 'en']}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
@@ -175,14 +175,14 @@ export default function ScoutEducation() {
 
         {/* Image Sections */}
         <div className="flex flex-col md:flex-row items-center mb-24">
-          <div className="md:w-1/2 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
+          <div className="w-full md:w-1/2 mb-8 md:mb-0 md:mr-8" data-aos="fade-right">
             <img
               src={mediaData.scoutEducation.educationImage1}
               alt="Scout Education"
-              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl" // Reduced max height
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl"
             />
           </div>
-          <div className="md:w-1/2" data-aos="fade-left">
+          <div className="w-full md:w-1/2" data-aos="fade-left">
             <p className="text-gray-600 leading-relaxed mb-4">
               {translations.description[isTamil ? 'ta' : 'en']}
             </p>
@@ -193,14 +193,14 @@ export default function ScoutEducation() {
         </div>
 
         <div className="flex flex-col md:flex-row-reverse items-center mb-24">
-          <div className="md:w-1/2 mb-8 md:mb-0 md:ml-8" data-aos="fade-left">
+          <div className="w-full md:w-1/2 mb-8 md:mb-0 md:ml-8" data-aos="fade-left">
             <img
               src={mediaData.scoutEducation.educationImage2}
               alt="Scout Education"
-              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl" // Reduced max height
+              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-2xl"
             />
           </div>
-          <div className="md:w-1/2" data-aos="fade-right">
+          <div className="w-full md:w-1/2" data-aos="fade-right">
             <p className="text-gray-600 leading-relaxed mb-4">
               {translations.description[isTamil ? 'ta' : 'en']}
             </p>
@@ -212,7 +212,7 @@ export default function ScoutEducation() {
 
         {/* Video Section */}
         {mediaData.scoutEducation.videos && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {mediaData.scoutEducation.videos.map((video, index) => (
               <div key={index} className="flex flex-col items-center" data-aos="flip-left" data-aos-delay={index * 100}>
                 <div className="w-full rounded-lg overflow-hidden shadow-2xl mb-4">
@@ -221,7 +221,7 @@ export default function ScoutEducation() {
                     {translations.videoError[isTamil ? 'ta' : 'en']}
                   </video>
                 </div>
-                <p className="text-xl text-violet-700 font-semibold">
+                <p className="text-lg sm:text-xl text-violet-700 font-semibold text-center">
                   {isTamil ? video.title.ta : video.title.en}
                 </p>
               </div>
