@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import api from '../apiConfig/api'; // Import the API configuration
+import api from '../apiConfig/api';
+import { useTranslation } from '../Context/TranslationContext';
 
 export default function LoginSignupPage() {
+  const { isTamil } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -12,21 +14,104 @@ export default function LoginSignupPage() {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const translations = {
+    createAccount: {
+      en: 'Create an Account',
+      ta: 'கணக்கை உருவாக்கவும்'
+    },
+    welcomeBack: {
+      en: 'Welcome Back',
+      ta: 'மீண்டும் வரவேற்கிறோம்'
+    },
+    joinCommunity: {
+      en: 'Join our community today!',
+      ta: 'இன்றே எங்கள் சமூகத்தில் இணையுங்கள்!'
+    },
+    signInPrompt: {
+      en: 'Please sign in to your account',
+      ta: 'உங்கள் கணக்கில் உள்நுழையவும்'
+    },
+    username: {
+      en: 'Username',
+      ta: 'பயனர்பெயர்'
+    },
+    enterUsername: {
+      en: 'Enter your username',
+      ta: 'உங்கள் பயனர்பெயரை உள்ளிடவும்'
+    },
+    emailAddress: {
+      en: 'Email address',
+      ta: 'மின்னஞ்சல் முகவரி'
+    },
+    enterEmail: {
+      en: 'Enter your email address',
+      ta: 'உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்'
+    },
+    password: {
+      en: 'Password',
+      ta: 'கடவுச்சொல்'
+    },
+    enterPassword: {
+      en: 'Enter your password',
+      ta: 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்'
+    },
+    loginAs: {
+      en: 'Login As',
+      ta: 'இவராக உள்நுழையவும்'
+    },
+    user: {
+      en: 'User',
+      ta: 'பயனர்'
+    },
+    admin: {
+      en: 'Admin',
+      ta: 'நிர்வாகி'
+    },
+    rememberMe: {
+      en: 'Remember me',
+      ta: 'என்னை நினைவில் வைத்துக்கொள்'
+    },
+    forgotPassword: {
+      en: 'Forgot your password?',
+      ta: 'கடவுச்சொல் மறந்துவிட்டதா?'
+    },
+    processing: {
+      en: 'Processing...',
+      ta: 'செயலாக்கப்படுகிறது...'
+    },
+    signUp: {
+      en: 'Sign Up',
+      ta: 'பதிவு செய்யவும்'
+    },
+    signIn: {
+      en: 'Sign In',
+      ta: 'உள்நுழையவும்'
+    },
+    alreadyHaveAccount: {
+      en: 'Already have an account?',
+      ta: 'ஏற்கனவே ஒரு கணக்கு உள்ளதா?'
+    },
+    dontHaveAccount: {
+      en: "Don't have an account?",
+      ta: 'கணக்கு இல்லையா?'
+    }
+  };
+
   const validateForm = () => {
     if (isSignup && !username.trim()) {
-      setError('Username is required');
+      setError(isTamil ? 'பயனர்பெயர் தேவை' : 'Username is required');
       return false;
     }
     if (!email.trim()) {
-      setError('Email is required');
+      setError(isTamil ? 'மின்னஞ்சல் தேவை' : 'Email is required');
       return false;
     }
     if (!password.trim()) {
-      setError('Password is required');
+      setError(isTamil ? 'கடவுச்சொல் தேவை' : 'Password is required');
       return false;
     }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError(isTamil ? 'கடவுச்சொல் குறைந்தது 8 எழுத்துகள் நீளமாக இருக்க வேண்டும்' : 'Password must be at least 8 characters long');
       return false;
     }
     return true;
@@ -44,12 +129,7 @@ export default function LoginSignupPage() {
     try {
       let response;
       if (isSignup) {
-        const registrationData = {
-          email,
-          password,
-          username,
-          loginAs,
-        };
+        const registrationData = { email, password, username, loginAs };
         console.log('Sending registration data:', JSON.stringify(registrationData, null, 2));
         response = await api.post('/api/register', registrationData);
       } else {
@@ -63,7 +143,10 @@ export default function LoginSignupPage() {
       if (response.data && response.data.message) {
         setSuccess(response.data.message);
       } else {
-        setSuccess(isSignup ? 'Registration successful! Please log in.' : 'Login successful!');
+        setSuccess(isSignup 
+          ? (isTamil ? 'பதிவு வெற்றிகரமாக முடிந்தது! தயவுசெய்து உள்நுழையவும்.' : 'Registration successful! Please log in.')
+          : (isTamil ? 'உள்நுழைவு வெற்றிகரமானது!' : 'Login successful!')
+        );
       }
 
       // TODO: Handle successful login (e.g., store token, redirect)
@@ -71,12 +154,21 @@ export default function LoginSignupPage() {
       console.error('Request error:', error);
       if (error.response && error.response.data) {
         if (error.response.data.message === 'Email already in use') {
-          setError('This email is already registered. Please use a different email or try logging in.');
+          setError(isTamil 
+            ? 'இந்த மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது. வேறு மின்னஞ்சலைப் பயன்படுத்தவும் அல்லது உள்நுழைய முயற்சிக்கவும்.'
+            : 'This email is already registered. Please use a different email or try logging in.'
+          );
         } else {
-          setError(error.response.data.message || `An error occurred during ${isSignup ? 'signup' : 'login'}`);
+          setError(error.response.data.message || (isTamil 
+            ? `${isSignup ? 'பதிவு' : 'உள்நுழைவு'} செய்யும் போது பிழை ஏற்பட்டது`
+            : `An error occurred during ${isSignup ? 'signup' : 'login'}`
+          ));
         }
       } else {
-        setError(`An unexpected error occurred. Please try again later.`);
+        setError(isTamil
+          ? 'எதிர்பாராத பிழை ஏற்பட்டது. தயவுசெய்து பின்னர் மீண்டும் முயற்சிக்கவும்.'
+          : 'An unexpected error occurred. Please try again later.'
+        );
       }
     } finally {
       setIsLoading(false);
@@ -95,10 +187,10 @@ export default function LoginSignupPage() {
           <div className="w-full lg:w-1/2 p-8 sm:p-12">
             <div>
               <h2 className="text-3xl font-extrabold text-gray-900">
-                {isSignup ? 'Create an Account' : 'Welcome Back'}
+                {isSignup ? translations.createAccount[isTamil ? 'ta' : 'en'] : translations.welcomeBack[isTamil ? 'ta' : 'en']}
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                {isSignup ? 'Join our community today!' : 'Please sign in to your account'}
+                {isSignup ? translations.joinCommunity[isTamil ? 'ta' : 'en'] : translations.signInPrompt[isTamil ? 'ta' : 'en']}
               </p>
             </div>
             {error && (
@@ -116,7 +208,7 @@ export default function LoginSignupPage() {
                 {isSignup && (
                   <div>
                     <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                      Username
+                      {translations.username[isTamil ? 'ta' : 'en']}
                     </label>
                     <input
                       id="username"
@@ -124,7 +216,7 @@ export default function LoginSignupPage() {
                       type="text"
                       required
                       className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                      placeholder="Enter your username"
+                      placeholder={translations.enterUsername[isTamil ? 'ta' : 'en']}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
@@ -132,7 +224,7 @@ export default function LoginSignupPage() {
                 )}
                 <div>
                   <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email address
+                    {translations.emailAddress[isTamil ? 'ta' : 'en']}
                   </label>
                   <input
                     id="email-address"
@@ -141,14 +233,14 @@ export default function LoginSignupPage() {
                     autoComplete="email"
                     required
                     className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Enter your email address"
+                    placeholder={translations.enterEmail[isTamil ? 'ta' : 'en']}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
+                    {translations.password[isTamil ? 'ta' : 'en']}
                   </label>
                   <input
                     id="password"
@@ -157,7 +249,7 @@ export default function LoginSignupPage() {
                     autoComplete="current-password"
                     required
                     className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Enter your password"
+                    placeholder={translations.enterPassword[isTamil ? 'ta' : 'en']}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -165,7 +257,7 @@ export default function LoginSignupPage() {
                 {isSignup && (
                   <div>
                     <label htmlFor="loginAs" className="block text-sm font-medium text-gray-700 mb-1">
-                      Login As
+                      {translations.loginAs[isTamil ? 'ta' : 'en']}
                     </label>
                     <select
                       id="loginAs"
@@ -174,8 +266,8 @@ export default function LoginSignupPage() {
                       onChange={(e) => setLoginAs(e.target.value)}
                       className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
+                      <option value="user">{translations.user[isTamil ? 'ta' : 'en']}</option>
+                      <option value="admin">{translations.admin[isTamil ? 'ta' : 'en']}</option>
                     </select>
                   </div>
                 )}
@@ -193,13 +285,14 @@ export default function LoginSignupPage() {
                       onChange={(e) => setRememberMe(e.target.checked)}
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                      Remember me
+                      {translations.rememberMe[isTamil ? 'ta' : 'en']}
                     </label>
                   </div>
 
                   <div className="text-sm">
+                    <a href="#" className="font-medium text-blue-600 hover:text-blue-500"></a>
                     <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                      Forgot your password?
+                      {translations.forgotPassword[isTamil ? 'ta' : 'en']}
                     </a>
                   </div>
                 </div>
@@ -211,13 +304,13 @@ export default function LoginSignupPage() {
                   className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Processing...' : (isSignup ? 'Sign Up' : 'Sign In')}
+                  {isLoading ? translations.processing[isTamil ? 'ta' : 'en'] : (isSignup ? translations.signUp[isTamil ? 'ta' : 'en'] : translations.signIn[isTamil ? 'ta' : 'en'])}
                 </button>
               </div>
             </form>
             <div className="mt-6">
               <p className="text-center text-sm text-gray-600">
-                {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}
+                {isSignup ? translations.alreadyHaveAccount[isTamil ? 'ta' : 'en'] : translations.dontHaveAccount[isTamil ? 'ta' : 'en']}{' '}
                 <button
                   onClick={() => {
                     setIsSignup(!isSignup);
@@ -226,7 +319,7 @@ export default function LoginSignupPage() {
                   }}
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  {isSignup ? 'Sign in' : 'Sign up'}
+                  {isSignup ? translations.signIn[isTamil ? 'ta' : 'en'] : translations.signUp[isTamil ? 'ta' : 'en']}
                 </button>
               </p>
             </div>

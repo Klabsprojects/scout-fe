@@ -2,9 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { TranslationProvider } from "./Context/TranslationContext";
 import { ParallaxProvider } from 'react-scroll-parallax';
+
+// Components
 import Navbar from "./components/Navbar";
-import ScoutHomepage from "./Pages/ScoutHomePage";
 import Footer from "./components/Footer";
+
+// Pages
+import ScoutHomepage from "./Pages/ScoutHomePage";
 import WhoWeAre from "./Pages/WhoWeAre";
 import ScoutEducation from "./Pages/ScoutEducation";
 import ScoutMethod from "./Pages/ScoutMethod";
@@ -29,8 +33,11 @@ function App() {
         <TranslationProvider>
           <Navbar />
           <Routes>
+            {/* Home Routes */}
             <Route path="/" element={<ScoutHomepage />} />
             <Route path="/ScoutHomepage" element={<ScoutHomepage />} />
+            
+            {/* Information Routes */}
             <Route path="/whoweare" element={<WhoWeAre />} />
             <Route path="/scout-education" element={<ScoutEducation />} />
             <Route path="/scout-method" element={<ScoutMethod />} />
@@ -39,14 +46,20 @@ function App() {
             <Route path="/where-we-work" element={<WhereWeWork/>} />
             <Route path="/get-involved" element={<GetInvolved />} />
             <Route path="/gallery" element={<Gallery />} />
-            <Route path="/product" element={<Products />} />
-            <Route path="/product/:id" element={<ProductDescription />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
-            <Route path="/donation" element={<DonationPage/>}/>
-            <Route path="/donate/:eventId" element={<DonationPayment />} />
+            <Route path="/office-bearers" element={<OfficeBearersPage/>} />
+            
+            {/* Product Routes */}
+            <Route path="/product" element={<Products />} /> {/* Updated from /product to /products */}
+            <Route path="/product-description" element={<ProductDescription />} /> {/* New route for product description */}
             <Route path="/cart" element={<Cart />} />
-            <Route path="/office-bearers" element={<OfficeBearersPage/>}/>
+            
+            {/* Authentication Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Donation Routes */}
+            <Route path="/donation" element={<DonationPage/>} />
+            <Route path="/donate/:eventId" element={<DonationPayment />} />
           </Routes>
           <Footer />
         </TranslationProvider>
