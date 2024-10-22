@@ -136,7 +136,6 @@ const FeatureCard = ({ Icon, title, description }) => (
   </div>
 );
 
-
 const ProductDescription = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -187,7 +186,6 @@ const ProductDescription = () => {
         productsData = productsData.results;
       }
 
-      // Filter out the current product and get random products
       const otherProducts = productsData.filter(p => p.id !== id);
       const shuffled = otherProducts.sort(() => 0.5 - Math.random());
       const selected = shuffled.slice(0, 4);
@@ -233,7 +231,6 @@ const ProductDescription = () => {
           filepath: productData.filepath?.trim() || '',
         });
 
-        // Fetch recommended products after getting the current product
         fetchRecommendedProducts();
       } catch (err) {
         console.error('Error fetching product:', err);
@@ -251,18 +248,20 @@ const ProductDescription = () => {
     const cleanPath = filepath.replace(/^uploads\\/, '').replace(/\\/g, '/');
     return `http://localhost:4010/uploads/${cleanPath}`;
   };
+
   const handleAddToCart = () => {
     if (product) {
       addToCart({
         id: product.id,
         name: product.name,
         price: product.price,
-        quantity: quantity, // Use the quantity state
+        quantity: quantity,
         maxQuantity: product.quantity
       });
       navigate('/cart');
     }
   };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -302,13 +301,12 @@ const ProductDescription = () => {
     );
   }
 
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-28">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-52">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.button
           onClick={() => navigate(-1)}
-          className="mb-8 inline-flex items-center text-gray-600 hover:text-gray-800 font-medium group"
+          className="mb-6 inline-flex items-center text-gray-600 hover:text-gray-800 font-medium group"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -341,7 +339,8 @@ const ProductDescription = () => {
                 >
                   <div>
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
                         {product.category}
                       </span>
                     </div>
@@ -422,7 +421,7 @@ const ProductDescription = () => {
                       id: product.id,
                       name: product.name,
                       price: product.price,
-                      quantity: quantity, // Use the quantity state instead of hardcoding 1
+                      quantity: 1,
                       maxQuantity: product.quantity
                     });
                     navigate('/cart');

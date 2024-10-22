@@ -43,7 +43,7 @@ const OfficeBearersPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-28">
+    <div className="bg-gray-100 min-h-screen pt-32">
       <motion.div 
         className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-10 px-4 mb-8"
         initial={{ opacity: 0 }}

@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   useEffect(() => {
     const handleResize = () => {
@@ -21,6 +22,14 @@ const Navbar = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -65,6 +74,20 @@ const Navbar = () => {
     { path: "/gallery", label: t.shop },
     { path: "/product", label: t.product },
   ];
+
+  const formatDateTime = () => {
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    };
+    return currentDateTime.toLocaleString('en-US', options);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white">
@@ -133,12 +156,17 @@ const Navbar = () => {
         </>
       ) : (
         <>
-          <div className="bg-blue-900 text-white py-4 md:py-4 lg:py-4 ">
+          <div className="bg-blue-900 text-white py-4 md:py-4 lg:py-4">
             <div className="container mx-auto flex items-center justify-between px-4 lg:px-16">
               <div className="w-16 lg:w-24"></div>
-              <h1 className={`text-xs lg:text-base ${isTamil ? 'font-bold' : 'font-semibold'} ml-4 lg:ml-2 flex-grow`}>
-                Bharat Scouts and Guides - பாரத சாரணியர் & வழிகாட்டுநர் மாநில தலைமையகம்
-              </h1>
+              <div className="flex flex-col items-center flex-grow">
+                <h1 className={`text-xs lg:text-base ${isTamil ? 'font-bold' : 'font-semibold'} ml-4 lg:ml-2`}>
+                  Bharat Scouts and Guides - பாரத சாரணியர் & வழிகாட்டுநர் மாநில தலைமையகம்
+                </h1>
+                <div className="text-xs lg:text-sm text-yellow-300 mt-1">
+                  {formatDateTime()}
+                </div>
+              </div>
               <div className="flex items-center space-x-2 lg:space-x-4 mr-4 lg:mr-16">
                 <div className="relative flex items-center">
                   <input
