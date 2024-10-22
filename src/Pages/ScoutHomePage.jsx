@@ -32,9 +32,9 @@ const ScoutHomepage = () => {
     title: {
       en: (
         <>
-          Creating transformative learning <br />
-          experiences for young people,<br />
-          everywhere.
+          Creating transformative learning experiences for young people, everywhere.<br />
+         
+        
         </>
       ),
       ta: "எங்கும் இளைஞர்களுக்கான மாற்றமளிக்கும் கற்றல் அனுபவங்களை உருவாக்குகிறோம்."
