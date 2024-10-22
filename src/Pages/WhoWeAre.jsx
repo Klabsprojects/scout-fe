@@ -82,7 +82,7 @@ export default function WhoWeAre() {
 
       <NavigationMenu />
 
-      <div id="content" className="max-w-7xl mx-auto px-4 mt-22">
+      <div id="content" className="max-w-7xl mx-auto px-4 ">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
