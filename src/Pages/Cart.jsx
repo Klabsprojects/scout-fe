@@ -53,104 +53,146 @@ const useCartStore = create(
   )
 );
 
+const translations = {
+  en: {
+    title: 'Your Shopping Cart',
+    empty: 'Your cart is empty',
+    total: 'Total',
+    totalItems: 'Total Items',
+    subtotal: 'Subtotal',
+    checkout: 'Proceed to Checkout',
+    remove: 'Remove',
+    continueShopping: 'Continue Shopping',
+    estimatedShipping: 'Estimated Shipping',
+    freeShipping: 'Free Shipping',
+    tax: 'Tax',
+    whyShopWithUs: 'Why Shop with Us?',
+    fastShipping: 'Fast and reliable shipping',
+    securePayment: 'Secure payment options',
+    exclusiveDeals: 'Exclusive deals and offers',
+    orderSummary: 'Order Summary',
+    items: 'Items',
+    estimatedDelivery: 'Estimated Delivery',
+    days: 'days',
+    category: 'Category',
+    description: 'Description',
+    quantity: 'Quantity',
+    price: 'Price',
+    faq: 'Frequently Asked Questions',
+    faqQuestion1: 'How long will my order take to arrive?',
+    faqAnswer1: 'Delivery times vary depending on your location, but typically orders arrive within 3-5 business days.',
+    faqQuestion2: 'What is your return policy?',
+    faqAnswer2: 'We offer a 30-day return policy for most items. Please check our returns page for more details.',
+    faqQuestion3: 'Do you offer international shipping?',
+    faqAnswer3: 'Yes, we ship to many countries worldwide. Shipping costs and delivery times may vary.',
+    errorFetchingCart: 'Error loading cart items',
+    errorFetchingProducts: 'Error loading product details',
+    uncategorized: 'Uncategorized',
+    noDescription: 'No description available',
+    unnamedProduct: 'Unnamed Product',
+    addAddress: 'Add Address',
+    fullName: 'Full Name',
+    phoneNumber: 'Phone Number',
+    doorNo: 'Door No',
+    street: 'Street',
+    address: 'Address',
+    city: 'City',
+    state: 'State',
+    pincode: 'Pincode',
+    primaryOrSecondary: 'Primary or Secondary',
+    cancel: 'Cancel',
+    submit: 'Submit',
+  },
+  ta: {
+  
+    title: 'உங்கள் கார்ட்',
+    empty: 'உங்கள் கார்ட் காலியாக உள்ளது',
+    total: 'மொத்தம்',
+    totalItems: 'மொத்த பொருட்கள்',
+    subtotal: 'கூட்டுத்தொகை',
+    checkout: 'செக்அவுட் செய்ய தொடரவும்',
+    remove: 'அகற்று',
+    continueShopping: 'கடை பிடிக்க தொடரவும்',
+    estimatedShipping: 'மதிப்பிடப்பட்ட அனுப்புதல்',
+    freeShipping: 'இலவச அனுப்புதல்',
+    tax: 'வரி',
+    whyShopWithUs: 'எங்களுடன் ஏன் கடை பிடிக்க வேண்டும்?',
+    fastShipping: 'விரைவான மற்றும் நம்பகமான அனுப்புதல்',
+    securePayment: 'பாதுகாப்பான பணம் செலுத்தும் விருப்பங்கள்',
+    exclusiveDeals: 'பிரத்யேக ஒப்பந்தங்கள் மற்றும் சலுகைகள்',
+    orderSummary: 'ஆர்டர் சுருக்கம்',
+    items: 'பொருட்கள்',
+    estimatedDelivery: 'மதிப்பிடப்பட்ட வழங்கல்',
+    days: 'நாட்கள்',
+    category: 'வகை',
+    description: 'விளக்கம்',
+    quantity: 'அளவு',
+    price: 'விலை',
+    faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+    faqQuestion1: 'எனது ஆர்டர் வர எவ்வளவு நேரம் ஆகும்?',
+    faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக 3-5 வேலை நாட்களில் வந்துவிடும்.',
+    faqQuestion2: 'உங்கள் திருப்பி அனுப்பும் கொள்கை என்ன?',
+    faqAnswer2: '30 நாட்கள் திருப்பி அனுப்பும் கொள்கை உள்ளது.',
+    faqQuestion3: 'சர்வதேச அனுப்புதல் உள்ளதா?',
+    faqAnswer3: 'ஆம், உலகம் முழுவதும் அனுப்புகிறோம்.',
+    errorFetchingCart: 'கார்ட் தகவல்களை பெறுவதில் பிழை',
+    errorFetchingProducts: 'தயாரிப்பு விவரங்களை ஏற்றுவதில் பிழை',
+    uncategorized: 'வகைப்படுத்தப்படாதது',
+    noDescription: 'விளக்கம் இல்லை',
+    unnamedProduct: 'பெயரிடப்படாத தயாரிப்பு',
+    addAddress: 'முகவரியைச் சேர்',
+    fullName: 'முழு பெயர்',
+    phoneNumber: 'தொலைபேசி எண்',
+    doorNo: 'கதவு எண்',
+    street: 'தெரு',
+    address: 'முகவரி',
+    city: 'நகரம்',
+    state: 'மாநிலம்',
+    pincode: 'பின்கோடு',
+    primaryOrSecondary: 'முதன்மை அல்லது இரண்டாம் நிலை',
+    cancel: 'ரத்துசெய்',
+    submit: 'சமர்ப்பி',
+  }
+};
+
 const Cart = () => {
   const navigate = useNavigate();
   const { isTamil } = useTranslation();
   const [showFAQ, setShowFAQ] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false); // New state for tracking data fetch
 
   // Zustand hooks
   const { userId } = useAuthStore();
   const { cartWithProducts, setCartWithProducts } = useCartStore();
 
-  const translations = {
-    en: {
-      title: 'Your Shopping Cart',
-      empty: 'Your cart is empty',
-      total: 'Total',
-      totalItems: 'Total Items',
-      subtotal: 'Subtotal',
-      checkout: 'Proceed to Checkout',
-      remove: 'Remove',
-      continueShopping: 'Continue Shopping',
-      estimatedShipping: 'Estimated Shipping',
-      freeShipping: 'Free Shipping',
-      tax: 'Tax',
-      whyShopWithUs: 'Why Shop with Us?',
-      fastShipping: 'Fast and reliable shipping',
-      securePayment: 'Secure payment options',
-      exclusiveDeals: 'Exclusive deals and offers',
-      orderSummary: 'Order Summary',
-      items: 'Items',
-      estimatedDelivery: 'Estimated Delivery',
-      days: 'days',
-      category: 'Category',
-      description: 'Description',
-      quantity: 'Quantity',
-      price: 'Price',
-      faq: 'Frequently Asked Questions',
-      faqQuestion1: 'How long will my order take to arrive?',
-      faqAnswer1: 'Delivery times vary depending on your location, but typically orders arrive within 3-5 business days.',
-      faqQuestion2: 'What is your return policy?',
-      faqAnswer2: 'We offer a 30-day return policy for most items. Please check our returns page for more details.',
-      faqQuestion3: 'Do you offer international shipping?',
-      faqAnswer3: 'Yes, we ship to many countries worldwide. Shipping costs and delivery times may vary.',
-      errorFetchingCart: 'Error loading cart items',
-      errorFetchingProducts: 'Error loading product details',
-      uncategorized: 'Uncategorized',
-      noDescription: 'No description available',
-      unnamedProduct: 'Unnamed Product'
-    },
-    ta: {
-      title: 'உங்கள் கார்ட்',
-      empty: 'உங்கள் கார்ட் காலியாக உள்ளது',
-      total: 'மொத்தம்',
-      totalItems: 'மொத்த பொருட்கள்',
-      subtotal: 'கூட்டுத்தொகை',
-      checkout: 'செக்அவுட் செய்ய தொடரவும்',
-      remove: 'அகற்று',
-      continueShopping: 'கடை பிடிக்க தொடரவும்',
-      estimatedShipping: 'மதிப்பிடப்பட்ட அனுப்புதல்',
-      freeShipping: 'இலவச அனுப்புதல்',
-      tax: 'வரி',
-      whyShopWithUs: 'எங்களுடன் ஏன் கடை பிடிக்க வேண்டும்?',
-      fastShipping: 'விரைவான மற்றும் நம்பகமான அனுப்புதல்',
-      securePayment: 'பாதுகாப்பான பணம் செலுத்தும் விருப்பங்கள்',
-      exclusiveDeals: 'பிரத்யேக ஒப்பந்தங்கள் மற்றும் சலுகைகள்',
-      orderSummary: 'ஆர்டர் சுருக்கம்',
-      items: 'பொருட்கள்',
-      estimatedDelivery: 'மதிப்பிடப்பட்ட வழங்கல்',
-      days: 'நாட்கள்',
-      category: 'வகை',
-      description: 'விளக்கம்',
-      quantity: 'அளவு',
-      price: 'விலை',
-      faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
-      faqQuestion1: 'எனது ஆர்டர் வர எவ்வளவு நேரம் ஆகும்?',
-      faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக 3-5 வேலை நாட்களில் வந்துவிடும்.',
-      faqQuestion2: 'உங்கள் திருப்பி அனுப்பும் கொள்கை என்ன?',
-      faqAnswer2: '30 நாட்கள் திருப்பி அனுப்பும் கொள்கை உள்ளது.',
-      faqQuestion3: 'சர்வதேச அனுப்புதல் உள்ளதா?',
-      faqAnswer3: 'ஆம், உலகம் முழுவதும் அனுப்புகிறோம்.',
-      errorFetchingCart: 'கார்ட் தகவல்களை பெறுவதில் பிழை',
-      errorFetchingProducts: 'தயாரிப்பு விவரங்களை ஏற்றுவதில் பிழை',
-      uncategorized: 'வகைப்படுத்தப்படாதது',
-      noDescription: 'விளக்கம் இல்லை',
-      unnamedProduct: 'பெயரிடப்படாத தயாரிப்பு'
-    }
+  const initialAddressState = {
+    fullName: '',
+    phoneNumber: '',
+    doorNo: '',
+    street: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    primaryOrSecondary: 'primary'
   };
 
+  const [addressFormData, setAddressFormData] = useState(initialAddressState);
   const t = translations[isTamil ? 'ta' : 'en'];
 
+  // Modified useEffect to prevent continuous API calls
   useEffect(() => {
     const fetchCartAndProducts = async () => {
-      try {
-        if (!userId) {
-          setLoading(false);
-          navigate('/login');
-          return;
-        }
+      // Skip if we've already fetched data or if there's no userId
+      if (isDataFetched || !userId) {
+        setLoading(false);
+        if (!userId) navigate('/login');
+        return;
+      }
 
+      try {
         const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
         console.log('Cart Response:', cartResponse.data);
 
@@ -158,8 +200,6 @@ const Cart = () => {
           const productPromises = cartResponse.data.results.map(async (cartItem) => {
             try {
               const productResponse = await api.get(`api/listProduct?id=${cartItem.productId}`);
-              console.log('Product Response for ID', cartItem.productId, ':', productResponse.data);
-              
               return {
                 cartItem,
                 productDetails: productResponse.data.results
@@ -174,22 +214,18 @@ const Cart = () => {
           });
 
           const responses = await Promise.all(productPromises);
-          console.log('All Responses:', responses);
+          
+          const cartWithProductDetails = responses.map(({ cartItem, productDetails }) => ({
+            id: cartItem.id,
+            productId: cartItem.productId,
+            quantity: cartItem.quantity,
+            name: productDetails?.name || t.unnamedProduct,
+            price: productDetails?.price || '0',
+            category: productDetails?.category || t.uncategorized,
+            description: productDetails?.description || t.noDescription,
+            filepath: productDetails?.filepath || null
+          }));
 
-          const cartWithProductDetails = responses.map(({ cartItem, productDetails }) => {
-            return {
-              id: cartItem.id,
-              productId: cartItem.productId,
-              quantity: cartItem.quantity,
-              name: productDetails?.name || t.unnamedProduct,
-              price: productDetails?.price || '0',
-              category: productDetails?.category || t.uncategorized,
-              description: productDetails?.description || t.noDescription,
-              filepath: productDetails?.filepath || null
-            };
-          });
-
-          console.log('Final Combined Cart Data:', cartWithProductDetails);
           setCartWithProducts(cartWithProductDetails);
         }
       } catch (error) {
@@ -197,11 +233,44 @@ const Cart = () => {
         toast.error(error.message === 'Network Error' ? t.errorFetchingCart : t.errorFetchingProducts);
       } finally {
         setLoading(false);
+        setIsDataFetched(true); // Mark data as fetched
       }
     };
 
     fetchCartAndProducts();
-  }, [userId, setCartWithProducts, t, navigate]);
+  }, [userId, setCartWithProducts, t, navigate, isDataFetched]);
+
+  // Function to manually refresh cart data when needed
+  const refreshCartData = () => {
+    setIsDataFetched(false);
+  };
+
+  const handleAddressSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post('api/addAddress', {
+        ...addressFormData,
+        loginId: userId
+      });
+
+      console.log('Address added:', response.data);
+      setShowAddressModal(false);
+      setAddressFormData(initialAddressState);
+      toast.success('Address added successfully!');
+      refreshCartData(); // Refresh cart data after address submission
+    } catch (error) {
+      console.error('Error adding address:', error);
+      toast.error('Failed to add address. Please try again.');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setAddressFormData({
+      ...addressFormData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const calculateSubtotal = () => {
     return cartWithProducts.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
@@ -319,7 +388,7 @@ const Cart = () => {
               </motion.div>
             )}
 
-            {/* Why Shop With Us Section - Always Visible */}
+            {/* Why Shop With Us Section */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -345,7 +414,7 @@ const Cart = () => {
               </div>
             </motion.div>
 
-            {/* FAQ Section - Always Visible */}
+            {/* FAQ Section */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -381,7 +450,7 @@ const Cart = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - Order Summary (Only visible when cart has items) */}
+          {/* Right Column - Order Summary */}
           {cartWithProducts && cartWithProducts.length > 0 && (
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
@@ -413,9 +482,12 @@ const Cart = () => {
                     <span className="text-xl md:text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
                   </div>
                 </div>
-                <button className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4">
-                  {t.checkout}
-                </button>
+                <Link 
+  to="/checkout" 
+  className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4 block text-center"
+>
+  {t.checkout}
+</Link>
                 <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
                   {t.continueShopping}
                 </Link>
@@ -424,6 +496,8 @@ const Cart = () => {
           )}
         </div>
       </div>
+
+     
     </div>
   );
 };

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
-import { ShoppingCart, Eye, Search, Filter, Plus, Minus } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, ArrowLeft, Truck, CreditCard, Gift, Clock, HelpCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -15,13 +15,10 @@ const useAuthStore = create(
       token: null,
       userId: null,
       username: null,
-      pendingCartProduct: null,
       setAuth: (token, userId, username) => 
         set({ token, userId, username }),
-      setPendingCartProduct: (product) => 
-        set({ pendingCartProduct: product }),
       logout: () => 
-        set({ token: null, userId: null, username: null, pendingCartProduct: null }),
+        set({ token: null, userId: null, username: null }),
     }),
     {
       name: 'auth-storage',
@@ -30,504 +27,635 @@ const useAuthStore = create(
 );
 
 // Cart Store
-const useCartStore = create((set) => ({
-  cart: [],
-  addToCart: (product, quantity = 1) => set((state) => {
-    const existingItem = state.cart.find(item => item.id === product.id);
-    if (existingItem) {
-      return {
-        cart: state.cart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+const useCartStore = create(
+  persist(
+    (set) => ({
+      cartItems: [],
+      cartWithProducts: [],
+      setCartItems: (items) => set({ cartItems: items }),
+      setCartWithProducts: (products) => set({ cartWithProducts: products }),
+      addToCart: (item) => set((state) => ({
+        cartItems: [...state.cartItems, item]
+      })),
+      removeFromCart: (itemId) => set((state) => ({
+        cartItems: state.cartItems.filter((item) => item.id !== itemId)
+      })),
+      clearCart: () => set({ cartItems: [], cartWithProducts: [] }),
+      updateCartItem: (itemId, updates) => set((state) => ({
+        cartItems: state.cartItems.map((item) =>
+          item.id === itemId ? { ...item, ...updates } : item
         )
-      };
-    } else {
-      return { cart: [...state.cart, { ...product, quantity }] };
+      }))
+    }),
+    {
+      name: 'cart-storage',
     }
-  }),
-  removeFromCart: (productId) => set((state) => ({
-    cart: state.cart.filter(item => item.id !== productId)
-  })),
-  updateQuantity: (productId, newQuantity) => set((state) => ({
-    cart: state.cart.map(item =>
-      item.id === productId ? { ...item, quantity: newQuantity } : item
-    )
-  })),
-  clearCart: () => set({ cart: [] }),
-}));
+  )
+);
 
-const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const { token } = useAuthStore();
-  const addToCartStore = useCartStore(state => state.addToCart);
-
-  if (!product) {
-    console.warn('ProductCard received undefined product');
-    return null;
-  }
-
-  const {
-    id = '',
-    name = 'Unnamed Product',
-    description = 'No description available',
-    category = 'Uncategorized',
-    quantity = 0,
-    price = 0,
-    filepath = ''
-  } = product;
-
-  const getImageSrc = (filepath) => {
-    if (!filepath) return '/api/placeholder/400/320';
-    const cleanPath = filepath.replace(/^uploads\\/, '').replace(/\\/g, '/');
-    return `http://localhost:4010/uploads/${cleanPath}`;
-  };
-
-  const imageSrc = getImageSrc(filepath);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoaded(true);
-  };
-
-  const handleQuantityChange = (change) => {
-    const newQuantity = selectedQuantity + change;
-    if (newQuantity >= 1 && newQuantity <= quantity) {
-      setSelectedQuantity(newQuantity);
-    }
-  };
-
-  const handleAddToCart = () => {
-    if (!token) {
-      onAddToCart(product, selectedQuantity); // This will handle redirect to login
-    } else {
-      addToCartStore(product, selectedQuantity);
-      toast.success('Product added to cart');
-      onAddToCart(product, selectedQuantity);
-    }
-  };
-
-  return (
-    <motion.div
-      className="bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col transition-all duration-300 hover:shadow-xl"
-      whileHover={{ y: -5 }}
-    >
-      <div className="relative w-full h-48 sm:h-64 bg-gray-200">
-        {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-pulse bg-gray-300 w-full h-full"></div>
-          </div>
-        )}
-        <img
-          src={imageSrc}
-          alt={name}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-        {imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-            <span className="text-gray-500">Image not available</span>
-          </div>
-        )}
-      </div>
-
-      <div className="p-4 flex flex-col justify-between flex-1">
-        <div>
-          <h3 className="text-base sm:text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-2">
-            {name}
-          </h3>
-          <p className="text-sm text-gray-600 mb-2">{description}</p>
-          <p className="text-sm text-gray-600 mb-2">Category: {category}</p>
-          <p className="text-sm text-gray-600 mb-2">Available: {quantity}</p>
-        </div>
-
-        <div className="flex flex-col space-y-2">
-          <span className="text-lg sm:text-xl font-bold text-[#1A2E44]">
-            ₹{Number(price).toFixed(2)}
-          </span>
-
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <button
-              onClick={() => handleQuantityChange(-1)}
-              className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={selectedQuantity <= 1}
-            >
-              <Minus size={16} />
-            </button>
-            <span className="w-8 text-center font-medium">{selectedQuantity}</span>
-            <button
-              onClick={() => handleQuantityChange(1)}
-              className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={selectedQuantity >= quantity}
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-
-          <button
-            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            Add to Cart
-          </button>
-          <button
-            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
-            onClick={() => onViewProduct(id)}
-          >
-            <Eye className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            View Product
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-// ... continuing from previous part
-
-const Products = () => {
-  const { isTamil } = useTranslation();
+const Cart = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const { isTamil } = useTranslation();
+  const [showFAQ, setShowFAQ] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
-  // Zustand store hooks
-  const { token, userId, setPendingCartProduct } = useAuthStore();
-  const { addToCart } = useCartStore();
+  // Zustand hooks
+  const { userId } = useAuthStore();
+  const { cartWithProducts, setCartWithProducts } = useCartStore();
+
+  const initialAddressState = {
+    fullName: '',
+    phoneNumber: '',
+    doorNo: '',
+    street: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    primaryOrSecondary: 'primary'
+  };
+
+  const [addressFormData, setAddressFormData] = useState(initialAddressState);
+
+  const handleAddressSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post('api/addAddress', {
+        ...addressFormData,
+        loginId: userId
+      });
+
+      console.log('Address added:', response.data);
+      setShowAddressModal(false);
+      setAddressFormData(initialAddressState);
+      toast.success('Address added successfully!');
+    } catch (error) {
+      console.error('Error adding address:', error);
+      toast.error('Failed to add address. Please try again.');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setAddressFormData({
+      ...addressFormData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const translations = {
     en: {
-      title: 'Our Products',
-      search: 'Search products...',
-      filters: 'Filters',
-      noProducts: 'No products found. Try adjusting your search or filters.',
-      loading: 'Loading...',
-      error: 'Failed to load products. Please try again.',
-      loginRequired: 'Please login to add items to cart',
-      addToCartSuccess: 'Product added to cart successfully',
-      addToCartError: 'Failed to add product to cart'
+      title: 'Your Shopping Cart',
+      empty: 'Your cart is empty',
+      total: 'Total',
+      totalItems: 'Total Items',
+      subtotal: 'Subtotal',
+      checkout: 'Proceed to Checkout',
+      remove: 'Remove',
+      continueShopping: 'Continue Shopping',
+      estimatedShipping: 'Estimated Shipping',
+      freeShipping: 'Free Shipping',
+      tax: 'Tax',
+      whyShopWithUs: 'Why Shop with Us?',
+      fastShipping: 'Fast and reliable shipping',
+      securePayment: 'Secure payment options',
+      exclusiveDeals: 'Exclusive deals and offers',
+      orderSummary: 'Order Summary',
+      items: 'Items',
+      estimatedDelivery: 'Estimated Delivery',
+      days: 'days',
+      category: 'Category',
+      description: 'Description',
+      quantity: 'Quantity',
+      price: 'Price',
+      faq: 'Frequently Asked Questions',
+      faqQuestion1: 'How long will my order take to arrive?',
+      faqAnswer1: 'Delivery times vary depending on your location, but typically orders arrive within 3-5 business days.',
+      faqQuestion2: 'What is your return policy?',
+      faqAnswer2: 'We offer a 30-day return policy for most items. Please check our returns page for more details.',
+      faqQuestion3: 'Do you offer international shipping?',
+      faqAnswer3: 'Yes, we ship to many countries worldwide. Shipping costs and delivery times may vary.',
+      errorFetchingCart: 'Error loading cart items',
+      errorFetchingProducts: 'Error loading product details',
+      uncategorized: 'Uncategorized',
+      noDescription: 'No description available',
+      unnamedProduct: 'Unnamed Product',
+      addAddress: 'Add Address',
+      fullName: 'Full Name',
+      phoneNumber: 'Phone Number',
+      doorNo: 'Door No',
+      street: 'Street',
+      address: 'Address',
+      city: 'City',
+      state: 'State',
+      pincode: 'Pincode',
+      primaryOrSecondary: 'Primary or Secondary',
+      cancel: 'Cancel',
+      submit: 'Submit',
     },
     ta: {
-      title: 'எங்கள் பொருட்கள்',
-      search: 'பொருட்களைத் தேடுங்கள்...',
-      filters: 'வடிகட்டிகள்',
-      noProducts: 'பொருட்கள் எதுவும் கிடைக்கவில்லை. உங்கள் தேடலை மாற்றி முயற்சிக்கவும்.',
-      loading: 'ஏற்றுகிறது...',
-      error: 'பொருட்களை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
-      loginRequired: 'கார்ட்டில் சேர்க்க உள்நுழையவும்',
-      addToCartSuccess: 'பொருள் கார்ட்டில் சேர்க்கப்பட்டது',
-      addToCartError: 'கார்ட்டில் சேர்க்க முடியவில்லை'
+      title: 'உங்கள் கார்ட்',
+      empty: 'உங்கள் கார்ட் காலியாக உள்ளது',
+      total: 'மொத்தம்',
+      totalItems: 'மொத்த பொருட்கள்',
+      subtotal: 'கூட்டுத்தொகை',
+      checkout: 'செக்அவுட் செய்ய தொடரவும்',
+      remove: 'அகற்று',
+      continueShopping: 'கடை பிடிக்க தொடரவும்',
+      estimatedShipping: 'மதிப்பிடப்பட்ட அனுப்புதல்',
+      freeShipping: 'இலவச அனுப்புதல்',
+      tax: 'வரி',
+      whyShopWithUs: 'எங்களுடன் ஏன் கடை பிடிக்க வேண்டும்?',
+      fastShipping: 'விரைவான மற்றும் நம்பகமான அனுப்புதல்',
+      securePayment: 'பாதுகாப்பான பணம் செலுத்தும் விருப்பங்கள்',
+      exclusiveDeals: 'பிரத்யேக ஒப்பந்தங்கள் மற்றும் சலுகைகள்',
+      orderSummary: 'ஆர்டர் சுருக்கம்',
+      items: 'பொருட்கள்',
+      estimatedDelivery: 'மதிப்பிடப்பட்ட வழங்கல்',
+      days: 'நாட்கள்',
+      category: 'வகை',
+      description: 'விளக்கம்',
+      quantity: 'அளவு',
+      price: 'விலை',
+      faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+      faqQuestion1: 'எனது ஆர்டர் வர எவ்வளவு நேரம் ஆகும்?',
+      faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக 3-5 வேலை நாட்களில் வந்துவிடும்.',
+      faqQuestion2: 'உங்கள் திருப்பி அனுப்பும் கொள்கை என்ன?',
+      faqAnswer2: '30 நாட்கள் திருப்பி அனுப்பும் கொள்கை உள்ளது.',
+      faqQuestion3: 'சர்வதேச அனுப்புதல் உள்ளதா?',
+      faqAnswer3: 'ஆம், உலகம் முழுவதும் அனுப்புகிறோம்.',
+      errorFetchingCart: 'கார்ட் தகவல்களை பெறுவதில் பிழை',
+      errorFetchingProducts: 'தயாரிப்பு விவரங்களை ஏற்றுவதில் பிழை',
+      uncategorized: 'வகைப்படுத்தப்படாதது',
+      noDescription: 'விளக்கம் இல்லை',
+      unnamedProduct: 'பெயரிடப்படாத தயாரிப்பு',
+      addAddress: 'முகவரியைச் சேர்',
+      fullName: 'முழு பெயர்',
+      phoneNumber: 'தொலைபேசி எண்',
+      doorNo: 'கதவு எண்',
+      street: 'தெரு',
+      address: 'முகவரி',
+      city: 'நகரம்',
+      state: 'மாநிலம்',
+      pincode: 'பின்கோடு',
+      primaryOrSecondary: 'முதன்மை அல்லது இரண்டாம் நிலை',
+      cancel: 'ரத்துசெய்',
+      submit: 'சமர்ப்பி',
     }
   };
 
   const t = translations[isTamil ? 'ta' : 'en'];
 
-  const handleAddToCart = async (product, quantity) => {
-    if (!token) {
-      setPendingCartProduct({
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity
-      });
-      
-      toast.info(t.loginRequired);
-      navigate('/login');
-      return;
-    }
-
-    try {
-      const cartData = {
-        productId: product.id,
-        loginId: parseInt(userId),
-        quantity: quantity
-      };
-
-      const response = await api.post('api/addCart', cartData);
-
-      if (response.status === 200 || response.status === 201) {
-        addToCart(product, quantity);
-        toast.success(t.addToCartSuccess);
-        navigate('/cart');
-      } else {
-        toast.error(t.addToCartError);
-      }
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error(t.addToCartError);
-    }
-  };
-
   useEffect(() => {
-    const processPendingCartAction = async () => {
-      const pendingProduct = useAuthStore.getState().pendingCartProduct;
-      
-      if (pendingProduct && token) {
-        try {
-          const cartData = {
-            productId: pendingProduct.productId,
-            loginId: parseInt(userId),
-            quantity: pendingProduct.quantity
-          };
-
-          const response = await api.post('api/addCart', cartData);
-          
-          if (response.status === 200 || response.status === 201) {
-            addToCart(pendingProduct);
-            toast.success(t.addToCartSuccess);
-            setPendingCartProduct(null);
-            navigate('/cart');
-          } else {
-            toast.error(t.addToCartError);
-          }
-        } catch (error) {
-          console.error('Error processing pending cart action:', error);
-          toast.error(t.addToCartError);
+    const fetchCartAndProducts = async () => {
+      try {
+        if (!userId) {
+          setLoading(false);
+          navigate('/login');
+          return;
         }
+
+        const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
+        console.log('Cart Response:', cartResponse.data);
+
+        if (cartResponse.data && Array.isArray(cartResponse.data.results)) {
+          const productPromises = cartResponse.data.results.map(async (cartItem) => {
+            try {
+              const productResponse = await api.get(`api/listProduct?id=${cartItem.productId}`);
+              console.log('Product Response for ID', cartItem.productId, ':', productResponse.data);
+              
+              return {
+                cartItem,
+                productDetails: productResponse.data.results
+              };
+            } catch (error) {
+              console.error(`Error fetching product ${cartItem.productId}:`, error);
+              return {
+                cartItem,
+                productDetails: null
+              };
+            }
+          });
+
+          const responses = await Promise.all(productPromises);
+          console.log('All Responses:', responses);
+
+          const cartWithProductDetails = responses.map(({ cartItem, productDetails }) => {
+            return {
+              id: cartItem.id,
+              productId: cartItem.productId,
+              quantity: cartItem.quantity,
+              name: productDetails?.name || t.unnamedProduct,
+              price: productDetails?.price || '0',
+              category: productDetails?.category || t.uncategorized,
+              description: productDetails?.description || t.noDescription,
+              filepath: productDetails?.filepath || null
+            };
+          });
+
+          console.log('Final Combined Cart Data:', cartWithProductDetails);
+          setCartWithProducts(cartWithProductDetails);
+        }
+      } catch (error) {
+        console.error('Error fetching cart and products:', error);
+        toast.error(error.message === 'Network Error' ? t.errorFetchingCart : t.errorFetchingProducts);
+      } finally {
+        setLoading(false);
       }
     };
 
-    processPendingCartAction();
-  }, [token, userId, setPendingCartProduct, addToCart, navigate, t.addToCartSuccess, t.addToCartError]);
+    fetchCartAndProducts();
+  }, [userId, setCartWithProducts, t, navigate]);
 
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.get('api/listProduct');
-      let productsData = response.data;
-
-      if (productsData && typeof productsData === 'object' && Array.isArray(productsData.results)) {
-        productsData = productsData.results;
-      } else if (!Array.isArray(productsData)) {
-        console.error('Unexpected data structure:', productsData);
-        setError('Received unexpected data structure from API');
-        setProducts([]);
-        return;
-      }
-
-      const processedProducts = productsData.map(product => ({
-        id: product?.id || '',
-        name: product?.name || 'Unnamed Product',
-        description: product?.description || 'No description available',
-        category: product?.category || 'Uncategorized',
-        quantity: Number(product?.quantity) || 0,
-        price: Number(product?.price) || 0,
-        filepath: product?.filepath || '',
-        createdAt: product?.createdAt,
-        updatedAt: product?.updatedAt
-      })).filter(product => product.id);
-
-      setProducts(processedProducts);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError(t.error);
-    } finally {
-      setLoading(false);
-    }
-  }, [t.error]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  const handleViewProduct = (productId) => {
-    navigate(`/product-description?id=${productId}`);
+  const calculateSubtotal = () => {
+    return cartWithProducts.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
   };
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const calculateTotalItems = () => {
+    return cartWithProducts.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const FAQ = [
+    { question: t.faqQuestion1, answer: t.faqAnswer1 },
+    { question: t.faqQuestion2, answer: t.faqAnswer2 },
+    { question: t.faqQuestion3, answer: t.faqAnswer3 },
+  ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
     );
-  }, [products, searchTerm]);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
+  }
   return (
-    <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8 pt-6">
-      <div className="max-w-7xl mx-auto">
-        <motion.h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-24 sm:pt-36"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {t.title}
-        </motion.h2>
+    <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
+      <div className="container mx-auto px-4 py-8 md:py-16">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
 
-        <motion.div
-          className="bg-white p-4 rounded-xl shadow-md mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-              <button
-                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center w-full sm:w-auto justify-center sm:justify-start"
-                onClick={() => setShowFilters(!showFilters)}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column - Cart Items or Empty State */}
+          <div className="w-full lg:w-2/3">
+            {(!cartWithProducts || cartWithProducts.length === 0) ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center bg-white rounded-lg shadow-lg p-8 mb-8"
               >
-                <Filter className="mr-2 h-4 w-4" />
-                {t.filters}
-              </button>
-              <div className="relative w-full sm:w-64">
-                <input
-                  type="text"
-                  placeholder={t.search}
-                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-full"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                />
-                <Search className="h-5 w-5 text-[#4A6FA5] absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
+                <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
+                <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
+                  <ArrowLeft size={24} className="mr-2" />
+                  {t.continueShopping}
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden mb-8"
+              >
+                <div className="p-4 md:p-6">
+                  <AnimatePresence>
+                    {cartWithProducts.map((item) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col md:flex-row items-start border-b border-gray-200 py-6 last:border-b-0"
+                      >
+                        <div className="w-full md:w-1/3 mb-4 md:mb-0">
+                          <img 
+                            src={
+                              item.filepath 
+                                ? `http://localhost:4010/uploads/${item.filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/')}`
+                                : '/api/placeholder/400/320'
+                            }
+                            alt={item.name || t.unnamedProduct} 
+                            onError={(e) => {
+                              e.target.src = '/api/placeholder/400/320';
+                              e.target.onerror = null;
+                            }}
+                            className="w-full h-48 object-cover rounded-lg" 
+                          />
+                        </div>
+
+                        <div className="md:ml-6 flex-1">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            {item.name || t.unnamedProduct}
+                          </h3>
+                          <div className="grid gap-2">
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">{t.price}:</span>
+                              <span className="text-blue-600">
+                                ₹{parseFloat(item.price || 0).toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">{t.category}:</span>
+                              <span className="text-gray-600">
+                                {item.category || t.uncategorized}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">{t.quantity}:</span>
+                              <span className="text-gray-600">
+                                {item.quantity || 1}
+                              </span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="font-medium text-gray-700 w-24">{t.description}:</span>
+                              <span className="text-gray-600">
+                                {item.description || t.noDescription}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Why Shop With Us Section - Always Visible */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6"
+            >
+              <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
+              <div className="flex items-center mb-3">
+                <Truck className="text-blue-500 mr-3" size={24} />
+                <span>{t.fastShipping}</span>
               </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <AnimatePresence>
-          {loading ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center text-xl text-[#4A6FA5] mt-12"
-            >
-              {t.loading}
+              <div className="flex items-center mb-3">
+                <CreditCard className="text-blue-500 mr-3" size={24} />
+                <span>{t.securePayment}</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <Gift className="text-blue-500 mr-3" size={24} />
+                <span>{t.exclusiveDeals}</span>
+              </div>
+              <div className="flex items-center">
+                <Clock className="text-blue-500 mr-3" size={24} />
+                <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
+              </div>
             </motion.div>
-          ) : (
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onViewProduct={handleViewProduct}
-                  isTamil={isTamil}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {filteredProducts.length === 0 && !loading && (
-          <motion.p
-            className="text-center text-lg sm:text-xl text-[#4A6FA5] mt-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            {t.noProducts}
-          </motion.p>
-        )}
-
-        {error && (
-          <motion.div
-            className="text-red-500 text-center mt-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {error}
-          </motion.div>
-        )}
-
-        {showFilters && (
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowFilters(false)}
-          >
-            <motion.div
-              className="bg-white rounded-xl p-6 max-w-md w-full"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
+            {/* FAQ Section - Always Visible */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-lg shadow-lg p-4 md:p-6"
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#1A2E44]">{t.filters}</h3>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                <h3 className="text-lg font-semibold">{t.faq}</h3>
+                <button 
+                  onClick={() => setShowFAQ(!showFAQ)}
+                  className="text-blue-500 hover:text-blue-600 transition-colors"
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <HelpCircle size={24} />
                 </button>
               </div>
-              <div className="space-y-4">
-                <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Category
-                  </label>
-                  <select
-                    className="rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
+              <AnimatePresence>
+                {showFAQ && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <option value="">All Categories</option>
-                  </select>
+                    {FAQ.map((item, index) => (
+                      <div key={index} className="mb-4 last:mb-0">
+                        <h4 className="font-medium mb-2">{item.question}</h4>
+                        <p className="text-gray-600">{item.answer}</p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Right Column - Order Summary (Only visible when cart has items) */}
+          {cartWithProducts && cartWithProducts.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full lg:w-1/3"
+            >
+              <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
+                <div className="flex justify-between mb-2">
+                  <span>{t.totalItems}</span>
+                  <span className="font-medium">{calculateTotalItems()}</span>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Price Range
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      className="w-1/2 rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      className="w-1/2 rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
-                    />
+                <div className="flex justify-between mb-2">
+                  <span>{t.subtotal}</span>
+                  <span>₹{calculateSubtotal().toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span>{t.estimatedShipping}</span>
+                  <span className="text-green-500">{t.freeShipping}</span>
+                </div>
+                <div className="flex justify-between mb-4">
+                  <span>{t.tax}</span>
+                  <span>₹0.00</span>
+                </div>
+                <div className="border-t pt-4 mb-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg md:text-xl font-semibold">{t.total}</span>
+                    <span className="text-xl md:text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
                   </div>
                 </div>
-                <button
-                  className="w-full bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300"
-                  onClick={() => setShowFilters(false)}
+                <button 
+                  onClick={() => setShowAddressModal(true)}
+                  className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4"
                 >
-                  Apply Filters
+                  {t.checkout}
                 </button>
+                <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
+                  {t.continueShopping}
+                </Link>
               </div>
             </motion.div>
-          </motion.div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  );
+
+     {/* Address Modal */}
+<AnimatePresence>
+  {showAddressModal && (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+    >
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.8 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4"
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">{t.addAddress}</h2>
+        <form onSubmit={handleAddressSubmit}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="fullName" className="block mb-1 font-medium">{t.fullName}</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                value={addressFormData.fullName}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="phoneNumber" className="block mb-1 font-medium">{t.phoneNumber}</label>
+              <input
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={addressFormData.phoneNumber}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="doorNo" className="block mb-1 font-medium">{t.doorNo}</label>
+              <input
+                type="text"
+                id="doorNo"
+                name="doorNo"
+                value={addressFormData.doorNo}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="street" className="block mb-1 font-medium">{t.street}</label>
+              <input
+                type="text"
+                id="street"
+                name="street"
+                value={addressFormData.street}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="address" className="block mb-1 font-medium">{t.address}</label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={addressFormData.address}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="city" className="block mb-1 font-medium">{t.city}</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={addressFormData.city}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="state" className="block mb-1 font-medium">{t.state}</label>
+              <input
+                type="text"
+                id="state"
+                name="state"
+                value={addressFormData.state}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="pincode" className="block mb-1 font-medium">{t.pincode}</label>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                value={addressFormData.pincode}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="primaryOrSecondary" className="block mb-1 font-medium">{t.primaryOrSecondary}</label>
+              <select
+                id="primaryOrSecondary"
+                name="primaryOrSecondary"
+                value={addressFormData.primaryOrSecondary}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                required
+              >
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              type="button"
+              onClick={() => setShowAddressModal(false)}
+              className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors mr-2"
+            >
+              {t.cancel}
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              {t.submit}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+</div>
+);
 };
 
-export default Products;
+export default Cart;

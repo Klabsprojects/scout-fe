@@ -25,6 +25,7 @@ import DonationPayment from "./Pages/DonationPayment";
 import Cart from "./Pages/Cart";
 import ProductDescription from "./Pages/ProductDescription";
 import OfficeBearersPage from "./Pages/OfficeBearers";
+import CheckoutPage from "./Pages/CheckoutPage";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
             <Route path="/office-bearers" element={<OfficeBearersPage/>} />
+            <Route path="/checkout" element={<CheckoutPage/>}/>
             
             {/* Product Routes */}
             <Route path="/product" element={<Products />} /> {/* Updated from /product to /products */}
