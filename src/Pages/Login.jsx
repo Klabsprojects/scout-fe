@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../apiConfig/api';
 import { useTranslation } from '../Context/TranslationContext';
+import useAuthStore from '../Zustand/authStore';
+import useCartStore from '../Zustand/cartStore';
 
 export default function LoginSignupPage() {
+  const navigate = useNavigate();
   const { isTamil } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +17,10 @@ export default function LoginSignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Zustand store hooks
+  const { setAuth, setPendingCartProduct, pendingCartProduct } = useAuthStore();
+  const { addToCart } = useCartStore();
 
   const translations = {
     createAccount: {
@@ -132,24 +140,55 @@ export default function LoginSignupPage() {
         const registrationData = { email, password, username, loginAs };
         console.log('Sending registration data:', JSON.stringify(registrationData, null, 2));
         response = await api.post('/api/register', registrationData);
+
+        if (response.data && response.data.message) {
+          setSuccess(response.data.message);
+        } else {
+          setSuccess(isTamil 
+            ? 'பதிவு வெற்றிகரமாக முடிந்தது! தயவுசெய்து உள்நுழையவும்.'
+            : 'Registration successful! Please log in.'
+          );
+        }
       } else {
         const loginData = { email, password };
         console.log('Sending login data:', JSON.stringify(loginData, null, 2));
         response = await api.post('/api/login', loginData);
+
+        console.log('Login response:', response.data);
+
+        if (response.data?.output?.data && response.data?.output?.token) {
+          // Store user data in Zustand
+          setAuth(
+            response.data.output.token,
+            response.data.output.data.id,
+            response.data.output.data.username
+          );
+
+          setSuccess(isTamil ? 'உள்நுழைவு வெற்றிகரமானது!' : 'Login successful!');
+
+          // Check for pending cart action
+          if (pendingCartProduct) {
+            try {
+              const cartData = {
+                productId: pendingCartProduct.productId,
+                loginId: response.data.output.data.id,
+                quantity: 1
+              };
+
+              await api.post('api/addCart', cartData);
+              addToCart(pendingCartProduct);
+              setPendingCartProduct(null);
+            } catch (cartError) {
+              console.error('Error adding pending product to cart:', cartError);
+            }
+          }
+
+          // Redirect to cart after a short delay
+          setTimeout(() => {
+            navigate('/cart');
+          }, 500);
+        }
       }
-
-      console.log(isSignup ? 'Registration response:' : 'Login response:', response.data);
-
-      if (response.data && response.data.message) {
-        setSuccess(response.data.message);
-      } else {
-        setSuccess(isSignup 
-          ? (isTamil ? 'பதிவு வெற்றிகரமாக முடிந்தது! தயவுசெய்து உள்நுழையவும்.' : 'Registration successful! Please log in.')
-          : (isTamil ? 'உள்நுழைவு வெற்றிகரமானது!' : 'Login successful!')
-        );
-      }
-
-      // TODO: Handle successful login (e.g., store token, redirect)
     } catch (error) {
       console.error('Request error:', error);
       if (error.response && error.response.data) {
@@ -239,7 +278,8 @@ export default function LoginSignupPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                     {translations.password[isTamil ? 'ta' : 'en']}
                   </label>
                   <input
@@ -290,7 +330,6 @@ export default function LoginSignupPage() {
                   </div>
 
                   <div className="text-sm">
-                    <a href="#" className="font-medium text-blue-600 hover:text-blue-500"></a>
                     <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
                       {translations.forgotPassword[isTamil ? 'ta' : 'en']}
                     </a>

@@ -1,28 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
 import { X, Plus, Minus, ShoppingCart, ArrowLeft, Truck, CreditCard, Gift, Clock, HelpCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import useStore from './useStore';  // Import the Zustand store
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import api from '../apiConfig/api';
+import { toast } from 'react-toastify';
+
+// Auth Store
+const useAuthStore = create(
+  persist(
+    (set) => ({
+      token: null,
+      userId: null,
+      username: null,
+      setAuth: (token, userId, username) => 
+        set({ token, userId, username }),
+      logout: () => 
+        set({ token: null, userId: null, username: null }),
+    }),
+    {
+      name: 'auth-storage',
+    }
+  )
+);
+
+// Cart Store
+const useCartStore = create(
+  persist(
+    (set) => ({
+      cartItems: [],
+      cartWithProducts: [],
+      setCartItems: (items) => set({ cartItems: items }),
+      setCartWithProducts: (products) => set({ cartWithProducts: products }),
+      addToCart: (item) => set((state) => ({
+        cartItems: [...state.cartItems, item]
+      })),
+      removeFromCart: (itemId) => set((state) => ({
+        cartItems: state.cartItems.filter((item) => item.id !== itemId)
+      })),
+      clearCart: () => set({ cartItems: [], cartWithProducts: [] }),
+      updateCartItem: (itemId, updates) => set((state) => ({
+        cartItems: state.cartItems.map((item) =>
+          item.id === itemId ? { ...item, ...updates } : item
+        )
+      }))
+    }),
+    {
+      name: 'cart-storage',
+    }
+  )
+);
 
 const Cart = () => {
+  const navigate = useNavigate();
   const { isTamil } = useTranslation();
   const [showFAQ, setShowFAQ] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Use Zustand store
-  const cartItems = useStore(state => state.cart);
-  const updateQuantity = useStore(state => state.updateQuantity);
-  const removeFromCart = useStore(state => state.removeFromCart);
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
+  // Zustand hooks
+  const { userId } = useAuthStore();
+  const { cartWithProducts, setCartWithProducts } = useCartStore();
 
   const translations = {
     en: {
       title: 'Your Shopping Cart',
       empty: 'Your cart is empty',
       total: 'Total',
+      totalItems: 'Total Items',
       subtotal: 'Subtotal',
       checkout: 'Proceed to Checkout',
       remove: 'Remove',
@@ -38,6 +84,10 @@ const Cart = () => {
       items: 'Items',
       estimatedDelivery: 'Estimated Delivery',
       days: 'days',
+      category: 'Category',
+      description: 'Description',
+      quantity: 'Quantity',
+      price: 'Price',
       faq: 'Frequently Asked Questions',
       faqQuestion1: 'How long will my order take to arrive?',
       faqAnswer1: 'Delivery times vary depending on your location, but typically orders arrive within 3-5 business days.',
@@ -45,11 +95,14 @@ const Cart = () => {
       faqAnswer2: 'We offer a 30-day return policy for most items. Please check our returns page for more details.',
       faqQuestion3: 'Do you offer international shipping?',
       faqAnswer3: 'Yes, we ship to many countries worldwide. Shipping costs and delivery times may vary.',
+      errorFetchingCart: 'Error loading cart items',
+      errorFetchingProducts: 'Error loading product details',
     },
     ta: {
       title: 'உங்கள் கார்ட்',
       empty: 'உங்கள் கார்ட் காலியாக உள்ளது',
       total: 'மொத்தம்',
+      totalItems: 'மொத்த பொருட்கள்',
       subtotal: 'கூட்டுத்தொகை',
       checkout: 'செக்அவுட் செய்ய தொடரவும்',
       remove: 'அகற்று',
@@ -67,15 +120,89 @@ const Cart = () => {
       days: 'நாட்கள்',
       faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
       faqQuestion1: 'எனது ஆர்டர் வர எவ்வளவு நேரம் ஆகும்?',
-      faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக ஆர்டர்கள் 3-5 வணிக நாட்களுக்குள் வந்துவிடும்.',
-      faqQuestion2: 'உங்கள் திருப்பிச் செலுத்தும் கொள்கை என்ன?',
-      faqAnswer2: 'பெரும்பாலான பொருட்களுக்கு நாங்கள் 30 நாள் திருப்பிச் செலுத்தும் கொள்கையை வழங்குகிறோம். மேலும் விவரங்களுக்கு எங்கள் திருப்பிச் செலுத்தும் பக்கத்தைப் பார்க்கவும்.',
-      faqQuestion3: 'நீங்கள் சர்வதேச அனுப்புதலை வழங்குகிறீர்களா?',
-      faqAnswer3: 'ஆம், நாங்கள் உலகெங்கிலும் உள்ள பல நாடுகளுக்கு அனுப்புகிறோம். அனுப்புதல் செலவுகள் மற்றும் வழங்கல் நேரங்கள் மாறுபடலாம்.',
+      faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக 3-5 வேலை நாட்களில் வந்துவிடும்.',
+      faqQuestion2: 'உங்கள் திருப்பி அனுப்பும் கொள்கை என்ன?',
+      faqAnswer2: '30 நாட்கள் திருப்பி அனுப்பும் கொள்கை உள்ளது.',
+      faqQuestion3: 'சர்வதேச அனுப்புதல் உள்ளதா?',
+      faqAnswer3: 'ஆம், உலகம் முழுவதும் அனுப்புகிறோம்.',
+      errorFetchingCart: 'கார்ட் தகவல்களை பெறுவதில் பிழை',
     }
   };
 
   const t = translations[isTamil ? 'ta' : 'en'];
+
+  useEffect(() => {
+    const fetchCartAndProducts = async () => {
+      try {
+        if (!userId) {
+          setLoading(false);
+          navigate('/login');
+          return;
+        }
+
+        // Fetch cart items
+        const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
+        console.log('Cart Response:', cartResponse.data);
+
+        if (cartResponse.data && Array.isArray(cartResponse.data.results)) {
+          // Create an array of promises for product fetching
+          const productPromises = cartResponse.data.results.map(async (cartItem) => {
+            try {
+              const productResponse = await api.get(`api/listProduct?id=${cartItem.productId}`);
+              console.log('Product Response for ID', cartItem.productId, ':', productResponse.data);
+              
+              return {
+                cartItem,
+                productDetails: productResponse.data.results
+              };
+            } catch (error) {
+              console.error(`Error fetching product ${cartItem.productId}:`, error);
+              return {
+                cartItem,
+                productDetails: null
+              };
+            }
+          });
+
+          // Wait for all product requests to complete
+          const responses = await Promise.all(productPromises);
+          console.log('All Responses:', responses);
+
+          // Combine cart items with their product details
+          const cartWithProductDetails = responses.map(({ cartItem, productDetails }) => {
+            return {
+              id: cartItem.id,
+              productId: cartItem.productId,
+              quantity: cartItem.quantity,
+              name: productDetails?.name || 'Product Not Found',
+              price: productDetails?.price || '0',
+              category: productDetails?.category || 'Uncategorized',
+              description: productDetails?.description || 'No description available',
+              filepath: productDetails?.filepath || null
+            };
+          });
+
+          console.log('Final Combined Cart Data:', cartWithProductDetails);
+          setCartWithProducts(cartWithProductDetails);
+        }
+      } catch (error) {
+        console.error('Error fetching cart and products:', error);
+        toast.error(error.message === 'Network Error' ? t.errorFetchingCart : t.errorFetchingProducts);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCartAndProducts();
+  }, [userId, setCartWithProducts, t.errorFetchingCart, t.errorFetchingProducts, navigate]);
+
+  const calculateSubtotal = () => {
+    return cartWithProducts.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+  };
+
+  const calculateTotalItems = () => {
+    return cartWithProducts.reduce((total, item) => total + item.quantity, 0);
+  };
 
   const FAQ = [
     { question: t.faqQuestion1, answer: t.faqAnswer1 },
@@ -83,11 +210,20 @@ const Cart = () => {
     { question: t.faqQuestion3, answer: t.faqAnswer3 },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
       <div className="container mx-auto px-4 py-8 md:py-16">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
-        {cartItems.length === 0 ? (
+        
+        {(!cartWithProducts || cartWithProducts.length === 0) ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,7 +232,7 @@ const Cart = () => {
           >
             <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
             <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
-            <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
+            <Link to="/products" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
               <ArrowLeft size={24} className="mr-2" />
               {t.continueShopping}
             </Link>
@@ -109,51 +245,66 @@ const Cart = () => {
               transition={{ duration: 0.5 }}
               className="w-full lg:w-2/3"
             >
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-                <div className="p-4 md:p-6">
-                  <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
-                  <div className="flex justify-between mb-2">
-                    <span>{t.items}</span>
-                    <span>{cartItems.length}</span>
-                  </div>
-                  <div className="flex justify-between mb-2">
-                    <span>{t.estimatedDelivery}</span>
-                    <span>3-5 {t.days}</span>
-                  </div>
-                </div>
-              </div>
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4 md:p-6">
                   <AnimatePresence>
-                    {cartItems.map((item) => (
+                    {cartWithProducts.map((item) => (
                       <motion.div
                         key={item.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-col md:flex-row items-center justify-between border-b border-gray-200 py-4 last:border-b-0"
+                        className="flex flex-col md:flex-row items-start border-b border-gray-200 py-6 last:border-b-0"
                       >
-                        <div className="flex items-center mb-4 md:mb-0">
-                          <img src={item.image} alt={item.name[isTamil ? 'ta' : 'en']} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-md mr-4 md:mr-6" />
-                          <div>
-                            <h3 className="text-base md:text-lg font-semibold text-gray-800">{item.name[isTamil ? 'ta' : 'en']}</h3>
-                            <p className="text-gray-600">₹{item.price.toFixed(2)}</p>
-                          </div>
+                        {/* Product Image */}
+                        <div className="w-full md:w-1/3 mb-4 md:mb-0">
+                          <img 
+                            src={
+                              item.filepath 
+                                ? `http://localhost:4010/uploads/${item.filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/')}`
+                                : '/api/placeholder/400/320'
+                            }
+                            alt={item.name || 'Product'} 
+                            onError={(e) => {
+                              e.target.src = '/api/placeholder/400/320';
+                              e.target.onerror = null;
+                            }}
+                            className="w-full h-48 object-cover rounded-lg" 
+                          />
                         </div>
-                        <div className="flex items-center">
-                          <div className="flex items-center border rounded-full overflow-hidden">
-                            <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-1 md:p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
-                              <Minus size={16} />
-                            </button>
-                            <span className="px-3 md:px-4 py-1 md:py-2 font-medium">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 md:p-2 bg-gray-100 hover:bg-gray-200 transition-colors">
-                              <Plus size={16} />
-                            </button>
+
+                        {/* Product Details */}
+                        <div className="md:ml-6 flex-1">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            {item.name || 'Unnamed Product'}
+                          </h3>
+                          <div className="grid gap-2">
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">Price:</span>
+                              <span className="text-blue-600">
+                                ₹{parseFloat(item.price || 0).toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">{t.category}:</span>
+                              <span className="text-gray-600">
+                                {item.category || 'Uncategorized'}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="font-medium text-gray-700 w-24">{t.quantity}:</span>
+                              <span className="text-gray-600">
+                                {item.quantity || 1}
+                              </span>
+                            </div>
+                            <div className="flex items-start">
+                              <span className="font-medium text-gray-700 w-24">{t.description}:</span>
+                              <span className="text-gray-600">
+                                {item.description || 'No description available'}
+                              </span>
+                            </div>
                           </div>
-                          <button onClick={() => removeFromCart(item.id)} className="ml-4 text-red-500 hover:text-red-700 transition-colors">
-                            <X size={24} />
-                          </button>
                         </div>
                       </motion.div>
                     ))}
@@ -161,6 +312,7 @@ const Cart = () => {
                 </div>
               </div>
             </motion.div>
+
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -168,7 +320,11 @@ const Cart = () => {
               className="w-full lg:w-1/3"
             >
               <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
-                <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.subtotal}</h2>
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
+                <div className="flex justify-between mb-2">
+                  <span>{t.totalItems}</span>
+                  <span className="font-medium">{calculateTotalItems()}</span>
+                </div>
                 <div className="flex justify-between mb-2">
                   <span>{t.subtotal}</span>
                   <span>₹{calculateSubtotal().toFixed(2)}</span>
@@ -190,27 +346,28 @@ const Cart = () => {
                 <button className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4">
                   {t.checkout}
                 </button>
-                <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
+                <Link to="/products" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
                   {t.continueShopping}
                 </Link>
               </div>
+
               <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
                 <div className="flex items-center mb-3">
                   <Truck className="text-blue-500 mr-3" size={24} />
-                  <span className="text-sm md:text-base">{t.fastShipping}</span>
+                  <span>{t.fastShipping}</span>
                 </div>
                 <div className="flex items-center mb-3">
                   <CreditCard className="text-blue-500 mr-3" size={24} />
-                  <span className="text-sm md:text-base">{t.securePayment}</span>
+                  <span>{t.securePayment}</span>
                 </div>
                 <div className="flex items-center mb-3">
                   <Gift className="text-blue-500 mr-3" size={24} />
-                  <span className="text-sm md:text-base">{t.exclusiveDeals}</span>
+                  <span>{t.exclusiveDeals}</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="text-blue-500 mr-3" size={24} />
-                  <span className="text-sm md:text-base">{t.estimatedDelivery}: 3-5 {t.days}</span>
+                  <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
                 </div>
               </div>
 
@@ -230,21 +387,21 @@ const Cart = () => {
                   </button>
                 </div>
                 <AnimatePresence>
-                {showFAQ && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {FAQ.map((item, index) => (
-                      <div key={index} className="mb-4 last:mb-0">
-                        <h4 className="font-medium mb-2">{item.question}</h4>
-                        <p className="text-sm md:text-base text-gray-600">{item.answer}</p>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
+                  {showFAQ && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {FAQ.map((item, index) => (
+                        <div key={index} className="mb-4 last:mb-0">
+                          <h4 className="font-medium mb-2">{item.question}</h4>
+                          <p className="text-gray-600">{item.answer}</p>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </motion.div>
             </motion.div>

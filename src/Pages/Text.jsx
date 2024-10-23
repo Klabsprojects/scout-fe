@@ -1,19 +1,116 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, AlertCircle, Star, Package, Clock, Shield, Eye } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '../Context/TranslationContext';
-import useStore from './useStore';
+import { ShoppingCart, Eye, Search, Filter, Plus, Minus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import api from '../apiConfig/api';
+import { toast } from 'react-toastify';
 
-const RecommendedProductCard = ({ product, onAddToCart, onViewProduct }) => {
+// Auth Store
+const useAuthStore = create(
+  persist(
+    (set) => ({
+      token: null,
+      userId: null,
+      username: null,
+      pendingCartProduct: null,
+      setAuth: (token, userId, username) => 
+        set({ token, userId, username }),
+      setPendingCartProduct: (product) => 
+        set({ pendingCartProduct: product }),
+      logout: () => 
+        set({ token: null, userId: null, username: null, pendingCartProduct: null }),
+    }),
+    {
+      name: 'auth-storage',
+    }
+  )
+);
+
+// Cart Store
+const useCartStore = create((set) => ({
+  cart: [],
+  addToCart: (product, quantity = 1) => set((state) => {
+    const existingItem = state.cart.find(item => item.id === product.id);
+    if (existingItem) {
+      return {
+        cart: state.cart.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        )
+      };
+    } else {
+      return { cart: [...state.cart, { ...product, quantity }] };
+    }
+  }),
+  removeFromCart: (productId) => set((state) => ({
+    cart: state.cart.filter(item => item.id !== productId)
+  })),
+  updateQuantity: (productId, newQuantity) => set((state) => ({
+    cart: state.cart.map(item =>
+      item.id === productId ? { ...item, quantity: newQuantity } : item
+    )
+  })),
+  clearCart: () => set({ cart: [] }),
+}));
+
+const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const { token } = useAuthStore();
+  const addToCartStore = useCartStore(state => state.addToCart);
+
+  if (!product) {
+    console.warn('ProductCard received undefined product');
+    return null;
+  }
+
+  const {
+    id = '',
+    name = 'Unnamed Product',
+    description = 'No description available',
+    category = 'Uncategorized',
+    quantity = 0,
+    price = 0,
+    filepath = ''
+  } = product;
 
   const getImageSrc = (filepath) => {
     if (!filepath) return '/api/placeholder/400/320';
     const cleanPath = filepath.replace(/^uploads\\/, '').replace(/\\/g, '/');
     return `http://localhost:4010/uploads/${cleanPath}`;
+  };
+
+  const imageSrc = getImageSrc(filepath);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(true);
+  };
+
+  const handleQuantityChange = (change) => {
+    const newQuantity = selectedQuantity + change;
+    if (newQuantity >= 1 && newQuantity <= quantity) {
+      setSelectedQuantity(newQuantity);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!token) {
+      onAddToCart(product, selectedQuantity); // This will handle redirect to login
+    } else {
+      addToCartStore(product, selectedQuantity);
+      toast.success('Product added to cart');
+      onAddToCart(product, selectedQuantity);
+    }
   };
 
   return (
@@ -21,23 +118,18 @@ const RecommendedProductCard = ({ product, onAddToCart, onViewProduct }) => {
       className="bg-white rounded-xl shadow-lg overflow-hidden relative flex flex-col transition-all duration-300 hover:shadow-xl"
       whileHover={{ y: -5 }}
     >
-      <div className="relative w-full h-48 bg-gray-200">
+      <div className="relative w-full h-48 sm:h-64 bg-gray-200">
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="animate-pulse bg-gray-300 w-full h-full"></div>
           </div>
         )}
         <img
-          src={getImageSrc(product.filepath)}
-          alt={product.name}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => {
-            setImageError(true);
-            setImageLoaded(true);
-          }}
+          src={imageSrc}
+          alt={name}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
         />
         {imageError && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
@@ -45,29 +137,52 @@ const RecommendedProductCard = ({ product, onAddToCart, onViewProduct }) => {
           </div>
         )}
       </div>
+
       <div className="p-4 flex flex-col justify-between flex-1">
         <div>
-          <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2">
-            {product.name}
+          <h3 className="text-base sm:text-lg font-semibold text-[#1A2E44] mb-1 line-clamp-2">
+            {name}
           </h3>
-          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+          <p className="text-sm text-gray-600 mb-2">{description}</p>
+          <p className="text-sm text-gray-600 mb-2">Category: {category}</p>
+          <p className="text-sm text-gray-600 mb-2">Available: {quantity}</p>
         </div>
+
         <div className="flex flex-col space-y-2">
-          <span className="text-lg font-bold text-gray-900">
-            ₹{Number(product.price).toFixed(2)}
+          <span className="text-lg sm:text-xl font-bold text-[#1A2E44]">
+            ₹{Number(price).toFixed(2)}
           </span>
+
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <button
+              onClick={() => handleQuantityChange(-1)}
+              className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={selectedQuantity <= 1}
+            >
+              <Minus size={16} />
+            </button>
+            <span className="w-8 text-center font-medium">{selectedQuantity}</span>
+            <button
+              onClick={() => handleQuantityChange(1)}
+              className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={selectedQuantity >= quantity}
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+
           <button
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-300 flex items-center justify-center"
-            onClick={() => onAddToCart(product)}
+            className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center justify-center"
+            onClick={handleAddToCart}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
+            <ShoppingCart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             Add to Cart
           </button>
           <button
-            className="bg-gray-100 text-gray-900 py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-200 transition duration-300 flex items-center justify-center"
-            onClick={() => onViewProduct(product.id)}
+            className="bg-gray-200 text-[#1A2E44] py-2 px-4 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-300 transition duration-300 flex items-center justify-center"
+            onClick={() => onViewProduct(id)}
           >
-            <Eye className="mr-2 h-4 w-4" />
+            <Eye className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             View Product
           </button>
         </div>
@@ -75,404 +190,344 @@ const RecommendedProductCard = ({ product, onAddToCart, onViewProduct }) => {
     </motion.div>
   );
 };
+// ... continuing from previous part
 
-const ImageComponent = ({ src, alt, className }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [imageRatio, setImageRatio] = useState(1);
-
-  const handleImageLoad = (e) => {
-    setImageLoaded(true);
-    const ratio = e.target.naturalWidth / e.target.naturalHeight;
-    setImageRatio(ratio);
-  };
-
-  return (
-    <div className="relative w-full h-auto aspect-square lg:aspect-auto group">
-      {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl" />
-      )}
-      <motion.div
-        className={`relative overflow-hidden rounded-xl ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-        onClick={() => setIsZoomed(!isZoomed)}
-      >
-        <motion.img
-          src={src}
-          alt={alt}
-          className={`w-full h-full ${imageRatio > 1 ? 'object-contain' : 'object-contain'} transition-all duration-300 rounded-xl hover:scale-105 ${
-            imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'
-          }`}
-          animate={{ scale: isZoomed ? 1.2 : 1 }}
-          onLoad={handleImageLoad}
-          onError={() => {
-            setImageError(true);
-            setImageLoaded(true);
-          }}
-        />
-        {!isZoomed && imageLoaded && !imageError && (
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-xl" />
-        )}
-      </motion.div>
-      {imageError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-xl">
-          <span className="text-gray-500 flex items-center">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            Image not available
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const FeatureCard = ({ Icon, title, description }) => (
-  <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-    <Icon className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-    <div>
-      <h4 className="text-sm font-medium text-gray-900">{title}</h4>
-      <p className="text-sm text-gray-600">{description}</p>
-    </div>
-  </div>
-);
-
-const ProductDescription = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const Products = () => {
   const { isTamil } = useTranslation();
-  const searchParams = new URLSearchParams(location.search);
-  const id = searchParams.get('id');
-
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const addToCart = useStore(state => state.addToCart);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
-  const translations = useMemo(() => ({
+  // Zustand store hooks
+  const { token, userId, setPendingCartProduct } = useAuthStore();
+  const { addToCart } = useCartStore();
+
+  const translations = {
     en: {
-      loading: 'Loading product details...',
-      backToProducts: 'Back to Products',
-      category: 'Category',
-      addToCart: 'Add to Cart',
-      productNotFound: 'Product not found',
-      quantity: 'Quantity Available',
-      errorMessage: 'Failed to load product. Please try again.',
-      description: 'Product Details',
-      recommendedProducts: 'You might also like',
-      features: {
-        shipping: 'Shipping',
-        shippingDesc: 'Delivery options available',
-        delivery: 'Delivery Time',
-        deliveryDesc: 'Estimated delivery time',
-        warranty: 'Warranty',
-        warrantyDesc: 'Product warranty'
-      }
+      title: 'Our Products',
+      search: 'Search products...',
+      filters: 'Filters',
+      noProducts: 'No products found. Try adjusting your search or filters.',
+      loading: 'Loading...',
+      error: 'Failed to load products. Please try again.',
+      loginRequired: 'Please login to add items to cart',
+      addToCartSuccess: 'Product added to cart successfully',
+      addToCartError: 'Failed to add product to cart'
     },
     ta: {
-      loading: 'தயாரிப்பு விவரங்களை ஏற்றுகிறது...',
-      backToProducts: 'பொருட்களுக்குத் திரும்பு',
-      category: 'வகை',
-      addToCart: 'கூடையில் சேர்',
-      productNotFound: 'தயாரிப்பு கிடைக்கவில்லை',
-      quantity: 'கையிருப்பு',
-      errorMessage: 'தயாரிப்பை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
-      description: 'தயாரிப்பு விவரங்கள்',
-      recommendedProducts: 'உங்களுக்கு பிடிக்கலாம்',
-      features: {
-        shipping: 'கப்பல் போக்குவரத்து',
-        shippingDesc: 'டெலிவரி விருப்பங்கள்',
-        delivery: 'டெலிவரி நேரம்',
-        deliveryDesc: 'மதிப்பிடப்பட்ட டெலிவரி நேரம்',
-        warranty: 'வாரண்டி',
-        warrantyDesc: 'தயாரிப்பு வாரண்டி'
-      }
+      title: 'எங்கள் பொருட்கள்',
+      search: 'பொருட்களைத் தேடுங்கள்...',
+      filters: 'வடிகட்டிகள்',
+      noProducts: 'பொருட்கள் எதுவும் கிடைக்கவில்லை. உங்கள் தேடலை மாற்றி முயற்சிக்கவும்.',
+      loading: 'ஏற்றுகிறது...',
+      error: 'பொருட்களை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
+      loginRequired: 'கார்ட்டில் சேர்க்க உள்நுழையவும்',
+      addToCartSuccess: 'பொருள் கார்ட்டில் சேர்க்கப்பட்டது',
+      addToCartError: 'கார்ட்டில் சேர்க்க முடியவில்லை'
     }
-  }), []);
+  };
 
   const t = translations[isTamil ? 'ta' : 'en'];
 
-  const fetchRecommendedProducts = async () => {
+  const handleAddToCart = async (product, quantity) => {
+    if (!token) {
+      setPendingCartProduct({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: quantity
+      });
+      
+      toast.info(t.loginRequired);
+      navigate('/login');
+      return;
+    }
+
     try {
-      const response = await api.get('api/listProduct');
-      let productsData = response.data;
+      const cartData = {
+        productId: product.id,
+        loginId: parseInt(userId),
+        quantity: quantity
+      };
 
-      if (productsData?.results) {
-        productsData = productsData.results;
+      const response = await api.post('api/addCart', cartData);
+
+      if (response.status === 200 || response.status === 201) {
+        addToCart(product, quantity);
+        toast.success(t.addToCartSuccess);
+        navigate('/cart');
+      } else {
+        toast.error(t.addToCartError);
       }
-
-      // Filter out the current product and get random products
-      const otherProducts = productsData.filter(p => p.id !== id);
-      const shuffled = otherProducts.sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 4);
-
-      setRecommendedProducts(selected);
-    } catch (err) {
-      console.error('Error fetching recommended products:', err);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error(t.addToCartError);
     }
   };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) {
-        setError(t.productNotFound);
-        setLoading(false);
-        return;
-      }
+    const processPendingCartAction = async () => {
+      const pendingProduct = useAuthStore.getState().pendingCartProduct;
+      
+      if (pendingProduct && token) {
+        try {
+          const cartData = {
+            productId: pendingProduct.productId,
+            loginId: parseInt(userId),
+            quantity: pendingProduct.quantity
+          };
 
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await api.get(`api/listProduct?id=${id}`);
-        let productData = response.data;
-
-        if (productData?.results) {
-          productData = Array.isArray(productData.results)
-            ? productData.results.find(p => p.id === id)
-            : productData.results;
+          const response = await api.post('api/addCart', cartData);
+          
+          if (response.status === 200 || response.status === 201) {
+            addToCart(pendingProduct);
+            toast.success(t.addToCartSuccess);
+            setPendingCartProduct(null);
+            navigate('/cart');
+          } else {
+            toast.error(t.addToCartError);
+          }
+        } catch (error) {
+          console.error('Error processing pending cart action:', error);
+          toast.error(t.addToCartError);
         }
-
-        if (!productData || !productData.id) {
-          throw new Error(t.productNotFound);
-        }
-
-        setProduct({
-          id: productData.id,
-          name: productData.name?.trim() || 'Unnamed Product',
-          description: productData.description?.trim() || 'No description available',
-          category: productData.category?.trim() || 'Uncategorized',
-          price: Number(productData.price) || 0,
-          quantity: Number(productData.quantity) || 0,
-          filepath: productData.filepath?.trim() || '',
-        });
-
-        // Fetch recommended products after getting the current product
-        fetchRecommendedProducts();
-      } catch (err) {
-        console.error('Error fetching product:', err);
-        setError(err.message === t.productNotFound ? err.message : t.errorMessage);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchProduct();
-  }, [id, t]);
+    processPendingCartAction();
+  }, [token, userId, setPendingCartProduct, addToCart, navigate, t.addToCartSuccess, t.addToCartError]);
 
-  const getImageSrc = (filepath) => {
-    if (!filepath) return '/api/placeholder/400/320';
-    const cleanPath = filepath.replace(/^uploads\\/, '').replace(/\\/g, '/');
-    return `http://localhost:4010/uploads/${cleanPath}`;
-  };
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get('api/listProduct');
+      let productsData = response.data;
 
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        maxQuantity: product.quantity
-      });
-      navigate('/cart');
+      if (productsData && typeof productsData === 'object' && Array.isArray(productsData.results)) {
+        productsData = productsData.results;
+      } else if (!Array.isArray(productsData)) {
+        console.error('Unexpected data structure:', productsData);
+        setError('Received unexpected data structure from API');
+        setProducts([]);
+        return;
+      }
+
+      const processedProducts = productsData.map(product => ({
+        id: product?.id || '',
+        name: product?.name || 'Unnamed Product',
+        description: product?.description || 'No description available',
+        category: product?.category || 'Uncategorized',
+        quantity: Number(product?.quantity) || 0,
+        price: Number(product?.price) || 0,
+        filepath: product?.filepath || '',
+        createdAt: product?.createdAt,
+        updatedAt: product?.updatedAt
+      })).filter(product => product.id);
+
+      setProducts(processedProducts);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError(t.error);
+    } finally {
+      setLoading(false);
     }
+  }, [t.error]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const handleViewProduct = (productId) => {
+    navigate(`/product-description?id=${productId}`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <motion.div 
-          className="flex items-center space-x-3 text-lg text-gray-600"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="w-6 h-6 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <span>{t.loading}</span>
-        </motion.div>
-      </div>
+  const filteredProducts = useMemo(() => {
+    return products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }
+  }, [products, searchTerm]);
 
-  if (error || !product) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
-        <motion.div 
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="flex items-center justify-center text-gray-600 mb-4">
-            <AlertCircle className="w-6 h-6 mr-2" />
-            <span className="text-lg">{error || t.productNotFound}</span>
-          </div>
-          <button
-            onClick={() => navigate('/products')}
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t.backToProducts}
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-28">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <motion.button
-          onClick={() => navigate(-1)}
-          className="mb-8 inline-flex items-center text-gray-600 hover:text-gray-800 font-medium group"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-          {t.backToProducts}
-        </motion.button>
-
-        <motion.div 
-          className="bg-white rounded-2xl shadow-lg overflow-hidden mb-12"
-          initial={{ opacity: 0, y: 20 }}
+    <div className="bg-gray-50 min-h-screen pb-12 px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="max-w-7xl mx-auto">
+        <motion.h2
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1A2E44] mb-8 text-center pt-24 sm:pt-36"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
-            <div className="p-8">
-              <ImageComponent
-              src={getImageSrc(product.filepath)}
-              alt={product.name}
-              className="w-full h-full object-contain"
-            />
-          </div>
+          {t.title}
+        </motion.h2>
 
-          <div className="p-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-8"
-              >
-                <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                      {product.category}
-                    </span>
-                  </div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                    {product.name}
-                  </h1>
-                  <p className="text-4xl font-bold text-gray-900 mb-6">
-                    ₹{product.price.toFixed(2)}
-                  </p>
-                </div>
-
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {t.description}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {product.description}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FeatureCard
-                    Icon={Package}
-                    title={t.features.shipping}
-                    description={t.features.shippingDesc}
-                  />
-                  <FeatureCard
-                    Icon={Clock}
-                    title={t.features.delivery}
-                    description={t.features.deliveryDesc}
-                  />
-                  <FeatureCard
-                    Icon={Shield}
-                    title={t.features.warranty}
-                    description={t.features.warrantyDesc}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900">
-                      {t.quantity}: {product.quantity}
-                    </span>
-                    <div className="flex items-center space-x-3">
-                      <button
-                        className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        disabled={quantity <= 1}
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center">{quantity}</span>
-                      <button
-                        className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200"
-                        onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
-                        disabled={quantity >= product.quantity}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  <button
-                    className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl text-base font-medium hover:bg-blue-700 transition duration-150 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
-                    onClick={handleAddToCart}
-                    disabled={product.quantity <= 0}
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {t.addToCart}
-                  </button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Recommended Products Section */}
-      {recommendedProducts.length > 0 && (
         <motion.div
-          className="space-y-8"
+          className="bg-white p-4 rounded-xl shadow-md mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-gray-900">
-            {t.recommendedProducts}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recommendedProducts.map((recProduct) => (
-              <RecommendedProductCard
-                key={recProduct.id}
-                product={recProduct}
-                onAddToCart={(product) => {
-                  addToCart({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    quantity: 1,
-                    maxQuantity: product.quantity
-                  });
-                  navigate('/cart');
-                }}
-                onViewProduct={(productId) => {
-                  window.scrollTo(0, 0);
-                  navigate(`/product-description?id=${productId}`);
-                }}
-              />
-            ))}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <button
+                className="bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300 flex items-center w-full sm:w-auto justify-center sm:justify-start"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {t.filters}
+              </button>
+              <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder={t.search}
+                  className="bg-gray-100 border-none text-[#1A2E44] rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#E07A5F] w-full"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                <Search className="h-5 w-5 text-[#4A6FA5] absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+            </div>
           </div>
         </motion.div>
-      )}
+
+        <AnimatePresence>
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center text-xl text-[#4A6FA5] mt-12"
+            >
+              {t.loading}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onViewProduct={handleViewProduct}
+                  isTamil={isTamil}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {filteredProducts.length === 0 && !loading && (
+          <motion.p
+            className="text-center text-lg sm:text-xl text-[#4A6FA5] mt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {t.noProducts}
+          </motion.p>
+        )}
+
+        {error && (
+          <motion.div
+            className="text-red-500 text-center mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {error}
+          </motion.div>
+        )}
+
+        {showFilters && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowFilters(false)}
+          >
+            <motion.div
+              className="bg-white rounded-xl p-6 max-w-md w-full"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-[#1A2E44]">{t.filters}</h3>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Category
+                  </label>
+                  <select
+                    className="rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
+                  >
+                    <option value="">All Categories</option>
+                  </select>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Price Range
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      className="w-1/2 rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      className="w-1/2 rounded-lg border-gray-300 focus:border-[#5f81e0] focus:ring focus:ring-[#5f81e0] focus:ring-opacity-50"
+                    />
+                  </div>
+                </div>
+                <button
+                  className="w-full bg-[#5f81e0] text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-[#C86D54] transition duration-300"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
-export default ProductDescription;
+export default Products;
