@@ -97,6 +97,9 @@ const Cart = () => {
       faqAnswer3: 'Yes, we ship to many countries worldwide. Shipping costs and delivery times may vary.',
       errorFetchingCart: 'Error loading cart items',
       errorFetchingProducts: 'Error loading product details',
+      uncategorized: 'Uncategorized',
+      noDescription: 'No description available',
+      unnamedProduct: 'Unnamed Product'
     },
     ta: {
       title: 'உங்கள் கார்ட்',
@@ -118,6 +121,10 @@ const Cart = () => {
       items: 'பொருட்கள்',
       estimatedDelivery: 'மதிப்பிடப்பட்ட வழங்கல்',
       days: 'நாட்கள்',
+      category: 'வகை',
+      description: 'விளக்கம்',
+      quantity: 'அளவு',
+      price: 'விலை',
       faq: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
       faqQuestion1: 'எனது ஆர்டர் வர எவ்வளவு நேரம் ஆகும்?',
       faqAnswer1: 'வழங்கல் நேரங்கள் உங்கள் இருப்பிடத்தைப் பொறுத்து மாறுபடும், ஆனால் பொதுவாக 3-5 வேலை நாட்களில் வந்துவிடும்.',
@@ -126,6 +133,10 @@ const Cart = () => {
       faqQuestion3: 'சர்வதேச அனுப்புதல் உள்ளதா?',
       faqAnswer3: 'ஆம், உலகம் முழுவதும் அனுப்புகிறோம்.',
       errorFetchingCart: 'கார்ட் தகவல்களை பெறுவதில் பிழை',
+      errorFetchingProducts: 'தயாரிப்பு விவரங்களை ஏற்றுவதில் பிழை',
+      uncategorized: 'வகைப்படுத்தப்படாதது',
+      noDescription: 'விளக்கம் இல்லை',
+      unnamedProduct: 'பெயரிடப்படாத தயாரிப்பு'
     }
   };
 
@@ -140,12 +151,10 @@ const Cart = () => {
           return;
         }
 
-        // Fetch cart items
         const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
         console.log('Cart Response:', cartResponse.data);
 
         if (cartResponse.data && Array.isArray(cartResponse.data.results)) {
-          // Create an array of promises for product fetching
           const productPromises = cartResponse.data.results.map(async (cartItem) => {
             try {
               const productResponse = await api.get(`api/listProduct?id=${cartItem.productId}`);
@@ -164,20 +173,18 @@ const Cart = () => {
             }
           });
 
-          // Wait for all product requests to complete
           const responses = await Promise.all(productPromises);
           console.log('All Responses:', responses);
 
-          // Combine cart items with their product details
           const cartWithProductDetails = responses.map(({ cartItem, productDetails }) => {
             return {
               id: cartItem.id,
               productId: cartItem.productId,
               quantity: cartItem.quantity,
-              name: productDetails?.name || 'Product Not Found',
+              name: productDetails?.name || t.unnamedProduct,
               price: productDetails?.price || '0',
-              category: productDetails?.category || 'Uncategorized',
-              description: productDetails?.description || 'No description available',
+              category: productDetails?.category || t.uncategorized,
+              description: productDetails?.description || t.noDescription,
               filepath: productDetails?.filepath || null
             };
           });
@@ -194,7 +201,7 @@ const Cart = () => {
     };
 
     fetchCartAndProducts();
-  }, [userId, setCartWithProducts, t.errorFetchingCart, t.errorFetchingProducts, navigate]);
+  }, [userId, setCartWithProducts, t, navigate]);
 
   const calculateSubtotal = () => {
     return cartWithProducts.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
@@ -222,30 +229,31 @@ const Cart = () => {
     <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
       <div className="container mx-auto px-4 py-8 md:py-16">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
-        
-        {(!cartWithProducts || cartWithProducts.length === 0) ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
-            <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
-            <Link to="/products" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
-              <ArrowLeft size={24} className="mr-2" />
-              {t.continueShopping}
-            </Link>
-          </motion.div>
-        ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="w-full lg:w-2/3"
-            >
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column - Cart Items or Empty State */}
+          <div className="w-full lg:w-2/3">
+            {(!cartWithProducts || cartWithProducts.length === 0) ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center bg-white rounded-lg shadow-lg p-8 mb-8"
+              >
+                <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
+                <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
+                <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
+                  <ArrowLeft size={24} className="mr-2" />
+                  {t.continueShopping}
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden mb-8"
+              >
                 <div className="p-4 md:p-6">
                   <AnimatePresence>
                     {cartWithProducts.map((item) => (
@@ -257,7 +265,6 @@ const Cart = () => {
                         transition={{ duration: 0.3 }}
                         className="flex flex-col md:flex-row items-start border-b border-gray-200 py-6 last:border-b-0"
                       >
-                        {/* Product Image */}
                         <div className="w-full md:w-1/3 mb-4 md:mb-0">
                           <img 
                             src={
@@ -265,7 +272,7 @@ const Cart = () => {
                                 ? `http://localhost:4010/uploads/${item.filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/')}`
                                 : '/api/placeholder/400/320'
                             }
-                            alt={item.name || 'Product'} 
+                            alt={item.name || t.unnamedProduct} 
                             onError={(e) => {
                               e.target.src = '/api/placeholder/400/320';
                               e.target.onerror = null;
@@ -274,14 +281,13 @@ const Cart = () => {
                           />
                         </div>
 
-                        {/* Product Details */}
                         <div className="md:ml-6 flex-1">
                           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                            {item.name || 'Unnamed Product'}
+                            {item.name || t.unnamedProduct}
                           </h3>
                           <div className="grid gap-2">
                             <div className="flex items-center">
-                              <span className="font-medium text-gray-700 w-24">Price:</span>
+                              <span className="font-medium text-gray-700 w-24">{t.price}:</span>
                               <span className="text-blue-600">
                                 ₹{parseFloat(item.price || 0).toFixed(2)}
                               </span>
@@ -289,7 +295,7 @@ const Cart = () => {
                             <div className="flex items-center">
                               <span className="font-medium text-gray-700 w-24">{t.category}:</span>
                               <span className="text-gray-600">
-                                {item.category || 'Uncategorized'}
+                                {item.category || t.uncategorized}
                               </span>
                             </div>
                             <div className="flex items-center">
@@ -301,7 +307,7 @@ const Cart = () => {
                             <div className="flex items-start">
                               <span className="font-medium text-gray-700 w-24">{t.description}:</span>
                               <span className="text-gray-600">
-                                {item.description || 'No description available'}
+                                {item.description || t.noDescription}
                               </span>
                             </div>
                           </div>
@@ -310,9 +316,73 @@ const Cart = () => {
                     ))}
                   </AnimatePresence>
                 </div>
+              </motion.div>
+            )}
+
+            {/* Why Shop With Us Section - Always Visible */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6"
+            >
+              <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
+              <div className="flex items-center mb-3">
+                <Truck className="text-blue-500 mr-3" size={24} />
+                <span>{t.fastShipping}</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <CreditCard className="text-blue-500 mr-3" size={24} />
+                <span>{t.securePayment}</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <Gift className="text-blue-500 mr-3" size={24} />
+                <span>{t.exclusiveDeals}</span>
+              </div>
+              <div className="flex items-center">
+                <Clock className="text-blue-500 mr-3" size={24} />
+                <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
               </div>
             </motion.div>
 
+            {/* FAQ Section - Always Visible */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-lg shadow-lg p-4 md:p-6"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">{t.faq}</h3>
+                <button 
+                  onClick={() => setShowFAQ(!showFAQ)}
+                  className="text-blue-500 hover:text-blue-600 transition-colors"
+                >
+                  <HelpCircle size={24} />
+                </button>
+              </div>
+              <AnimatePresence>
+                {showFAQ && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {FAQ.map((item, index) => (
+                      <div key={index} className="mb-4 last:mb-0">
+                        <h4 className="font-medium mb-2">{item.question}</h4>
+                        <p className="text-gray-600">{item.answer}</p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Right Column - Order Summary (Only visible when cart has items) */}
+          {cartWithProducts && cartWithProducts.length > 0 && (
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -346,67 +416,13 @@ const Cart = () => {
                 <button className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4">
                   {t.checkout}
                 </button>
-                <Link to="/products" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
+                <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
                   {t.continueShopping}
                 </Link>
               </div>
-
-              <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
-                <div className="flex items-center mb-3">
-                  <Truck className="text-blue-500 mr-3" size={24} />
-                  <span>{t.fastShipping}</span>
-                </div>
-                <div className="flex items-center mb-3">
-                  <CreditCard className="text-blue-500 mr-3" size={24} />
-                  <span>{t.securePayment}</span>
-                </div>
-                <div className="flex items-center mb-3">
-                  <Gift className="text-blue-500 mr-3" size={24} />
-                  <span>{t.exclusiveDeals}</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="text-blue-500 mr-3" size={24} />
-                  <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
-                </div>
-              </div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-white rounded-lg shadow-lg p-4 md:p-6"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">{t.faq}</h3>
-                  <button 
-                    onClick={() => setShowFAQ(!showFAQ)}
-                    className="text-blue-500 hover:text-blue-600 transition-colors"
-                  >
-                    <HelpCircle size={24} />
-                  </button>
-                </div>
-                <AnimatePresence>
-                  {showFAQ && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {FAQ.map((item, index) => (
-                        <div key={index} className="mb-4 last:mb-0">
-                          <h4 className="font-medium mb-2">{item.question}</h4>
-                          <p className="text-gray-600">{item.answer}</p>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
             </motion.div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
