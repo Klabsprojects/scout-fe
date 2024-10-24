@@ -304,7 +304,7 @@ const CheckoutPage = () => {
         // Clear cart after successful order
         try {
           await Promise.all(cartItems.map(async (item) => {
-            await api.delete(`http://localhost:4010/api/deleteCart?productId=${item.productId}&loginId=${userId}`);
+            await api.delete(`/api/deleteCart?productId=${item.productId}&loginId=${userId}`);
           }));
           setCartItems([]);
         } catch (error) {
