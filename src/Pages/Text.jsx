@@ -7,52 +7,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../apiConfig/api';
 import { toast } from 'react-toastify';
+import { useAuthStore } from '../Zustand/authStore';
+import { useCartStore } from '../Zustand/cartStore';
 
-// Auth Store
-const useAuthStore = create(
-  persist(
-    (set) => ({
-      token: null,
-      userId: null,
-      username: null,
-      setAuth: (token, userId, username) => 
-        set({ token, userId, username }),
-      logout: () => 
-        set({ token: null, userId: null, username: null }),
-    }),
-    {
-      name: 'auth-storage',
-    }
-  )
-);
 
-// Cart Store
-const useCartStore = create(
-  persist(
-    (set) => ({
-      cartItems: [],
-      cartWithProducts: [],
-      setCartItems: (items) => set({ cartItems: items }),
-      setCartWithProducts: (products) => set({ cartWithProducts: products }),
-      addToCart: (item) => set((state) => ({
-        cartItems: [...state.cartItems, item]
-      })),
-      removeFromCart: (itemId) => set((state) => ({
-        cartItems: state.cartItems.filter((item) => item.id !== itemId)
-      })),
-      clearCart: () => set({ cartItems: [], cartWithProducts: [] }),
-      updateCartItem: (itemId, updates) => set((state) => ({
-        cartItems: state.cartItems.map((item) =>
-          item.id === itemId ? { ...item, ...updates } : item
-        )
-      }))
-    }),
-    {
-      name: 'cart-storage',
-    }
-  )
-);
-
+// Translations object remains the same...
 const translations = {
   en: {
     title: 'Your Shopping Cart',
@@ -160,10 +119,10 @@ const Cart = () => {
   const [showFAQ, setShowFAQ] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [isDataFetched, setIsDataFetched] = useState(false); // New state for tracking data fetch
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   // Zustand hooks
-  const { userId } = useAuthStore();
+  const { token } = useAuthStore();
   const { cartWithProducts, setCartWithProducts } = useCartStore();
 
   const initialAddressState = {
@@ -181,18 +140,27 @@ const Cart = () => {
   const [addressFormData, setAddressFormData] = useState(initialAddressState);
   const t = translations[isTamil ? 'ta' : 'en'];
 
-  // Modified useEffect to prevent continuous API calls
+  // Configure API headers with token
+  const configureAPI = () => {
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete api.defaults.headers.common['Authorization'];
+    }
+  };
+
+  // Modified useEffect to use token instead of userId
   useEffect(() => {
     const fetchCartAndProducts = async () => {
-      // Skip if we've already fetched data or if there's no userId
-      if (isDataFetched || !userId) {
+      if (isDataFetched || !token) {
         setLoading(false);
-        if (!userId) navigate('/login');
+        if (!token) navigate('/login');
         return;
       }
 
       try {
-        const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
+        configureAPI();
+        const cartResponse = await api.get('api/listCart');
         console.log('Cart Response:', cartResponse.data);
 
         if (cartResponse.data && Array.isArray(cartResponse.data.results)) {
@@ -229,38 +197,94 @@ const Cart = () => {
         }
       } catch (error) {
         console.error('Error fetching cart and products:', error);
-        toast.error(error.message === 'Network Error' ? t.errorFetchingCart : t.errorFetchingProducts);
+        if (error.response?.status === 401) {
+          toast.error('Session expired. Please login again.');
+          useAuthStore.getState().clearAuth();
+          navigate('/login');
+        } else {
+          toast.error(error.message === 'Network Error' ? t.errorFetchingCart : t.errorFetchingProducts);
+        }
       } finally {
         setLoading(false);
-        setIsDataFetched(true); // Mark data as fetched
+        setIsDataFetched(true);
       }
     };
 
     fetchCartAndProducts();
-  }, [userId, setCartWithProducts, t, navigate, isDataFetched]);
+  }, [token, setCartWithProducts, t, navigate, isDataFetched]);
 
-  // Function to manually refresh cart data when needed
+  // Function to manually refresh cart data
   const refreshCartData = () => {
     setIsDataFetched(false);
   };
 
+  // Modified handleAddressSubmit to use token
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post('api/addAddress', {
-        ...addressFormData,
-        loginId: userId
-      });
+      configureAPI();
+      const response = await api.post('api/addAddress', addressFormData);
 
       console.log('Address added:', response.data);
       setShowAddressModal(false);
       setAddressFormData(initialAddressState);
       toast.success('Address added successfully!');
-      refreshCartData(); // Refresh cart data after address submission
+      refreshCartData();
     } catch (error) {
       console.error('Error adding address:', error);
-      toast.error('Failed to add address. Please try again.');
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        useAuthStore.getState().clearAuth();
+        navigate('/login');
+      } else {
+        toast.error('Failed to add address. Please try again.');
+      }
+    }
+  };
+
+  // Modified quantity update functions to use token
+  const handleIncreaseQuantity = async (item) => {
+    try {
+      configureAPI();
+      await api.put(`api/updateProductCount`, {
+        productId: item.productId,
+        quantity: item.quantity + 1
+      });
+      refreshCartData();
+    } catch (error) {
+      console.error('Error updating product count:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        useAuthStore.getState().clearAuth();
+        navigate('/login');
+      } else {
+        toast.error('Failed to update product quantity. Please try again.');
+      }
+    }
+  };
+
+  const handleDecreaseQuantity = async (item) => {
+    if (item.quantity === 1) {
+      return;
+    }
+
+    try {
+      configureAPI();
+      await api.put(`api/updateProductCount`, {
+        productId: item.productId,
+        quantity: item.quantity - 1
+      });
+      refreshCartData();
+    } catch (error) {
+      console.error('Error updating product count:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        useAuthStore.getState().clearAuth();
+        navigate('/login');
+      } else {
+        toast.error('Failed to update product quantity. Please try again.');
+      }
     }
   };
 
@@ -285,31 +309,6 @@ const Cart = () => {
     { question: t.faqQuestion3, answer: t.faqAnswer3 },
   ];
 
-  // New functions for updating quantity
-  const handleIncreaseQuantity = async (item) => {
-    try {
-      await api.put(`api/updateProductCount?loginId=${userId}&productId=${item.productId}&quantity=${item.quantity + 1}`);
-      refreshCartData();
-    } catch (error) {
-      console.error('Error updating product count:', error);
-      toast.error('Failed to update product quantity. Please try again.');
-    }
-  };
-
-  const handleDecreaseQuantity = async (item) => {
-    if (item.quantity === 1) {
-      return;
-    }
-
-    try {
-      await api.put(`api/updateProductCount?loginId=${userId}&productId=${item.productId}&quantity=${item.quantity - 1}`);
-      refreshCartData();
-    } catch (error) {
-      console.error('Error updating product count:', error);
-      toast.error('Failed to update product quantity. Please try again.');
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -318,224 +317,225 @@ const Cart = () => {
     );
   }
 
+
   return (
     <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
-      <div className="container mx-auto px-4 py-8 md:py-16">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
+    <div className="container mx-auto px-4 py-8 md:py-16">
+      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
 
-          {/* Left Column - Cart Items or Empty State */}
+        {/* Left Column - Cart Items or Empty State */}
 <div className="w-full lg:w-2/3">
-  {(!cartWithProducts || cartWithProducts.length === 0) ? (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-center bg-white rounded-lg shadow-lg p-8 mb-8"
-    >
-      <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
-      <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
-      <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
-        <ArrowLeft size={24} className="mr-2" />
-        {t.continueShopping}
-      </Link>
-    </motion.div>
-  ) : (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white rounded-lg shadow-lg overflow-hidden mb-8"
-    >
-      <div className="p-4 md:p-6">
-        <AnimatePresence>
-          {cartWithProducts.map((item) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col md:flex-row items-start border-b border-gray-200 py-6 last:border-b-0"
-            >
-              <div className="w-full md:w-1/3 mb-4 md:mb-0">
-                <img 
-                  src={
-                    item.filepath 
-                      ? `http://localhost:4010/uploads/${item.filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/')}`
-                      : '/api/placeholder/400/320'
-                  }
-                  alt={item.name || t.unnamedProduct} 
-                  onError={(e) => {
-                    e.target.src = '/api/placeholder/400/320';
-                    e.target.onerror = null;
-                  }}
-                  className="w-full h-48 object-cover rounded-lg" 
-                />
-              </div>
-
-              <div className="md:ml-6 flex-1">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  {item.name || t.unnamedProduct}
-                </h3>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <span className="font-medium text-gray-700 w-24">{t.price}:</span>
-                    <span className="text-blue-600">
-                      ₹{parseFloat(item.price || 0).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="font-medium text-gray-700 w-24">{t.category}:</span>
-                    <span className="text-gray-600">
-                      {item.category || t.uncategorized}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="font-medium text-gray-700 w-24">{t.quantity}:</span>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                        onClick={() => handleDecreaseQuantity(item)}
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="text-gray-600">
-                        {item.quantity || 1}
-                      </span>
-                      <button
-                        className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                        onClick={() => handleIncreaseQuantity(item)}
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-medium text-gray-700 w-24">{t.description}:</span>
-                    <span className="text-gray-600">
-                      {item.description || t.noDescription}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </motion.div>
-  )}
-
-  {/* Why Shop With Us Section */}
+{(!cartWithProducts || cartWithProducts.length === 0) ? (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
-    className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6"
+    className="text-center bg-white rounded-lg shadow-lg p-8 mb-8"
   >
-    <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
-    <div className="flex items-center mb-3">
-      <Truck className="text-blue-500 mr-3" size={24} />
-      <span>{t.fastShipping}</span>
-    </div>
-    <div className="flex items-center mb-3">
-      <CreditCard className="text-blue-500 mr-3" size={24} />
-      <span>{t.securePayment}</span>
-    </div>
-    <div className="flex items-center mb-3">
-      <Gift className="text-blue-500 mr-3" size={24} />
-      <span>{t.exclusiveDeals}</span>
-    </div>
-    <div className="flex items-center">
-      <Clock className="text-blue-500 mr-3" size={24} />
-      <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
-    </div>
+    <ShoppingCart size={80} className="mx-auto text-gray-400 mb-6" />
+    <p className="text-xl md:text-2xl text-gray-600 mb-8">{t.empty}</p>
+    <Link to="/product" className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition-colors inline-flex items-center text-lg">
+      <ArrowLeft size={24} className="mr-2" />
+      {t.continueShopping}
+    </Link>
   </motion.div>
-
-  {/* FAQ Section */}
+) : (
   <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: 0.2 }}
-    className="bg-white rounded-lg shadow-lg p-4 md:p-6"
-  >
-    <div className="flex justify-between items-center mb-4">
-      <h3 className="text-lg font-semibold">{t.faq}</h3>
-      <button 
-        onClick={() => setShowFAQ(!showFAQ)}
-        className="text-blue-500 hover:text-blue-600 transition-colors"
-      >
-        <HelpCircle size={24} />
-      </button>
-    </div>
-    <AnimatePresence>
-      {showFAQ && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          {FAQ.map((item, index) => (
-            <div key={index} className="mb-4 last:mb-0">
-              <h4 className="font-medium mb-2">{item.question}</h4>
-              <p className="text-gray-600">{item.answer}</p>
-            </div>
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </motion.div>
-</div>
-
-{/* Right Column - Order Summary */}
-{cartWithProducts && cartWithProducts.length > 0 && (
-  <motion.div 
-    initial={{ opacity: 0, x: 20 }}
+    initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5 }}
-    className="w-full lg:w-1/3"
+    className="bg-white rounded-lg shadow-lg overflow-hidden mb-8"
   >
-    <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
-      <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
-      <div className="flex justify-between mb-2">
-        <span>{t.totalItems}</span>
-        <span className="font-medium">{calculateTotalItems()}</span>
-      </div>
-      <div className="flex justify-between mb-2">
-        <span>{t.subtotal}</span>
-        <span>₹{calculateSubtotal().toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between mb-2">
-        <span>{t.estimatedShipping}</span>
-        <span className="text-green-500">{t.freeShipping}</span>
-      </div>
-      <div className="flex justify-between mb-4">
-        <span>{t.tax}</span>
-        <span>₹0.00</span>
-      </div>
-      <div className="border-t pt-4 mb-6">
-        <div className="flex justify-between items-center">
-          <span className="text-lg md:text-xl font-semibold">{t.total}</span>
-          <span className="text-xl md:text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
-        </div>
-      </div>
-      <Link 
-        to="/checkout" 
-        className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4 block text-center"
-      >
-        {t.checkout}
-      </Link>
-      <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
-        {t.continueShopping}
-      </Link>
+    <div className="p-4 md:p-6">
+      <AnimatePresence>
+        {cartWithProducts.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col md:flex-row items-start border-b border-gray-200 py-6 last:border-b-0"
+          >
+            <div className="w-full md:w-1/3 mb-4 md:mb-0">
+              <img 
+                src={
+                  item.filepath 
+                    ? `http://localhost:4010/uploads/${item.filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/')}`
+                    : '/api/placeholder/400/320'
+                }
+                alt={item.name || t.unnamedProduct} 
+                onError={(e) => {
+                  e.target.src = '/api/placeholder/400/320';
+                  e.target.onerror = null;
+                }}
+                className="w-full h-48 object-cover rounded-lg" 
+              />
+            </div>
+
+            <div className="md:ml-6 flex-1">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {item.name || t.unnamedProduct}
+              </h3>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 w-24">{t.price}:</span>
+                  <span className="text-blue-600">
+                    ₹{parseFloat(item.price || 0).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 w-24">{t.category}:</span>
+                  <span className="text-gray-600">
+                    {item.category || t.uncategorized}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium text-gray-700 w-24">{t.quantity}:</span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={() => handleDecreaseQuantity(item)}
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="text-gray-600">
+                      {item.quantity || 1}
+                    </span>
+                    <button
+                      className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={() => handleIncreaseQuantity(item)}
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <span className="font-medium text-gray-700 w-24">{t.description}:</span>
+                  <span className="text-gray-600">
+                    {item.description || t.noDescription}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   </motion.div>
 )}
 
+{/* Why Shop With Us Section */}
+<motion.div 
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6"
+>
+  <h3 className="text-lg font-semibold mb-4">{t.whyShopWithUs}</h3>
+  <div className="flex items-center mb-3">
+    <Truck className="text-blue-500 mr-3" size={24} />
+    <span>{t.fastShipping}</span>
+  </div>
+  <div className="flex items-center mb-3">
+    <CreditCard className="text-blue-500 mr-3" size={24} />
+    <span>{t.securePayment}</span>
+  </div>
+  <div className="flex items-center mb-3">
+    <Gift className="text-blue-500 mr-3" size={24} />
+    <span>{t.exclusiveDeals}</span>
+  </div>
+  <div className="flex items-center">
+    <Clock className="text-blue-500 mr-3" size={24} />
+    <span>{t.estimatedDelivery}: 3-5 {t.days}</span>
+  </div>
+</motion.div>
+
+{/* FAQ Section */}
+<motion.div 
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.2 }}
+  className="bg-white rounded-lg shadow-lg p-4 md:p-6"
+>
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="text-lg font-semibold">{t.faq}</h3>
+    <button 
+      onClick={() => setShowFAQ(!showFAQ)}
+      className="text-blue-500 hover:text-blue-600 transition-colors"
+    >
+      <HelpCircle size={24} />
+    </button>
+  </div>
+  <AnimatePresence>
+    {showFAQ && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {FAQ.map((item, index) => (
+          <div key={index} className="mb-4 last:mb-0">
+            <h4 className="font-medium mb-2">{item.question}</h4>
+            <p className="text-gray-600">{item.answer}</p>
+          </div>
+        ))}
+      </motion.div>
+    )}
+  </AnimatePresence>
+</motion.div>
 </div>
+
+     {/* Right Column - Order Summary */}
+     {cartWithProducts && cartWithProducts.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full lg:w-1/3"
+          >
+            <div className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6">
+              <h2 className="text-xl md:text-2xl font-semibold mb-4">{t.orderSummary}</h2>
+              <div className="flex justify-between mb-2">
+                <span>{t.totalItems}</span>
+                <span className="font-medium">{calculateTotalItems()}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>{t.subtotal}</span>
+                <span>₹{calculateSubtotal().toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>{t.estimatedShipping}</span>
+                <span className="text-green-500">{t.freeShipping}</span>
+              </div>
+              <div className="flex justify-between mb-4">
+                <span>{t.tax}</span>
+                <span>₹0.00</span>
+              </div>
+              <div className="border-t pt-4 mb-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg md:text-xl font-semibold">{t.total}</span>
+                  <span className="text-xl md:text-2xl font-bold text-blue-600">₹{calculateSubtotal().toFixed(2)}</span>
+                </div>
+              </div>
+              <Link 
+                to="/checkout" 
+                className="w-full bg-blue-500 text-white py-2 md:py-3 px-4 rounded-full hover:bg-blue-600 transition-colors text-base md:text-lg font-semibold mb-4 block text-center"
+              >
+                {t.checkout}
+              </Link>
+              <Link to="/product" className="block text-center text-blue-500 hover:text-blue-600 transition-colors">
+                {t.continueShopping}
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
+  </div>
   );
 };
 

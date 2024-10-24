@@ -7,62 +7,52 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../apiConfig/api';
 import { toast } from 'react-toastify';
+import { useAuthStore } from '../Zustand/authStore';
 
-// Auth Store
-const useAuthStore = create(
+// Cart Store
+const useCartStore = create(
   persist(
     (set) => ({
-      token: null,
-      userId: null,
-      username: null,
-      pendingCartProduct: null,
-      setAuth: (token, userId, username) => 
-        set({ token, userId, username }),
-      setPendingCartProduct: (product) => 
-        set({ pendingCartProduct: product }),
-      logout: () => 
-        set({ token: null, userId: null, username: null, pendingCartProduct: null }),
+      cartItems: [],
+      cartWithProducts: [],
+      setCartItems: (items) => set({ cartItems: items }),
+      setCartWithProducts: (products) => set({ cartWithProducts: products }),
+      addToCart: (product, quantity = 1) => set((state) => {
+        const existingItem = state.cartItems.find(item => item.id === product.id);
+        if (existingItem) {
+          return {
+            cartItems: state.cartItems.map(item =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            )
+          };
+        }
+        return { 
+          cartItems: [...state.cartItems, { ...product, quantity }] 
+        };
+      }),
+      removeFromCart: (productId) => set((state) => ({
+        cartItems: state.cartItems.filter(item => item.id !== productId)
+      })),
+      updateQuantity: (productId, newQuantity) => set((state) => ({
+        cartItems: state.cartItems.map(item =>
+          item.id === productId ? { ...item, quantity: newQuantity } : item
+        )
+      })),
+      clearCart: () => set({ cartItems: [], cartWithProducts: [] }),
     }),
     {
-      name: 'auth-storage',
+      name: 'cart-storage',
     }
   )
 );
-
-// Cart Store
-const useCartStore = create((set) => ({
-  cart: [],
-  addToCart: (product, quantity = 1) => set((state) => {
-    const existingItem = state.cart.find(item => item.id === product.id);
-    if (existingItem) {
-      return {
-        cart: state.cart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        )
-      };
-    } else {
-      return { cart: [...state.cart, { ...product, quantity }] };
-    }
-  }),
-  removeFromCart: (productId) => set((state) => ({
-    cart: state.cart.filter(item => item.id !== productId)
-  })),
-  updateQuantity: (productId, newQuantity) => set((state) => ({
-    cart: state.cart.map(item =>
-      item.id === productId ? { ...item, quantity: newQuantity } : item
-    )
-  })),
-  clearCart: () => set({ cart: [] }),
-}));
 
 const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const { token } = useAuthStore();
-  const addToCartStore = useCartStore(state => state.addToCart);
 
   if (!product) {
     console.warn('ProductCard received undefined product');
@@ -81,7 +71,7 @@ const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
 
   const getImageSrc = (filepath) => {
     if (!filepath) return '/api/placeholder/400/320';
-    const cleanPath = filepath.replace(/^uploads\\/, '').replace(/\\/g, '/');
+    const cleanPath = filepath.toString().replace(/^uploads\\/, '').replace(/\\/g, '/');
     return `http://localhost:4010/uploads/${cleanPath}`;
   };
 
@@ -103,14 +93,9 @@ const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
     }
   };
 
-  const handleAddToCart = () => {
-    if (!token) {
-      onAddToCart(product, selectedQuantity); // This will handle redirect to login
-    } else {
-      addToCartStore(product, selectedQuantity);
-      toast.success('Product added to cart');
-      onAddToCart(product, selectedQuantity);
-    }
+  const handleAddToCart = async () => {
+    console.log('Add to cart triggered:', { product, selectedQuantity, token });
+    onAddToCart(product, selectedQuantity);
   };
 
   return (
@@ -190,7 +175,6 @@ const ProductCard = ({ product, onAddToCart, onViewProduct, isTamil }) => {
     </motion.div>
   );
 };
-// ... continuing from previous part
 
 const Products = () => {
   const { isTamil } = useTranslation();
@@ -216,7 +200,8 @@ const Products = () => {
       error: 'Failed to load products. Please try again.',
       loginRequired: 'Please login to add items to cart',
       addToCartSuccess: 'Product added to cart successfully',
-      addToCartError: 'Failed to add product to cart'
+      addToCartError: 'Failed to add product to cart',
+      networkError: 'Network error. Please check your connection.'
     },
     ta: {
       title: 'எங்கள் பொருட்கள்',
@@ -227,14 +212,27 @@ const Products = () => {
       error: 'பொருட்களை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
       loginRequired: 'கார்ட்டில் சேர்க்க உள்நுழையவும்',
       addToCartSuccess: 'பொருள் கார்ட்டில் சேர்க்கப்பட்டது',
-      addToCartError: 'கார்ட்டில் சேர்க்க முடியவில்லை'
+      addToCartError: 'கார்ட்டில் சேர்க்க முடியவில்லை',
+      networkError: 'இணைய பிழை. உங்கள் இணைப்பை சரிபார்க்கவும்.'
     }
   };
 
   const t = translations[isTamil ? 'ta' : 'en'];
 
+  // Configure API with token
+  const configureAPI = useCallback(() => {
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete api.defaults.headers.common['Authorization'];
+    }
+  }, [token]);
+
   const handleAddToCart = async (product, quantity) => {
+    console.log('Add to cart triggered:', { product, quantity, token });
+    
     if (!token) {
+      console.log('No token, setting pending product and redirecting to login');
       setPendingCartProduct({
         productId: product.id,
         name: product.name,
@@ -248,6 +246,13 @@ const Products = () => {
     }
 
     try {
+      configureAPI();
+      console.log('Sending cart request with data:', {
+        productId: product.id,
+        loginId: userId,
+        quantity: quantity
+      });
+
       const cartData = {
         productId: product.id,
         loginId: parseInt(userId),
@@ -255,17 +260,31 @@ const Products = () => {
       };
 
       const response = await api.post('api/addCart', cartData);
+      console.log('Add to cart response:', response);
 
       if (response.status === 200 || response.status === 201) {
         addToCart(product, quantity);
         toast.success(t.addToCartSuccess);
         navigate('/cart');
       } else {
+        console.error('Unexpected response:', response);
         toast.error(t.addToCartError);
       }
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error(t.addToCartError);
+      console.error('Detailed error:', {
+        error,
+        response: error.response,
+        message: error.message
+      });
+
+      if (error.response?.status === 401) {
+        toast.error(t.loginRequired);
+        navigate('/login');
+      } else if (error.message === 'Network Error') {
+        toast.error(t.networkError);
+      } else {
+        toast.error(t.addToCartError);
+      }
     }
   };
 
@@ -275,6 +294,7 @@ const Products = () => {
       
       if (pendingProduct && token) {
         try {
+          configureAPI();
           const cartData = {
             productId: pendingProduct.productId,
             loginId: parseInt(userId),
@@ -293,18 +313,24 @@ const Products = () => {
           }
         } catch (error) {
           console.error('Error processing pending cart action:', error);
-          toast.error(t.addToCartError);
+          if (error.response?.status === 401) {
+            toast.error(t.loginRequired);
+            navigate('/login');
+          } else {
+            toast.error(t.addToCartError);
+          }
         }
       }
     };
 
     processPendingCartAction();
-  }, [token, userId, setPendingCartProduct, addToCart, navigate, t.addToCartSuccess, t.addToCartError]);
+  }, [token, userId, setPendingCartProduct, addToCart, navigate, t, configureAPI]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      configureAPI();
       const response = await api.get('api/listProduct');
       let productsData = response.data;
 
@@ -336,7 +362,7 @@ const Products = () => {
     } finally {
       setLoading(false);
     }
-  }, [t.error]);
+  }, [t.error, configureAPI]);
 
   useEffect(() => {
     fetchProducts();
@@ -451,7 +477,7 @@ const Products = () => {
           </motion.div>
         )}
 
-        {showFilters && (
+{showFilters && (
           <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}

@@ -1,30 +1,55 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useCartStore = create((set) => ({
-  cart: [],
-  addToCart: (product) => set((state) => {
-    const existingItem = state.cart.find(item => item.id === product.id);
-    if (existingItem) {
-      return {
-        cart: state.cart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      };
-    } else {
-      return { cart: [...state.cart, { ...product, quantity: 1 }] };
+export const useCartStore = create(
+  persist(
+    (set, get) => ({
+      cartWithProducts: [],
+      loginId: null,  // Add loginId to store
+      
+      setCartWithProducts: (products) => {
+        set({ cartWithProducts: products });
+      },
+
+      setLoginId: (id) => {
+        set({ loginId: id });
+      },
+
+      clearCart: () => {
+        set({ cartWithProducts: [], loginId: null });
+      },
+
+      updateCartItem: (productId, quantity) => {
+        set((state) => ({
+          cartWithProducts: state.cartWithProducts.map((item) =>
+            item.productId === productId
+              ? { ...item, quantity }
+              : item
+          ),
+        }));
+      },
+
+      removeCartItem: (productId) => {
+        set((state) => ({
+          cartWithProducts: state.cartWithProducts.filter(
+            (item) => item.productId !== productId
+          ),
+        }));
+      },
+
+      getCartItemCount: () => {
+        return get().cartWithProducts.reduce((total, item) => total + item.quantity, 0);
+      },
+
+      getCartTotal: () => {
+        return get().cartWithProducts.reduce(
+          (total, item) => total + (parseFloat(item.price) * item.quantity), 
+          0
+        );
+      }
+    }),
+    {
+      name: 'cart-storage',
     }
-  }),
-  removeFromCart: (productId) => set((state) => ({
-    cart: state.cart.filter(item => item.id !== productId)
-  })),
-  updateQuantity: (productId, newQuantity) => set((state) => ({
-    cart: state.cart.map(item =>
-      item.id === productId ? { ...item, quantity: newQuantity } : item
-    )
-  })),
-  clearCart: () => set({ cart: [] }),
-}));
-
-export default useCartStore;
+  )
+);

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Truck, ChevronRight, CheckCircle, Plus } from 'lucide-react';
 import api from '../apiConfig/api';
 import { toast } from 'react-toastify';
-import useAuthStore from '../Zustand/authStore';
+import { useAuthStore } from '../Zustand/authStore';
 import { useTranslation } from '../Context/TranslationContext';
 
 // Translation object for all text content

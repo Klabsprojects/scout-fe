@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Package, ChevronDown, ChevronUp, Clock, MapPin, Calendar, IndianRupee, Box } from 'lucide-react';
 import api from '../apiConfig/api';
 import { toast } from 'react-toastify';
-import useAuthStore from '../Zustand/authStore';
+import { useAuthStore } from '../Zustand/authStore';
 
 const OrdersPage = () => {
   const { userId } = useAuthStore();

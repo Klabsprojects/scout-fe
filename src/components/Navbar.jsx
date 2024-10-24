@@ -1,44 +1,122 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { ShoppingBagIcon, UserIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from '../Context/TranslationContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import mediaData from '../MediaData.json';
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { useAuthStore } from '../Zustand/authStore';
+
+const AuthContext = createContext(null);
+
+
+
+const useCartStore = create(
+  persist(
+    (set) => ({
+      cartItems: [],
+      clearCart: () => set({ cartItems: [] })
+    }),
+    {
+      name: 'cart-storage',
+      storage: createJSONStorage(() => localStorage)
+    }
+  )
+);
+
+// Auth Provider Component
+// Auth Provider Component
+export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState({
+    token: useAuthStore.getState().token,
+    username: useAuthStore.getState().username,
+    userId: useAuthStore.getState().userId
+  });
+
+  useEffect(() => {
+    // Subscribe to auth store changes
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      setAuthState({
+        token: state.token,
+        username: state.username,
+        userId: state.userId
+      });
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider value={authState}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// Custom hook to use auth context
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 const Navbar = () => {
   const { isTamil, toggleLanguage } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Update this line to use both context and store
+  const auth = useAuth();
+  const authStore = useAuthStore();
 
+  // Combine store actions
+  const { clearAuth } = authStore;
+  const { clearCart } = useCartStore();
+
+  // Add this effect to monitor auth state changes
   useEffect(() => {
-    // Check for user in localStorage
-    const userDetails = localStorage.getItem('user');
-    if (userDetails) {
-      setUser(JSON.parse(userDetails));
-    }
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      console.log('Auth state updated:', state); // Debug log
+    });
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false);
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
       }
     };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+    // Clear all auth-related items
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('loginAs');
+    
+    // Clear Zustand stores
+    clearAuth();
+    clearCart();
+    
+    // Reset UI state
     setIsUserDropdownOpen(false);
+    
+    // Show success message
+    toast.success(isTamil ? 'வெற்றிகரமாக வெளியேறினீர்கள்' : 'Successfully logged out');
+    
+    // Navigate to home page
     navigate('/');
   };
 
@@ -58,7 +136,8 @@ const Navbar = () => {
       profile: "Your Profile",
       orders: "Your Orders",
       address: "Your Address",
-      logout: "Logout"
+      logout: "Logout",
+      welcome: "Welcome"
     },
     ta: {
       home: "முகப்பு",
@@ -75,7 +154,8 @@ const Navbar = () => {
       profile: "உங்கள் சுயவிவரம்",
       orders: "உங்கள் ஆர்டர்கள்",
       address: "உங்கள் முகவரி",
-      logout: "வெளியேறு"
+      logout: "வெளியேறு",
+      welcome: "வரவேற்கிறோம்"
     }
   };
 
@@ -94,6 +174,11 @@ const Navbar = () => {
   const UserDropdown = () => (
     <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
       <div className="py-1">
+        {(auth.username || authStore.username) && (
+          <div className="px-4 py-2 text-sm text-gray-700 border-b">
+            {t.welcome}, {auth.username || authStore.username}
+          </div>
+        )}
         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
           {t.profile}
         </Link>
@@ -116,6 +201,11 @@ const Navbar = () => {
 
   const MobileUserMenu = () => (
     <div className="border-t border-gray-200 pt-4">
+      {auth.username && (
+        <div className="py-2 text-sm text-gray-700 border-b">
+          {t.welcome}, {auth.username}
+        </div>
+      )}
       <Link to="/profile" className="block py-2 text-sm text-gray-700 hover:bg-gray-100">
         {t.profile}
       </Link>
@@ -134,6 +224,40 @@ const Navbar = () => {
       </button>
     </div>
   );
+
+  const AuthButtons = () => {
+    // Check both auth context and store
+    const isAuthenticated = auth.token || authStore.token;
+    const currentUsername = auth.username || authStore.username;
+
+    if (isAuthenticated) {
+      return (
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <button 
+              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+              className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+            </button>
+            {isUserDropdownOpen && <UserDropdown />}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-3 py-1.5 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+          >
+            <LogOut className="h-4 w-4 mr-1" />
+            {t.logout}
+          </button>
+        </div>
+      );
+    }
+    return (
+      <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+        <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+      </Link>
+    );
+};
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white">
@@ -171,20 +295,9 @@ const Navbar = () => {
                 <Link to="/cart" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                   <ShoppingBagIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
                 </Link>
-                {user ? (
-                  <button 
-                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    <UserIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
-                  </button>
-                ) : (
-                  <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                    <UserIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
-                  </Link>
-                )}
+                <AuthButtons />
               </div>
-              {user && isUserDropdownOpen && <MobileUserMenu />}
+              {auth.token && isUserDropdownOpen && <MobileUserMenu />}
               <div className="flex items-center justify-center">
                 <span className="mr-2 text-sm">{isTamil ? 'த' : 'En'}</span>
                 <div className="relative inline-block w-10 mr-2 align-middle select-none">
@@ -263,21 +376,7 @@ const Navbar = () => {
                   <Link to="/cart" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                     <ShoppingBagIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
                   </Link>
-                  {user ? (
-                    <div className="relative">
-                      <button 
-                        onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                        className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
-                      >
-                        <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
-                      </button>
-                      {isUserDropdownOpen && <UserDropdown />}
-                    </div>
-                  ) : (
-                    <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                      <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
-                    </Link>
-                  )}
+                  <AuthButtons />
                 </div>
               </div>
             </div>

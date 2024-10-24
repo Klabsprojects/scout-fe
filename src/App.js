@@ -1,7 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { TranslationProvider } from "./Context/TranslationContext";
 import { ParallaxProvider } from 'react-scroll-parallax';
+import { AuthProvider } from "./components/Navbar";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -28,48 +31,111 @@ import OfficeBearersPage from "./Pages/OfficeBearers";
 import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccessPage from "./Pages/OrderSucessPage";
 import OrdersPage from "./Pages/Order";
+import MyProfile from "./Pages/MyProfile";
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('auth-storage') !== null;
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
 
 function App() {
   return (
-    <Router>
-      <ParallaxProvider>
-        <TranslationProvider>
-          <Navbar />
-          <Routes>
-            {/* Home Routes */}
-            <Route path="/" element={<ScoutHomepage />} />
-            <Route path="/ScoutHomepage" element={<ScoutHomepage />} />
+    <AuthProvider>
+      <Router>
+        <ParallaxProvider>
+          <TranslationProvider>
+            {/* Toast Container for notifications */}
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
             
-            {/* Information Routes */}
-            <Route path="/whoweare" element={<WhoWeAre />} />
-            <Route path="/scout-education" element={<ScoutEducation />} />
-            <Route path="/scout-method" element={<ScoutMethod />} />
-            <Route path="/scout-promising-law" element={<ScoutPromiseLaw />} />
-            <Route path="/what-we-do" element={<WhatWeDo />} />
-            <Route path="/where-we-work" element={<WhereWeWork/>} />
-            <Route path="/get-involved" element={<GetInvolved />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
-            <Route path="/office-bearers" element={<OfficeBearersPage/>} />
-            <Route path="/checkout" element={<CheckoutPage/>}/>
-            <Route path="/order-success" element={<OrderSuccessPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-            {/* Product Routes */}
-            <Route path="/product" element={<Products />} /> {/* Updated from /product to /products */}
-            <Route path="/product-description" element={<ProductDescription />} /> {/* New route for product description */}
-            <Route path="/cart" element={<Cart />} />
+            <Navbar />
             
-            {/* Authentication Routes */}
-            <Route path="/login" element={<LoginPage />} />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<ScoutHomepage />} />
+              <Route path="/ScoutHomepage" element={<ScoutHomepage />} />
+              <Route path="/whoweare" element={<WhoWeAre />} />
+              <Route path="/scout-education" element={<ScoutEducation />} />
+              <Route path="/scout-method" element={<ScoutMethod />} />
+              <Route path="/scout-promising-law" element={<ScoutPromiseLaw />} />
+              <Route path="/what-we-do" element={<WhatWeDo />} />
+              <Route path="/where-we-work" element={<WhereWeWork />} />
+              <Route path="/get-involved" element={<GetInvolved />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
+              <Route path="/office-bearers" element={<OfficeBearersPage />} />
+              <Route path="/product" element={<Products />} />
+              <Route path="/product-description" element={<ProductDescription />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/donation" element={<DonationPage />} />
+              <Route path="/donate/:eventId" element={<DonationPayment />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/cart"
+                element={
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/order-success"
+                element={
+                  <ProtectedRoute>
+                    <OrderSuccessPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <OrdersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <MyProfile />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Catch all route - redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
             
-            {/* Donation Routes */}
-            <Route path="/donation" element={<DonationPage/>} />
-            <Route path="/donate/:eventId" element={<DonationPayment />} />
-          </Routes>
-          <Footer />
-        </TranslationProvider>
-      </ParallaxProvider>
-    </Router>
+            <Footer />
+          </TranslationProvider>
+        </ParallaxProvider>
+      </Router>
+    </AuthProvider>
   );
 }
 
