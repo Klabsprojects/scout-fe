@@ -26,6 +26,8 @@ import Cart from "./Pages/Cart";
 import ProductDescription from "./Pages/ProductDescription";
 import OfficeBearersPage from "./Pages/OfficeBearers";
 import CheckoutPage from "./Pages/CheckoutPage";
+import OrderSuccessPage from "./Pages/OrderSucessPage";
+import OrdersPage from "./Pages/Order";
 
 function App() {
   return (
@@ -50,7 +52,8 @@ function App() {
             <Route path="/scouting-history" element={<ScoutingHistoryPage />} />
             <Route path="/office-bearers" element={<OfficeBearersPage/>} />
             <Route path="/checkout" element={<CheckoutPage/>}/>
-            
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
             {/* Product Routes */}
             <Route path="/product" element={<Products />} /> {/* Updated from /product to /products */}
             <Route path="/product-description" element={<ProductDescription />} /> {/* New route for product description */}

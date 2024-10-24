@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { ShoppingBagIcon, UserIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from '../Context/TranslationContext';
-import { Link, useLocation } from 'react-router-dom'; 
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import mediaData from '../MediaData.json';
 
 const Navbar = () => {
   const { isTamil, toggleLanguage } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Check for user in localStorage
+    const userDetails = localStorage.getItem('user');
+    if (userDetails) {
+      setUser(JSON.parse(userDetails));
+    }
+
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth >= 768) {
@@ -25,6 +34,13 @@ const Navbar = () => {
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsUserDropdownOpen(false);
+    navigate('/');
+  };
 
   const translations = {
     en: {
@@ -38,7 +54,11 @@ const Navbar = () => {
       login: "Login",
       product: "Products",
       headerText: "Bharat Scouts and Guides",
-      officeBearers: "Office Bearers"
+      officeBearers: "Office Bearers",
+      profile: "Your Profile",
+      orders: "Your Orders",
+      address: "Your Address",
+      logout: "Logout"
     },
     ta: {
       home: "முகப்பு",
@@ -51,7 +71,11 @@ const Navbar = () => {
       login: "உள்நுழைய",
       product: "பொருட்கள்",
       headerText: "பாரத சாரணர் மற்றும் வழிகாட்டிகள்",
-      officeBearers: "அலுவலக தாங்கிகள்"
+      officeBearers: "அலுவலக தாங்கிகள்",
+      profile: "உங்கள் சுயவிவரம்",
+      orders: "உங்கள் ஆர்டர்கள்",
+      address: "உங்கள் முகவரி",
+      logout: "வெளியேறு"
     }
   };
 
@@ -66,6 +90,50 @@ const Navbar = () => {
     { path: "/gallery", label: t.shop },
     { path: "/product", label: t.product },
   ];
+
+  const UserDropdown = () => (
+    <div className="absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+      <div className="py-1">
+        <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          {t.profile}
+        </Link>
+        <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          {t.orders}
+        </Link>
+        <Link to="/address" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          {t.address}
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          {t.logout}
+        </button>
+      </div>
+    </div>
+  );
+
+  const MobileUserMenu = () => (
+    <div className="border-t border-gray-200 pt-4">
+      <Link to="/profile" className="block py-2 text-sm text-gray-700 hover:bg-gray-100">
+        {t.profile}
+      </Link>
+      <Link to="/orders" className="block py-2 text-sm text-gray-700 hover:bg-gray-100">
+        {t.orders}
+      </Link>
+      <Link to="/address" className="block py-2 text-sm text-gray-700 hover:bg-gray-100">
+        {t.address}
+      </Link>
+      <button
+        onClick={handleLogout}
+        className="w-full text-left py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+      >
+        <LogOut className="h-4 w-4 mr-2" />
+        {t.logout}
+      </button>
+    </div>
+  );
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white">
@@ -103,10 +171,20 @@ const Navbar = () => {
                 <Link to="/cart" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                   <ShoppingBagIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
                 </Link>
-                <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                  <UserIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
-                </Link>
+                {user ? (
+                  <button 
+                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <UserIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
+                  </button>
+                ) : (
+                  <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+                    <UserIcon className="h-5 w-5 text-gray-700 hover:text-blue-600" />
+                  </Link>
+                )}
               </div>
+              {user && isUserDropdownOpen && <MobileUserMenu />}
               <div className="flex items-center justify-center">
                 <span className="mr-2 text-sm">{isTamil ? 'த' : 'En'}</span>
                 <div className="relative inline-block w-10 mr-2 align-middle select-none">
@@ -185,9 +263,21 @@ const Navbar = () => {
                   <Link to="/cart" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                     <ShoppingBagIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
                   </Link>
-                  <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-                    <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
-                  </Link>
+                  {user ? (
+                    <div className="relative">
+                      <button 
+                        onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                        className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                      >
+                        <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+                      </button>
+                      {isUserDropdownOpen && <UserDropdown />}
+                    </div>
+                  ) : (
+                    <Link to="/login" className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+                      <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
