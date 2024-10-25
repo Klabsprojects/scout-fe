@@ -109,7 +109,6 @@ const translations = {
   }
 };
 
-
 const Cart = () => {
   const navigate = useNavigate();
   const { isTamil } = useTranslation();
@@ -118,7 +117,6 @@ const Cart = () => {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [isDataFetched, setIsDataFetched] = useState(false);
 
-  // Get both token and userId from auth store
   const { token, userId } = useAuthStore();
   const { cartWithProducts, setCartWithProducts } = useCartStore();
 
@@ -137,7 +135,6 @@ const Cart = () => {
   const [addressFormData, setAddressFormData] = useState(initialAddressState);
   const t = translations[isTamil ? 'ta' : 'en'];
 
-  // Configure API headers with token
   const configureAPI = () => {
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -146,7 +143,6 @@ const Cart = () => {
     }
   };
 
-  // Modified useEffect to include loginId in the API call
   useEffect(() => {
     const fetchCartAndProducts = async () => {
       if (isDataFetched || !token || !userId) {
@@ -211,20 +207,31 @@ const Cart = () => {
     fetchCartAndProducts();
   }, [token, userId, setCartWithProducts, t, navigate, isDataFetched]);
 
-  // Function to manually refresh cart data
   const refreshCartData = () => {
     setIsDataFetched(false);
   };
 
-
   const handleDecreaseQuantity = async (item) => {
     if (item.quantity === 1) {
+      try {
+        configureAPI();
+        await api.delete(`http://localhost:4010/api/deleteCart?productId=${item.productId}&loginId=${userId}`);
+        refreshCartData();
+      } catch (error) {
+        console.error('Error deleting product from cart:', error);
+        if (error.response?.status === 401) {
+          toast.error('Session expired. Please login again.');
+          useAuthStore.getState().clearAuth();
+          navigate('/login');
+        } else {
+          toast.error('Failed to delete product from cart. Please try again.');
+        }
+      }
       return;
     }
-  
+
     try {
       configureAPI();
-      // Changed to use query parameters instead of request body
       await api.put(`api/updateProductCount?loginId=${userId}&productId=${item.productId}&quantity=${item.quantity - 1}`);
       refreshCartData();
     } catch (error) {
@@ -238,6 +245,7 @@ const Cart = () => {
       }
     }
   };
+
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
 
@@ -262,26 +270,23 @@ const Cart = () => {
     }
   };
 
-// Replace your existing handleIncreaseQuantity with this:
-const handleIncreaseQuantity = async (item) => {
-  try {
-    configureAPI();
-    // Changed to use query parameters instead of request body
-    await api.put(`api/updateProductCount?loginId=${userId}&productId=${item.productId}&quantity=${item.quantity + 1}`);
-    refreshCartData();
-  } catch (error) {
-    console.error('Error updating product count:', error);
-    if (error.response?.status === 401) {
-      toast.error('Session expired. Please login again.');
-      useAuthStore.getState().clearAuth();
-      navigate('/login');
-    } else {
-      toast.error('Failed to update product quantity. Please try again.');
+  const handleIncreaseQuantity = async (item) => {
+    try {
+      configureAPI();
+      // Changed to use query parameters instead of request body
+      await api.put(`api/updateProductCount?loginId=${userId}&productId=${item.productId}&quantity=${item.quantity + 1}`);
+      refreshCartData();
+    } catch (error) {
+      console.error('Error updating product count:', error);
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        useAuthStore.getState().clearAuth();
+        navigate('/login');
+      } else {
+        toast.error('Failed to update product quantity. Please try again.');
+      }
     }
-  }
-};
-
-// Replace your existing handleDecreaseQuantity with this:
+  };
 
   const handleInputChange = (e) => {
     setAddressFormData({
@@ -313,7 +318,7 @@ const handleIncreaseQuantity = async (item) => {
   }
 
   return (
-<div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
+    <div className="bg-gray-100 min-h-screen pt-20 md:pt-28">
     <div className="container mx-auto px-4 py-8 md:py-16">
       <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">{t.title}</h1>
 
@@ -529,7 +534,7 @@ const handleIncreaseQuantity = async (item) => {
         )}
       </div>
     </div>
-  </div>
+    </div>
   );
 };
 

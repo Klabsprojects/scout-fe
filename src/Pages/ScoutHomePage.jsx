@@ -1,40 +1,24 @@
-import React, { useEffect, useCallback, useState } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '../Context/TranslationContext';
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { useInView } from 'react-intersection-observer';
-import { motion } from 'framer-motion';
-import mediaData from '../MediaData.json';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { ChevronRight, Play } from 'lucide-react';
+import mediaData from '../MediaData.json';
 
 import './TamilFont.css';
 
 const ScoutHomepage = () => {
   const { isTamil } = useTranslation();
+  const [activeIndex, setActiveIndex] = useState(0);
   const [expandedCards, setExpandedCards] = useState({});
   const [showAllNews, setShowAllNews] = useState(false);
-
-  const smoothScroll = useCallback((e) => {
-    e.preventDefault();
-    const href = e.currentTarget.getAttribute('href');
-    document.querySelector(href).scrollIntoView({
-      behavior: 'smooth'
-    });
-  }, []);
-
-  useEffect(() => {
-    const links = document.querySelectorAll('a[href^="#"]');
-    links.forEach(link => link.addEventListener('click', smoothScroll));
-    return () => links.forEach(link => link.removeEventListener('click', smoothScroll));
-  }, [smoothScroll]);
 
   const translations = {
     title: {
       en: (
         <>
           Creating transformative learning experiences for young people, everywhere.<br />
-         
-        
         </>
       ),
       ta: "எங்கும் இளைஞர்களுக்கான மாற்றமளிக்கும் கற்றல் அனுபவங்களை உருவாக்குகிறோம்."
@@ -72,11 +56,11 @@ const ScoutHomepage = () => {
       },
       story2: {
         en: "East Zone Gathering",
-        ta: "கிழக்கு மண்டல திரளணி  "
+        ta: "கிழக்கு மண்டல திரளணி"
       },
       story3: {
         en: "State Special Rally North Zone",
-        ta: "மாநில சிறப்பு திரளணி வடக்கு மண்டலம்  "
+        ta: "மாநில சிறப்பு திரளணி வடக்கு மண்டலம்"
       }
     },
     seeAllNews: {
@@ -94,33 +78,14 @@ const ScoutHomepage = () => {
     readLess: {
       en: "Read less",
       ta: "குறைவாக படிக்க"
+    },
+    showLess: {
+      en: "Show Less",
+      ta: "குறைவாகக் காட்டு"
     }
   };
 
-  const FadeInSection = ({ children }) => {
-    const [ref, inView] = useInView({
-      triggerOnce: true,
-      threshold: 0.1,
-    });
-
-    return (
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 50 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5 }}
-      >
-        {children}
-      </motion.div>
-    );
-  };
-
-  const toggleCardExpansion = (index) => {
-    setExpandedCards(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
-  };
+  // Your existing newsContent array
   const newsContent = [
     {
       title: "World Thought Day 2023",
@@ -143,115 +108,163 @@ const ScoutHomepage = () => {
     {
       title: "Chaturtha Charan / Heerak Bunk Exam Camps",
       titleTa: "சதுர்த்த சரண் / ஹீரக் பங்க் தேர்வு முகாம்கள்",
-      description: "Chaturtha Charan / Heerak Bunk Selection Camps are important events of Scouting in India. These camps are considered high-level exams for senior scouts.Participants are rigorously tested on their scouting skills, leadership qualities, community service and knowledge of environmental protection.",
-      descriptionTa: "சதுர்த்த சரண் / ஹீரக் பங்க் தேர்வு முகாம்கள் என்பது இந்திய சாரணர் இயக்கத்தின் முக்கியமான நிகழ்வுகளாகும். இந்த முகாம்கள் மூத்த சாரணர்களுக்கான உயர்நிலை தேர்வுகளாக கருதப்படுகின்றன.பங்கேற்பாளர்கள் தங்கள் சாரணர் திறன்கள், தலைமைத்துவ பண்புகள், சமூக சேவை மற்றும் சுற்றுச்சூழல் பாதுகாப்பு பற்றிய அறிவு ஆகியவற்றில் கடுமையாக சோதிக்கப்படுகிறார்கள்."
+      description: "Chaturtha Charan / Heerak Bunk Selection Camps are important events of Scouting in India. These camps are considered high-level exams for senior scouts. Participants are rigorously tested on their scouting skills, leadership qualities, community service and knowledge of environmental protection.",
+      descriptionTa: "சதுர்த்த சரண் / ஹீரக் பங்க் தேர்வு முகாம்கள் என்பது இந்திய சாரணர் இயக்கத்தின் முக்கியமான நிகழ்வுகளாகும். இந்த முகாம்கள் மூத்த சாரணர்களுக்கான உயர்நிலை தேர்வுகளாக கருதப்படுகின்றன. பங்கேற்பாளர்கள் தங்கள் சாரணர் திறன்கள், தலைமைத்துவ பண்புகள், சமூக சேவை மற்றும் சுற்றுச்சூழல் பாதுகாப்பு பற்றிய அறிவு ஆகியவற்றில் கடுமையாக சோதிக்கப்படுகிறார்கள்."
     },
     {
       title: "World Thought Day -2024",
       titleTa: "உலக சிந்தனை நாள் -2024",
       description: "World Thought Day-2024 is an important event for India Scouts and Scout Movement. Celebrated every year on 22nd February, the day emphasizes the global brotherhood of scouts. On this day, scouts and scouts across India engage in activities promoting environmental protection and peace.",
-      descriptionTa: "உலக சிந்தனை நாள் -2024 ஆனது பாரத சாரணர் மற்றும் சாரணியர் இயக்கத்தின் முக்கிய நிகழ்வாகும். ஒவ்வொரு ஆண்டும் பிப்ரவரி 22 அன்று கொண்டாடப்படும் இந்த நாள், உலகளாவிய சாரணர் சகோதரத்துவத்தை வலியுறுத்துகிறது.இந்த நாளில், இந்தியா முழுவதும் உள்ள சாரணர்கள் மற்றும் சாரணியர்கள் சுற்றுச்சூழல் பாதுகாப்பு மற்றும் அமைதியை ஊக்குவிக்கும் செயல்பாடுகளில் ஈடுபடுவார்கள்.=."
+      descriptionTa: "உலக சிந்தனை நாள் -2024 ஆனது பாரத சாரணர் மற்றும் சாரணியர் இயக்கத்தின் முக்கிய நிகழ்வாகும். ஒவ்வொரு ஆண்டும் பிப்ரவரி 22 அன்று கொண்டாடப்படும் இந்த நாள், உலகளாவிய சாரணர் சகோதரத்துவத்தை வலியுறுத்துகிறது. இந்த நாளில், இந்தியா முழுவதும் உள்ள சாரணர்கள் மற்றும் சாரணியர்கள் சுற்றுச்சூழல் பாதுகாப்பு மற்றும் அமைதியை ஊக்குவிக்கும் செயல்பாடுகளில் ஈடுபடுவார்கள்."
+    },
+    {
+      title: "National Integration Camp 2024",
+      titleTa: "தேசிய ஒருங்கிணைப்பு முகாம் 2024",
+      description: "The National Integration Camp brings together scouts from different states of India to promote unity in diversity. The camp features cultural exchanges, joint activities, and programs that help scouts understand and appreciate India's diverse heritage. Participants learn about different customs, traditions, and languages while building lasting friendships.",
+      descriptionTa: "தேசிய ஒருங்கிணைப்பு முகாம் பன்முகத்தன்மையில் ஒற்றுமையை ஊக்குவிக்க இந்தியாவின் பல்வேறு மாநிலங்களைச் சேர்ந்த சாரணர்களை ஒன்றிணைக்கிறது. இந்த முகாமில் கலாச்சார பரிமாற்றங்கள், கூட்டு நடவடிக்கைகள் மற்றும் சாரணர்கள் இந்தியாவின் பன்முக பாரம்பரியத்தைப் புரிந்துகொள்ளவும் பாராட்டவும் உதவும் நிகழ்ச்சிகள் இடம்பெறும். பங்கேற்பாளர்கள் நீடித்த நட்புறவை வளர்த்துக் கொள்வதோடு வெவ்வேறு பழக்கவழக்கங்கள், பாரம்பரியங்கள் மற்றும் மொழிகளைப் பற்றியும் கற்றுக்கொள்கிறார்கள்."
     }
   ];
 
-  const newsCards = newsContent.map((news, index) => (
-    <FadeInSection key={index}>
-      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-        <div className="relative pt-[75%]">
-          <img
-            src={mediaData.newsImages[index % mediaData.newsImages.length]}
-            alt={`Latest news ${index + 1}`}
-            className="absolute top-0 left-0 w-full h-full object-contain"
-          />
-        </div>
-        <div className="p-6 flex-grow">
-          <h3 className={`text-base md:text-lg font-bold mb-3 ${isTamil ? 'tamil-font' : ''}`}>
-            {isTamil ? news.titleTa : news.title}
-          </h3>
-          <p className={`text-sm md:text-base text-gray-600 mb-4 ${isTamil ? 'tamil-font' : ''}`}>
-            {expandedCards[index] ? (isTamil ? news.descriptionTa : news.description) : 
-              (isTamil ? news.descriptionTa.slice(0, 100) + "..." : news.description.slice(0, 100) + "...")}
-          </p>
-          <button 
-            onClick={() => toggleCardExpansion(index)} 
-            className={`text-blue-600 hover:underline font-semibold ${isTamil ? 'tamil-font' : ''}`}
-          >
-            {expandedCards[index] 
-              ? translations.readLess[isTamil ? 'ta' : 'en']
-              : translations.readMore[isTamil ? 'ta' : 'en']}
-          </button>
-        </div>
-      </div>
-    </FadeInSection>
-  ));
+  
+  // Refs for scroll functionality
+  const videoSectionRef = useRef(null);
+  const storiesSectionRef = useRef(null);
+
+  // Smooth scroll function
+  const scrollToSection = (ref) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % mediaData.carouselImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const FadeInSection = ({ children, delay = 0 }) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 1.2, delay, ease: "easeOut" }}
+      >
+        {children}
+      </motion.div>
+    );
+  };
+
+  const toggleCardExpansion = (index) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
 
   return (
-    <div className={`pt-20 md:pt-34 ${isTamil ? 'tamil-font' : ''}`}>
+    <div className="bg-[#FDFBF8] overflow-x-hidden pt-10">
       {/* Hero Section */}
-      <section className="bg-[#feeecf] py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-              <FadeInSection>
-                <h1 className={`font-bold mb-6 text-left leading-tight ${
-                  isTamil 
-                    ? 'text-2xl md:text-3xl lg:text-4xl tamil-hero-title' 
-                    : 'text-3xl md:text-4xl lg:text-5xl'
-                }`}>
-                  {isTamil ? translations.title.ta : translations.title.en}
-                </h1>
-                <Link to="/whoweare">
-                  <button className={`bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-300 ${
-                    isTamil ? 'text-base' : 'text-lg'
-                  }`}>
-                    {translations.learnMore[isTamil ? 'ta' : 'en']}
-                  </button>
-                </Link>
-              </FadeInSection>
-            </div>
-            <div className="md:w-1/2">
-              <FadeInSection>
-                <Carousel 
-                  autoPlay 
-                  infiniteLoop 
-                  interval={5000} 
-                  showThumbs={false} 
-                  showStatus={false} 
-                  transitionTime={1000}
-                  className="rounded-lg shadow-2xl overflow-hidden"
-                >
-                  {mediaData.carouselImages.map((image, index) => (
-                    <div key={index}>
-                      <img src={image} alt={`Scouts marching ${index + 1}`} className="w-full h-auto object-cover" />
-                    </div>
-                  ))}
-                </Carousel>
-              </FadeInSection>
-            </div>
+      <section className="relative min-h-[90vh] md:min-h-screen">
+        {/* Background Carousel */}
+        <div className="absolute inset-0 overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.img
+              key={activeIndex}
+              src={mediaData.carouselImages[activeIndex]}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="absolute w-full h-full object-cover"
+            />
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-[#F5F1EA]/75 backdrop-blur-[2px]" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-20">
+          <div className="max-w-4xl mx-auto text-center md:text-left">
+            <FadeInSection>
+              <h1 className={`text-[#2C251D] mb-8 ${
+                isTamil 
+                  ? 'text-2xl sm:text-3xl md:text-4xl leading-tight font-normal'
+                  : 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-medium'
+              }`}>
+                {isTamil ? translations.title.ta : translations.title.en}
+              </h1>
+              <p className={`text-[#645D57] mb-12 ${
+                isTamil
+                  ? 'text-base sm:text-lg md:text-xl leading-relaxed'
+                  : 'text-lg sm:text-xl md:text-2xl leading-relaxed'
+              }`}>
+                {translations.newOrganization.description[isTamil ? 'ta' : 'en']}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
+  <Link to="/whoweare" className="w-full sm:w-auto">
+    <button className="group relative w-full sm:w-auto overflow-hidden bg-gradient-to-r from-[#8A7968] to-[#726354] text-white px-10 py-4 rounded-full transition-all duration-500 hover:shadow-[0_8px_30px_rgb(138,121,104,0.3)]">
+      <span className="absolute inset-0 bg-gradient-to-r from-[#726354] to-[#8A7968] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+      <span className="relative flex items-center justify-center gap-3 text-base sm:text-lg font-medium tracking-wide">
+        {translations.learnMore[isTamil ? 'ta' : 'en']}
+        <ChevronRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+      </span>
+    </button>
+  </Link>
+  
+  <button 
+    onClick={() => scrollToSection(videoSectionRef)}
+    className="group relative w-full sm:w-auto overflow-hidden border-2 border-[#8A7968] hover:border-transparent bg-transparent hover:bg-gradient-to-r from-[#8A7968] to-[#726354] text-[#8A7968] hover:text-white px-10 py-4 rounded-full transition-all duration-500 hover:shadow-[0_8px_30px_rgb(138,121,104,0.3)]"
+  >
+    <span className="relative flex items-center justify-center gap-3 text-base sm:text-lg font-medium tracking-wide">
+      <Play className="w-5 h-5 transform group-hover:scale-110 transition-transform duration-300" />
+      <span className="transform group-hover:translate-x-1 transition-transform duration-300">Watch Video</span>
+    </span>
+  </button>
+</div>
+            </FadeInSection>
           </div>
         </div>
+
+        ```jsx
+        {/* Decorative Elements */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#FDFBF8]" />
+        <div className="absolute -bottom-1 left-0 right-0 h-16 bg-[#FDFBF8] transform -skew-y-2" />
       </section>
-{/* Featured Stories Section */}
-<section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
+
+      {/* Featured Stories Section */}
+      <section ref={storiesSectionRef} className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
-              {isTamil ? translations.featuredStories.ta : translations.featuredStories.en}
-            </h2>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className={`text-[#2C251D] ${
+                isTamil 
+                  ? 'text-2xl sm:text-3xl md:text-4xl' 
+                  : 'text-3xl sm:text-4xl md:text-5xl'
+              }`}>
+                {translations.featuredStories[isTamil ? 'ta' : 'en']}
+              </h2>
+            </div>
           </FadeInSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {mediaData.featuredStories.map((image, index) => (
-              <FadeInSection key={index}>
-                <div className={`rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 ${index === 0 ? 'bg-green-300' : index === 1 ? 'bg-blue-300' : 'bg-orange-300'}`}>
-                  <img
-                    src={image}
-                    alt={`Featured story ${index + 1}`}
-                    className="w-full h-48 md:h-64 object-cover"
-                  />
-                  <div className="p-6">
-                    <p className="text-base md:text-lg text-white font-bold text-center">
-                      {isTamil ? translations.featuredStoryTitles[`story${index + 1}`].ta : translations.featuredStoryTitles[`story${index + 1}`].en}
-                    </p>
+              <FadeInSection key={index} delay={index * 0.1}>
+                <div className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-500">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={image}
+                      alt={`Featured story ${index + 1}`}
+                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-6 bg-white">
+                    <h3 className={`text-[#2C251D] mb-3 ${
+                      isTamil 
+                        ? 'text-lg sm:text-xl' 
+                        : 'text-xl sm:text-2xl'
+                    }`}>
+                      {translations.featuredStoryTitles[`story${index + 1}`][isTamil ? 'ta' : 'en']}
+                    </h3>
                   </div>
                 </div>
               </FadeInSection>
@@ -261,54 +274,119 @@ const ScoutHomepage = () => {
       </section>
 
       {/* Latest News Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4">
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-[#F5F1EA]">
+        <div className="container mx-auto">
           <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center">
-              {isTamil ? translations.latestNews.ta : translations.latestNews.en}
-            </h2>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className={`text-[#2C251D] ${
+                isTamil 
+                  ? 'text-2xl sm:text-3xl md:text-4xl' 
+                  : 'text-3xl sm:text-4xl md:text-5xl'
+              }`}>
+                {translations.latestNews[isTamil ? 'ta' : 'en']}
+              </h2>
+            </div>
           </FadeInSection>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {newsCards.slice(0, showAllNews ? 6 : 3)}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {newsContent.slice(0, showAllNews ? 6 : 3).map((news, index) => (
+              <FadeInSection key={index} delay={index * 0.1}>
+                <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500">
+                  <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
+                    <img
+                      src={mediaData.newsImages[index % mediaData.newsImages.length]}
+                      alt={isTamil ? news.titleTa : news.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  
+                  <div className="p-6 md:p-8">
+                    <h3 className={`text-[#2C251D] mb-3 ${
+                      isTamil 
+                        ? 'text-lg sm:text-xl' 
+                        : 'text-xl sm:text-2xl'
+                    }`}>
+                      {isTamil ? news.titleTa : news.title}
+                    </h3>
+                    <p className={`text-[#645D57] mb-6 ${
+                      isTamil ? 'text-sm sm:text-base' : 'text-base'
+                    }`}>
+                      {expandedCards[index] 
+                        ? (isTamil ? news.descriptionTa : news.description)
+                        : (isTamil ? news.descriptionTa.slice(0, 150) : news.description.slice(0, 150)) + "..."}
+                    </p>
+                    <button 
+                      onClick={() => toggleCardExpansion(index)}
+                      className="text-[#8A7968] text-sm font-medium flex items-center gap-2 group/btn"
+                    >
+                      {expandedCards[index] 
+                        ? translations.readLess[isTamil ? 'ta' : 'en']
+                        : translations.readMore[isTamil ? 'ta' : 'en']}
+                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              </FadeInSection>
+            ))}
           </div>
-          <div className="text-center mt-12">
-            <button 
-              onClick={() => setShowAllNews(!showAllNews)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300"
-            >
-              {showAllNews 
-                ? (isTamil ? "குறைவாகக் காட்டு" : "Show Less") 
-                : translations.seeAllNews[isTamil ? 'ta' : 'en']}
-            </button>
-          </div>
+
+          <FadeInSection>
+            <div className="text-center mt-12 md:mt-16">
+              <button 
+                onClick={() => setShowAllNews(!showAllNews)}
+                className="bg-[#8A7968] hover:bg-[#726354] text-white px-8 py-4 rounded-full transition-all duration-300 text-sm sm:text-base font-medium inline-flex items-center gap-2"
+              >
+                {showAllNews 
+                  ? (isTamil ? "குறைவாகக் காட்டு" : "Show Less")
+                  : translations.seeAllNews[isTamil ? 'ta' : 'en']}
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </FadeInSection>
         </div>
       </section>
 
-      {/* Scouting Stories Video Section */}
-      <section className="py-16 px-4 sm:px-9 bg-white">
+      {/* Video Stories Section */}
+      <section ref={videoSectionRef} className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <FadeInSection>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
-              {isTamil ? translations.watchScoutingStories.ta : translations.watchScoutingStories.en}
-            </h2>
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className={`text-[#2C251D] ${
+                isTamil 
+                  ? 'text-2xl sm:text-3xl md:text-4xl' 
+                  : 'text-3xl sm:text-4xl md:text-5xl'
+              }`}>
+                {translations.watchScoutingStories[isTamil ? 'ta' : 'en']}
+              </h2>
+            </div>
           </FadeInSection>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((index) => (
-              <FadeInSection key={index}>
-                <div className="bg-white rounded-lg overflow-hidden shadow-md">
-                  <div className="aspect-w-16 aspect-h-9">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {mediaData.videos.map((video, index) => (
+              <FadeInSection key={index} delay={index * 0.1}>
+                <div className="group relative rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition-all duration-500">
+                  <div className="aspect-video relative">
                     <video
                       controls
                       className="w-full h-full object-cover"
-                      poster={`/api/placeholder/640/360?text=Video ${index}`}
+                      preload="metadata"
                     >
-                     <source src={mediaData.whoWeAre.video} type="video/mp4" />
+                      <source src={video} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
-                  <div className="p-4 bg-gray-100">
-                    <p className="font-semibold text-sm">
-                      {translations.videoDescription[isTamil ? 'ta' : 'en']} {index}
+                  <div className="p-5 md:p-6">
+                    <h3 className={`text-[#2C251D] mb-2 ${
+                      isTamil 
+                        ? 'text-lg' 
+                        : 'text-xl'
+                    }`}>
+                      Scout Stories {index + 1}
+                    </h3>
+                    <p className={`text-[#645D57] ${
+                      isTamil ? 'text-sm' : 'text-base'
+                    }`}>
+                      {translations.videoDescription[isTamil ? 'ta' : 'en']} {index + 1}
                     </p>
                   </div>
                 </div>

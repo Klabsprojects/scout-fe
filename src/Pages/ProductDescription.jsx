@@ -239,32 +239,46 @@ const ProductDescription = () => {
       navigate('/login');
       return;
     }
-
+  
     try {
+      // First check if we're not exceeding available quantity
+      if (quantity > product.quantity) {
+        toast.error('Requested quantity exceeds available stock');
+        return;
+      }
+  
       const cartData = {
         productId: product.id,
         loginId: parseInt(userId),
         quantity: quantity
       };
-
-      // Check if product already exists in cart
+  
+      // Get current cart state
       const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
       const existingCartItem = cartResponse.data.results?.find(
         item => item.productId === product.id
       );
-
+  
       let response;
       if (existingCartItem) {
+        // Check if new total quantity would exceed available stock
+        const newQuantity = existingCartItem.quantity + quantity;
+        if (newQuantity > product.quantity) {
+          toast.error('Total quantity would exceed available stock');
+          return;
+        }
+        
         // Update existing cart item
-        cartData.quantity = existingCartItem.quantity + quantity;
+        cartData.quantity = newQuantity;
         response = await api.put(`api/updateCart/${existingCartItem.id}`, cartData);
       } else {
         // Add new cart item
         response = await api.post('api/addCart', cartData);
       }
-
+  
       if (response.status === 200 || response.status === 201) {
-        addToCart(product, quantity);
+        // Update local cart state
+        useCartStore.getState().addToCart(product, quantity);
         toast.success(t.addToCartSuccess);
         navigate('/cart');
       } else {

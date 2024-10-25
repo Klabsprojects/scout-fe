@@ -5,8 +5,8 @@ export const useCartStore = create(
   persist(
     (set, get) => ({
       cartWithProducts: [],
-      loginId: null,  // Add loginId to store
-      
+      loginId: null,
+
       setCartWithProducts: (products) => {
         set({ cartWithProducts: products });
       },
@@ -22,9 +22,7 @@ export const useCartStore = create(
       updateCartItem: (productId, quantity) => {
         set((state) => ({
           cartWithProducts: state.cartWithProducts.map((item) =>
-            item.productId === productId
-              ? { ...item, quantity }
-              : item
+            item.productId === productId ? { ...item, quantity } : item
           ),
         }));
       },
@@ -43,10 +41,10 @@ export const useCartStore = create(
 
       getCartTotal: () => {
         return get().cartWithProducts.reduce(
-          (total, item) => total + (parseFloat(item.price) * item.quantity), 
+          (total, item) => total + parseFloat(item.price) * item.quantity,
           0
         );
-      }
+      },
     }),
     {
       name: 'cart-storage',

@@ -141,8 +141,7 @@ const CheckoutPage = () => {
       emptyCart: 'Your cart is empty',
       orderFailed: 'Failed to place order. Please try again.',
       addressSaved: 'Address saved successfully!',
-      addressSaveError: 'Failed to save address',
-      cartDeleteError: 'Failed to delete cart items'
+      addressSaveError: 'Failed to save address'
     },
     tamil: {
       addressFetchError: 'முகவரிகளை பெற முடியவில்லை',
@@ -151,8 +150,7 @@ const CheckoutPage = () => {
       emptyCart: 'உங்கள் கார்ட் காலியாக உள்ளது',
       orderFailed: 'ஆர்டர் செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
       addressSaved: 'முகவரி வெற்றிகரமாக சேமிக்கப்பட்டது!',
-      addressSaveError: 'முகவரியை சேமிக்க முடியவில்லை',
-      cartDeleteError: 'கார்ட் பொருட்களை நீக்க முடியவில்லை'
+      addressSaveError: 'முகவரியை சேமிக்க முடியவில்லை'
     }
   };
 
@@ -249,7 +247,7 @@ const CheckoutPage = () => {
       toast.error(toastMessages[isTamil ? 'tamil' : 'english'].cartFetchError);
     }
   };
-  
+
   const calculateTotalPrice = () => {
     try {
       const total = cartItems.reduce((sum, item) => {
@@ -264,6 +262,7 @@ const CheckoutPage = () => {
       return '0.00';
     }
   };
+  
   const handlePlaceOrder = async () => {
     const msgs = toastMessages[isTamil ? 'tamil' : 'english'];
   
@@ -299,7 +298,7 @@ const CheckoutPage = () => {
       };
   
       const response = await api.post('/api/addOrder', orderData);
-      
+  
       if (response.data && response.data.message === "Created successfully") {
         // Clear cart after successful order
         try {
@@ -314,7 +313,7 @@ const CheckoutPage = () => {
   
         setShowSuccessModal(true);
         setSuccessModalData({
-          totalPrice: parseFloat(totalPrice), // Convert to number explicitly
+          totalPrice: parseFloat(totalPrice),
           totalQuantity: totalQuantity
         });
         setTimeout(() => {
@@ -353,6 +352,7 @@ const CheckoutPage = () => {
       }));
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -642,7 +642,7 @@ const CheckoutPage = () => {
             </div>
           )}
         </motion.div>
-
+  
         {/* Delivery Information */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -670,10 +670,7 @@ const CheckoutPage = () => {
         </ul>
       </motion.div>
 
-
-
-
-{/* Success Modal */}
+      {/* Success Modal */}
 {showSuccessModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <motion.div 
@@ -716,7 +713,6 @@ const CheckoutPage = () => {
 )}
 </div>
 </div>
-
 );
 };
 
