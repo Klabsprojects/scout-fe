@@ -29,7 +29,6 @@ const useAuthStore = create(
   )
 );
 
-// Cart Store
 const useCartStore = create(
   persist(
     (set) => ({
@@ -37,9 +36,23 @@ const useCartStore = create(
       cartWithProducts: [],
       setCartItems: (items) => set({ cartItems: items }),
       setCartWithProducts: (products) => set({ cartWithProducts: products }),
-      addToCart: (item) => set((state) => ({
-        cartItems: [...state.cartItems, item]
-      })),
+      addToCart: (product, quantity = 1) => set((state) => {
+        const existingItem = state.cartItems.find(item => item.id === product.id);
+        if (existingItem) {
+          // Update existing item quantity
+          return {
+            cartItems: state.cartItems.map(item =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            )
+          };
+        }
+        // Add new item
+        return {
+          cartItems: [...state.cartItems, { ...product, quantity }]
+        };
+      }),
       removeFromCart: (itemId) => set((state) => ({
         cartItems: state.cartItems.filter((item) => item.id !== itemId)
       })),
@@ -241,44 +254,63 @@ const ProductDescription = () => {
     }
   
     try {
-      // First check if we're not exceeding available quantity
       if (quantity > product.quantity) {
         toast.error('Requested quantity exceeds available stock');
         return;
       }
   
-      const cartData = {
-        productId: product.id,
-        loginId: parseInt(userId),
-        quantity: quantity
-      };
-  
       // Get current cart state
       const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
+      console.log('Current cart:', cartResponse.data); // Debug log
+      
       const existingCartItem = cartResponse.data.results?.find(
         item => item.productId === product.id
       );
   
       let response;
+      
       if (existingCartItem) {
-        // Check if new total quantity would exceed available stock
-        const newQuantity = existingCartItem.quantity + quantity;
-        if (newQuantity > product.quantity) {
+        console.log('Existing cart item:', existingCartItem); // Debug log
+        
+        // Just use the new quantity, don't add to existing
+        const requestedQuantity = quantity;
+        
+        if (requestedQuantity > product.quantity) {
           toast.error('Total quantity would exceed available stock');
           return;
         }
-        
-        // Update existing cart item
-        cartData.quantity = newQuantity;
-        response = await api.put(`api/updateCart/${existingCartItem.id}`, cartData);
+  
+        // Update cart with the new quantity (not adding to existing)
+        response = await api.post('api/addCart', {
+          productId: product.id,
+          loginId: parseInt(userId),
+          quantity: requestedQuantity // Use just the new quantity
+        });
+  
+        console.log('Update response:', response.data); // Debug log
       } else {
         // Add new cart item
-        response = await api.post('api/addCart', cartData);
+        response = await api.post('api/addCart', {
+          productId: product.id,
+          loginId: parseInt(userId),
+          quantity: quantity
+        });
+  
+        console.log('New item response:', response.data); // Debug log
       }
   
       if (response.status === 200 || response.status === 201) {
-        // Update local cart state
-        useCartStore.getState().addToCart(product, quantity);
+        // Use setCartItems instead of addToCart to avoid double counting
+        const updatedCart = existingCartItem 
+          ? useCartStore.getState().cartItems.map(item => 
+              item.id === product.id 
+                ? { ...item, quantity: quantity }  // Set new quantity
+                : item
+            )
+          : [...useCartStore.getState().cartItems, { ...product, quantity }];
+        
+        useCartStore.getState().setCartItems(updatedCart);
+        
         toast.success(t.addToCartSuccess);
         navigate('/cart');
       } else {
