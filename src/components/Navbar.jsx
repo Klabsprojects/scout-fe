@@ -1,5 +1,5 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Menu, X, LogOut } from 'lucide-react';
+import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
+import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { ShoppingBagIcon, UserIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from '../Context/TranslationContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -9,7 +9,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useAuthStore } from '../Zustand/authStore';
 
-// Context and Store definitions remain the same
 const AuthContext = createContext(null);
 
 const useCartStore = create(
@@ -55,14 +54,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
 const Navbar = () => {
   const { isTamil, toggleLanguage } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,13 +61,18 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const auth = useAuth();
+  const auth = useContext(AuthContext);
   const authStore = useAuthStore();
   const { clearAuth } = authStore;
   const { clearCart } = useCartStore();
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth <= 768;
+
+  // Refs for click outside handling
+  const dropdownRef = useRef(null);
+  const userButtonRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -87,30 +83,43 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Close menus when clicking outside
-  useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMenuOpen || isUserMenuOpen) {
-        const menu = document.getElementById('mobile-menu');
-        const userMenu = document.getElementById('user-menu');
-        const menuButton = document.getElementById('menu-button');
-        const userButton = document.getElementById('user-button');
+      // For User Menu
+      if (
+        isUserMenuOpen && 
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target) &&
+        !userButtonRef.current?.contains(event.target)
+      ) {
+        setIsUserMenuOpen(false);
+      }
 
-        if (menu && !menu.contains(event.target) && !menuButton?.contains(event.target)) {
-          setIsMenuOpen(false);
-        }
-        if (userMenu && !userMenu.contains(event.target) && !userButton?.contains(event.target)) {
-          setIsUserMenuOpen(false);
-        }
+      // For Mobile Menu
+      if (
+        isMenuOpen &&
+        !event.target.closest('#mobile-menu') &&
+        !menuButtonRef.current?.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
       }
     };
 
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        setIsUserMenuOpen(false);
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
   }, [isMenuOpen, isUserMenuOpen]);
 
   const handleLogout = () => {
@@ -182,16 +191,17 @@ const Navbar = () => {
   const MobileUserMenu = () => (
     <div
       id="user-menu"
+      ref={dropdownRef}
       className={`
         fixed right-0 top-16 w-64 bg-white shadow-lg rounded-l-lg transform transition-transform duration-300 ease-in-out z-50
         ${isUserMenuOpen ? 'translate-x-0' : 'translate-x-full'}
       `}
     >
       <div className="py-2">
-        {(auth.username || authStore.username) && (
+        {auth.username && (
           <div className="px-4 py-3 border-b border-gray-200">
             <p className="text-sm font-medium text-gray-900">
-              {t.welcome}, {auth.username || authStore.username}
+              {t.welcome}, {auth.username}
             </p>
           </div>
         )}
@@ -243,6 +253,7 @@ const Navbar = () => {
   const MobileMenu = () => (
     <div
       id="mobile-menu"
+      ref={menuButtonRef}
       className={`
         fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
         ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -306,13 +317,19 @@ const Navbar = () => {
             <span className="text-sm text-gray-500">{isTamil ? 'த' : 'En'}</span>
             <button
               onClick={toggleLanguage}
-              className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className={`
+                relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full 
+                border-2 border-transparent transition-colors duration-200 ease-in-out 
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                ${isTamil ? 'bg-blue-600' : 'bg-gray-200'}
+              `}
               role="switch"
               aria-checked={isTamil}
             >
               <span
                 className={`
-                  pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
+                  pointer-events-none inline-block h-5 w-5 transform rounded-full 
+                  bg-white shadow ring-0 transition duration-200 ease-in-out
                   ${isTamil ? 'translate-x-5' : 'translate-x-0'}
                 `}
               />
@@ -324,49 +341,6 @@ const Navbar = () => {
     </div>
   );
 
-  const MobileHeader = () => (
-    <div className="bg-blue-900 text-white">
-      <div className="h-16 flex items-center justify-between px-4">
-        <button
-          id="menu-button"
-          onClick={() => {
-            setIsMenuOpen(!isMenuOpen);
-            setIsUserMenuOpen(false);
-          }}
-          className="p-2 rounded-md text-white hover:bg-blue-800"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-
-        <div className="flex items-center flex-1 justify-center">
-          <img
-            src={mediaData.headerImages.scoutLogo}
-            alt="Scout Logo"
-            className="h-10 w-10 object-contain"
-          />
-          <h1 className="text-sm font-semibold mx-2 text-center">
-            {isTamil ? "பாரத சாரணியர் & வழிகாட்டுநர்" : "Bharat Scouts and Guides"}
-          </h1>
-          <img
-            src={mediaData.headerImages.tnLogo}
-            alt="TN Logo"
-            className="h-10 w-10 object-contain"
-          />
-        </div>
-
-        <button
-          id="user-button"
-          onClick={() => {
-            setIsUserMenuOpen(!isUserMenuOpen);
-            setIsMenuOpen(false);
-          }}
-          className="p-2 rounded-md text-white hover:bg-blue-800"
-        >
-          <UserIcon className="h-6 w-6" />
-        </button>
-      </div>
-    </div>
-  );
   const DesktopHeader = () => (
     <>
       <div className="bg-blue-900 text-white py-4">
@@ -386,7 +360,13 @@ const Navbar = () => {
               />
               <label htmlFor="languageToggle" className="flex items-center cursor-pointer">
                 <div className="relative w-12 h-6 rounded-full bg-white border-2 border-gray-400">
-                  <div className={`absolute top-0 left-0 w-5 h-5 rounded-full bg-red-500 shadow-md transform transition-transform duration-300 ${isTamil ? 'translate-x-6' : 'translate-x-0'}`} />
+                  <div 
+                    className={`
+                      absolute top-0 left-0 w-5 h-5 rounded-full bg-red-500 shadow-md 
+                      transform transition-transform duration-300 
+                      ${isTamil ? 'translate-x-6' : 'translate-x-0'}
+                    `} 
+                  />
                 </div>
                 <span className="ml-2 text-white text-sm">{isTamil ? 'En' : 'த'}</span>
               </label>
@@ -405,7 +385,7 @@ const Navbar = () => {
                     <li className="h-8 flex items-center">
                       <Link
                         to={item.path}
-                        className={`text-sm hover:text-blue-600 whitespace-nowrap px-3 py-1 rounded-md transition-colors ${
+                        className={`text-sm hover:text-blue-600 whitespace-nowrap px-1 py-1 rounded-md transition-colors ${
                           location.pathname === item.path 
                             ? 'text-blue-600 font-bold bg-blue-50' 
                             : 'text-gray-700 font-medium hover:bg-gray-50'
@@ -422,31 +402,48 @@ const Navbar = () => {
               </ul>
             </div>
 
-            <div className="flex items-center gap-4 mr-24">
+            <div className="flex items-center gap-1 mr-24">
               <Link 
                 to="/donation" 
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="group flex items-center gap-1 px-1
+                 py-2 rounded-lg hover:bg-gray-100 transition-all"
                 title={t.donate}
               >
-                <CreditCardIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+                <CreditCardIcon className="h-5 w-5 text-red-700 group-hover:text-blue-600" />
+                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                  {t.donate}
+                </span>
               </Link>
+              
               <Link 
                 to="/cart" 
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="group flex items-center gap-1 px-1 py-2 rounded-lg hover:bg-gray-100 transition-all"
                 title={t.cart}
               >
-                <ShoppingBagIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+                <ShoppingBagIcon className="h-5 w-5 text-red-700 group-hover:text-blue-600" />
+                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                  {t.cart}
+                </span>
               </Link>
+
               <div className="relative">
                 <button
+                  ref={userButtonRef}
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                  title={auth.token ? t.profile : t.login}
+                  className="group flex items-center gap-1 px-1 py-2 rounded-lg hover:bg-gray-100 transition-all"
                 >
-                  <UserIcon className="h-5 w-5 text-red-700 hover:text-blue-600" />
+                  <UserIcon className="h-5 w-5 text-red-700 group-hover:text-blue-600" />
+                  <ChevronDown 
+                    className={`h-4 w-4 text-gray-500 transition-transform duration-200 
+                      ${isUserMenuOpen ? 'rotate-180' : ''}`} 
+                  />
                 </button>
+                
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div 
+                    ref={dropdownRef}
+                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50"
+                  >
                     {auth.token ? (
                       <>
                         <div className="px-4 py-2 text-sm text-gray-700 border-b">
@@ -513,6 +510,54 @@ const Navbar = () => {
         />
       </div>
     </>
+  );
+  const MobileHeader = () => (
+    <div className="bg-blue-900 text-white">
+      <div className="h-16 flex items-center justify-between px-4">
+        <button
+          id="menu-button"
+          ref={menuButtonRef}
+          onClick={() => {
+            setIsMenuOpen(!isMenuOpen);
+            setIsUserMenuOpen(false);
+          }}
+          className="p-2 rounded-md text-white hover:bg-blue-800"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+
+        <div className="flex items-center flex-1 justify-center">
+          <img
+            src={mediaData.headerImages.scoutLogo}
+            alt="Scout Logo"
+            className="h-10 w-10 object-contain"
+          />
+          <h1 className="text-sm font-semibold mx-2 text-center">
+            {isTamil ? "பாரத சாரணியர் & வழிகாட்டுநர்" : "Bharat Scouts and Guides"}
+          </h1>
+          <img
+            src={mediaData.headerImages.tnLogo}
+            alt="TN Logo"
+            className="h-10 w-10 object-contain"
+          />
+        </div>
+
+        <button
+          id="user-button"
+          ref={userButtonRef}
+          onClick={() => {
+            setIsUserMenuOpen(!isUserMenuOpen);
+            setIsMenuOpen(false);
+          }}
+          className="p-2 rounded-md text-white hover:bg-blue-800 flex items-center gap-1"
+        >
+          <UserIcon className="h-6 w-6" />
+          <ChevronDown 
+            className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} 
+          />
+        </button>
+      </div>
+    </div>
   );
 
   return (

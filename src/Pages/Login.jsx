@@ -132,6 +132,10 @@ export default function LoginSignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('=== Starting Authentication Process ===');
+    console.log('Form Type:', isSignup ? 'Signup' : 'Login');
+    console.log('Initial pendingCartProduct:', pendingCartProduct);
+    
     setError('');
     setSuccess('');
 
@@ -142,6 +146,7 @@ export default function LoginSignupPage() {
     try {
       let response;
       if (isSignup) {
+        console.log('=== Starting Signup Process ===');
         response = await api.post('/api/register', {
           email,
           password,
@@ -160,14 +165,14 @@ export default function LoginSignupPage() {
           setUsername('');
         }
       } else {
+        console.log('=== Starting Login Process ===');
         response = await api.post('/api/login', { email, password });
         
-        // Debug logs
-        console.log('Login response:', response.data);
+        console.log('Login Response:', response.data);
         console.log('Token:', response.data?.output?.token);
-        console.log('User data:', response.data?.output?.data);
+        console.log('User Data:', response.data?.output?.data);
+        console.log('Current pendingCartProduct before handling:', pendingCartProduct);
 
-        // Check for complete response structure
         if (!response.data?.output?.token || !response.data?.output?.data) {
           throw new Error('Incomplete login response data');
         }
@@ -179,72 +184,86 @@ export default function LoginSignupPage() {
           throw new Error('Missing required login data');
         }
 
-        // Clear any existing auth data
+        // Clear existing auth data
+        console.log('=== Clearing Existing Auth Data ===');
         localStorage.clear();
 
-        // Update Zustand store first
+        // Update Zustand store
+        console.log('=== Updating Auth Store ===');
+        console.log('Setting auth with:', { token, userId: userData.id, username: userData.username });
         setAuth(token, userData.id, userData.username);
 
-        // Then update localStorage
+        // Update localStorage
         localStorage.setItem('authToken', token);
         localStorage.setItem('userId', userData.id);
-        // localStorage.setItem('username', userData.username);
-        // localStorage.setItem('email', email);
-        // localStorage.setItem('loginAs', userData.loginAs || 'user');
 
         if (rememberMe) {
           localStorage.setItem('rememberEmail', email);
         }
 
-        // Show success toast
         toast.success(isTamil ? 'உள்நுழைவு வெற்றிகரமானது!' : 'Login successful!');
-        
-        // Show modal
         setShowSuccessModal(true);
 
-        // Handle pending cart product if exists
+        // Handle pending cart product
+        console.log('=== Checking Pending Cart Product ===');
         if (pendingCartProduct) {
+          console.log('Found pending cart product:', pendingCartProduct);
           try {
+            console.log('Attempting to add to cart with:', {
+              productId: pendingCartProduct.productId,
+              loginId: userData.id,
+              quantity: pendingCartProduct.quantity
+            });
+
             const cartResponse = await api.post('api/addCart', {
               productId: pendingCartProduct.productId,
               loginId: userData.id,
               quantity: 1
             });
 
+            console.log('Cart API Response:', cartResponse.data);
+
             if (cartResponse.data.success) {
+              console.log('Successfully added to cart, updating stores');
               addToCart(pendingCartProduct);
+              console.log('Clearing pending cart product');
               setPendingCartProduct(null);
+              console.log('Pending cart product after clearing:', pendingCartProduct);
             }
           } catch (cartError) {
-            console.error('Cart error:', cartError);
+            console.error('Cart Addition Error:', cartError);
             toast.error(isTamil 
               ? 'கார்ட்டில் பொருளைச் சேர்க்க முடியவில்லை'
               : 'Could not add item to cart'
             );
           }
+        } else {
+          console.log('No pending cart product found');
         }
 
         // Navigate after delay
+        console.log('=== Preparing Navigation ===');
+        console.log('Will navigate to:', pendingCartProduct ? '/cart' : '/');
+        
         setTimeout(() => {
           setShowSuccessModal(false);
           navigate(pendingCartProduct ? '/cart' : '/');
         }, 2000);
-
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('=== Authentication Error ===');
+      console.error('Error details:', error);
+      console.log('pendingCartProduct state during error:', pendingCartProduct);
       
-      // Clear any stale auth data
+      // Clear auth data on error
       localStorage.removeItem('authToken');
       localStorage.removeItem('userId');
       localStorage.removeItem('username');
       localStorage.removeItem('email');
       localStorage.removeItem('loginAs');
       
-      // Clear Zustand store
       setAuth(null, null, null);
       
-      // Show appropriate error message
       if (error.response?.data?.message === 'Email already in use') {
         toast.error(isTamil 
           ? 'இந்த மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது'
@@ -263,8 +282,11 @@ export default function LoginSignupPage() {
       }
     } finally {
       setIsLoading(false);
+      console.log('=== Process Complete ===');
+      console.log('Final pendingCartProduct state:', pendingCartProduct);
     }
 };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 pt-36">

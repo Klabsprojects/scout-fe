@@ -466,14 +466,15 @@ const CheckoutPage = () => {
                       <ChevronRight className="ml-2" size={20} />
                     </button>
                   </div>
-  
                   {cartItems.length > 0 && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                      <p className="font-medium">{t.orderSummary}</p>
-                      <p className="text-gray-600">{t.totalItems}: {cartItems.length}</p>
-                      <p className="text-gray-600">{t.totalAmount}: ₹{calculateTotalPrice()}</p>
-                    </div>
-                  )}
+  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+    <p className="font-medium">{t.orderSummary}</p>
+    <p className="text-gray-600">
+      {t.totalItems}: {cartItems.reduce((total, item) => total + parseInt(item.quantity), 0)}
+    </p>
+    <p className="text-gray-600">{t.totalAmount}: ₹{calculateTotalPrice()}</p>
+  </div>
+)}
                 </div>
               )}
             </>

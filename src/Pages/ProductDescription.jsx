@@ -240,7 +240,9 @@ const ProductDescription = () => {
   const t = translations[isTamil ? 'ta' : 'en'];
 
   const handleAddToCart = async () => {
+    // First check for authentication
     if (!token) {
+      // Only store pending product and redirect to login
       setPendingCartProduct({
         productId: product.id,
         name: product.name,
@@ -250,9 +252,10 @@ const ProductDescription = () => {
       
       toast.info(t.loginRequired);
       navigate('/login');
-      return;
+      return; // Important: Return early to prevent further execution
     }
   
+    // Rest of the function only executes if user is authenticated
     try {
       if (quantity > product.quantity) {
         toast.error('Requested quantity exceeds available stock');
@@ -261,7 +264,7 @@ const ProductDescription = () => {
   
       // Get current cart state
       const cartResponse = await api.get(`api/listCart?loginId=${userId}`);
-      console.log('Current cart:', cartResponse.data); // Debug log
+      console.log('Current cart:', cartResponse.data); 
       
       const existingCartItem = cartResponse.data.results?.find(
         item => item.productId === product.id
@@ -270,9 +273,8 @@ const ProductDescription = () => {
       let response;
       
       if (existingCartItem) {
-        console.log('Existing cart item:', existingCartItem); // Debug log
+        console.log('Existing cart item:', existingCartItem);
         
-        // Just use the new quantity, don't add to existing
         const requestedQuantity = quantity;
         
         if (requestedQuantity > product.quantity) {
@@ -287,7 +289,7 @@ const ProductDescription = () => {
           quantity: requestedQuantity // Use just the new quantity
         });
   
-        console.log('Update response:', response.data); // Debug log
+        console.log('Update response:', response.data);
       } else {
         // Add new cart item
         response = await api.post('api/addCart', {
@@ -296,7 +298,7 @@ const ProductDescription = () => {
           quantity: quantity
         });
   
-        console.log('New item response:', response.data); // Debug log
+        console.log('New item response:', response.data);
       }
   
       if (response.status === 200 || response.status === 201) {
@@ -321,7 +323,6 @@ const ProductDescription = () => {
       toast.error(t.addToCartError);
     }
   };
-
   const handleRecommendedAddToCart = async (recProduct) => {
     if (!token) {
       setPendingCartProduct({

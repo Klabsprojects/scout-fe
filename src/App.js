@@ -32,7 +32,7 @@ import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccessPage from "./Pages/OrderSucessPage";
 import OrdersPage from "./Pages/Order";
 import MyProfile from "./Pages/MyProfile";
-
+import YourAddress from "./Pages/YourAddresses";
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('auth-storage') !== null;
@@ -84,6 +84,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/donation" element={<DonationPage />} />
               <Route path="/donate/:eventId" element={<DonationPayment />} />
+              <Route path="/address" element={<YourAddress />} />
 
               {/* Protected Routes */}
               <Route
